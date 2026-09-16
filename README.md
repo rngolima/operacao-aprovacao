@@ -94,7 +94,7 @@ graph TD
 ## 📋 Roadmap de Entregas (Sprints)
 
 - [x] **Sprint 0: Foundation** — Setup inicial com Java 21, Spring Boot 3.3, Clean Architecture, Flyway V1, OpenAPI, H2/PostgreSQL e testes unitários.
-- [ ] **Sprint 1: Security & Identity** — Implementação de autenticação JWT, encriptação BCrypt, RBAC e endpoints de registro/login.
+- [x] **Sprint 1: Security & Identity** — Implementação de autenticação JWT, encriptação BCrypt, RBAC e endpoints de registro/login.
 - [ ] **Sprint 2: Core Domain (Certames & Questões)** — Modelagem agnóstica de bancas, concursos e ingestão do banco de questões da PC-PE.
 - [ ] **Sprint 3: Engine de Treinamento & Simulados** — Geração dinâmica de simulados com regras Cebraspe e tracking de proficiência.
 - [ ] **Sprint 4: Testes Corporativos & QA** — Testcontainers, cobertura massiva de testes e esteira CI/CD.
