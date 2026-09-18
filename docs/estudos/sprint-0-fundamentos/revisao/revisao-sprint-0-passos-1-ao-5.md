@@ -13,7 +13,8 @@
 | **Passo 2** | `OperacaoAprovacaoApplication.java` | ☕ | Concluído | Bootstrap da JVM, Tomcat embutido e mecanismo de radar do `@ComponentScan`. |
 | **Passo 3** | `BaseEntity.java` & `ApiResponse.java` | 🧱 | Concluído | Auditoria JPA com `@MappedSuperclass` e Response Envelope com Generics `<T>`. |
 | **Passo 4** | `V1__initial_schema.sql` / Flyway | 🗃️ | Concluído | Modelagem normalizada (3NF), chaves `BIGINT` e migração idempotente. |
-| **Passo 5** | `HealthController` & Testes | 🌐 | Em Andamento | Camada web REST e testes de integração rápidos em memória com `MockMvc`. |
+| **Passo 5** | `HealthController` & Testes | 🌐 | Concluído | Camada web REST e testes de integração rápidos em memória com `MockMvc`. |
+| **Status Geral** | **Sprint 0: Foundation** | 🚀 | **100% Validada** | Base de dados, arquitetura limpa, segurança e pipeline de testes integrados. |
 
 ---
 
@@ -192,3 +193,123 @@ CREATE TABLE tb_concurso (
 > **Resposta Técnica Modelo:**  
 > *"Adotamos o `BIGINT` (64 bits) para todas as chaves primárias porque em uma plataforma de estudos o volume de transações cresce exponencialmente (resoluções de questões, logs de simulados e telemetria de desempenho). Um tipo `INT` de 32 bits atinge seu limite em 2,1 bilhões de registros, o que causaria um estouro de inteiro (*Integer Overflow*) e indisponibilidade crítica do banco.  
 > Quanto ao `VARCHAR(150)` em vez de `TEXT`, embora o PostgreSQL utilize o mecanismo TOAST para ambos, a restrição de tamanho no schema impõe uma camada de validação e governança diretamente no banco de dados. Isso impede que eventuais falhas de validação na camada de aplicação ou injeções de payloads maliciosos gravem volumes desnecessários de dados nas páginas de disco, preservando a integridade e o consumo de memória do buffer pool."*
+
+---
+
+## 🌐 PASSO 5: A Camada Web (`HealthController`) e a Blindagem com Testes (`MockMvc`)
+
+### 1. O que são esses componentes e por que existem?
+- 🌐 **`HealthController.java`:** Ponto de entrada REST público responsável por expor a saúde operacional do serviço (`/api/v1/health`). É consumido por orquestradores de containers (Kubernetes, AWS ECS) e balanceadores de carga para monitorar *Liveness* (se a JVM travou) e *Readiness* (se o sistema está pronto para receber tráfego).
+- 🧪 **`OperacaoAprovacaoApplicationTests.java`:** Bateria de testes automatizados de integração que sobe o contexto completo da aplicação Spring Boot (`@SpringBootTest`) e valida os endpoints HTTP em memória (`MockMvc`) sem necessidade de abrir conexões de rede físicas lentas.
+
+### 2. Fundamentos da Linguagem & Anotações
+
+| Recurso / Anotação | Origem | Papel Técnico Corporativo |
+| :--- | :--- | :--- |
+| **`@RestController`** | Spring Web | Especialização de `@Controller` com serialização automática dos retornos em JSON (`@ResponseBody`). |
+| **`@RequestMapping`** | Spring Web | Define o prefixo canônico da URL (`/api/v1/health`), garantindo versionamento semântico da API na rota. |
+| **`@GetMapping`** | Spring Web | Mapeia o método HTTP `GET` de leitura idempotente. |
+| **`ResponseEntity<T>`** | Spring Web | Objeto que encapsula o Status Code HTTP (ex: `200 OK`), Headers e Body da resposta com segurança de tipos. |
+| **`@SpringBootTest`** | Spring Test | Carrega o `ApplicationContext` do Spring Boot com injeção de dependências e configurações ativas para testes de integração. |
+| **`@AutoConfigureMockMvc`** | Spring Boot Test | Configura e disponibiliza o objeto `MockMvc` no container de testes, permitindo simular requisições HTTP em memória sem subir servidor Tomcat real. |
+| **`@ActiveProfiles("dev")`** | Spring Test | Fixa o profile `dev`, garantindo que os testes utilizem o banco H2 em memória, isolando completamente o ambiente de homologação e produção. |
+| **`MockMvc`** | Spring Test | Cliente de teste em memória que envia requisições simuladas para os DispatcherServlets do Spring e avalia status e payloads JSON via JsonPath. |
+
+### 3. Código Fonte Comentado
+
+#### 🌐 `HealthController.java`
+```java
+package com.operacaoaprovacao.api.presentation.controller;
+
+import com.operacaoaprovacao.api.core.dto.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/v1/health")
+@Tag(name = "Health Check", description = "Monitoramento de saude e integridade da API")
+public class HealthController {
+
+    @GetMapping
+    @Operation(summary = "Verifica se a API esta operacional", description = "Retorna o status, versao e horario do servidor.")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkHealth() {
+        Map<String, Object> status = Map.of(
+                "status", "UP",
+                "service", "operacao-aprovacao-api",
+                "version", "1.0.0-SNAPSHOT",
+                "timestamp", LocalDateTime.now().toString()
+        );
+        return ResponseEntity.ok(ApiResponse.ok("API operacional e pronta para conexoes.", status));
+    }
+}
+```
+
+#### 🧪 `OperacaoAprovacaoApplicationTests.java`
+```java
+package com.operacaoaprovacao.api;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("dev")
+class OperacaoAprovacaoApplicationTests {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    @DisplayName("Deve carregar o contexto da aplicacao Spring Boot com sucesso")
+    void contextLoads() {
+        // Smoke Test: garante que injeções de dependência, banco H2 e Beans carregam sem falhas
+    }
+
+    @Test
+    @DisplayName("Endpoint /api/v1/health deve responder HTTP 200 OK com status UP")
+    void healthCheckShouldReturnOk() throws Exception {
+        mockMvc.perform(get("/api/v1/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.status").value("UP"))
+                .andExpect(jsonPath("$.data.service").value("operacao-aprovacao-api"));
+    }
+}
+```
+
+### 4. Análise sob os Três Pilares Corporativos
+
+#### 🏛️ Pilar 1: Arquitetura (Separation of Concerns & Thin Controllers)
+- **Controladores Enxutos (Thin Controllers):** O `HealthController` atua estritamente na borda (Presentation Layer). Ele traduz o protocolo HTTP e devolve a resposta no envelope `ApiResponse<T>`, sem acoplamento a regras de negócio de domínio.
+- **Teste de Contexto (Smoke Test):** O método `contextLoads()` valida a integridade estrutural de toda a árvore de injeção de dependências do Spring. Se houver uma anotação conflitante ou dependência circular, o teste falha na hora.
+
+#### ⚡ Pilar 2: Escalabilidade & Performance
+- **Execução em Nanossegundos com `MockMvc`:** Subir um servidor web real (Tomcat em porta física) para cada teste de integração torna a esteira de CI/CD lenta e sujeita a conflitos de portas de rede ("Address already in use"). O `MockMvc` despacha a requisição internamente através do `DispatcherServlet` em memória, executando centenas de testes por segundo.
+- **Health Check para Alta Disponibilidade:** O endpoint `/api/v1/health` fornece a telemetria necessária para balanceadores de carga retirarem instâncias instáveis de circulação antes que usuários finais sejam afetados.
+
+#### 🛡️ Pilar 3: Dimensões Técnicas & Isolamento de Ambientes
+- **Idempotência de Teste com `@ActiveProfiles("dev")`:** Garante isolamento estrito. Os testes nunca realizam chamadas a bancos remotos ou infraestrutura compartilhada, garantindo execução reproduzível em qualquer máquina local ou runner do GitHub Actions.
+
+### 🎯 Simulação de Entrevista Técnica (Passo 5):
+> **Pergunta do Tech Lead:**  
+> *"Em uma arquitetura de microsserviços Spring Boot, por que é recomendado utilizar o `MockMvc` em conjunto com `@AutoConfigureMockMvc` para testar os nossos Controllers em vez de subir um servidor real (Tomcat) com chamadas via `RestTemplate` ou `WebClient`? E qual é o papel de um endpoint como `/api/v1/health` quando a aplicação está rodando em um orquestrador como Kubernetes ou AWS?"*
+> 
+> **Resposta Técnica Modelo:**  
+> *"Utilizamos o `MockMvc` porque ele simula as chamadas HTTP diretamente contra a camada de controladores do Spring em memória, sem a sobrecarga de iniciar um servidor de aplicação físico (como o Tomcat) nem abrir conexões de socket de rede reais. Isso reduz o tempo de execução da suíte de testes em pipelines de CI/CD de minutos para segundos e elimina conflitos de portas TCP em builds paralelos.  
+> Já o endpoint `/api/v1/health` cumpre a função vital de Liveness e Readiness Probe: ele oferece aos orquestradores de contêineres (Kubernetes, AWS ECS) e balanceadores de carga um endpoint ultraleve para checar se a instância está viva e apta a receber tráfego, permitindo o reinício automático de pods degradados sem downtime para os usuários."*

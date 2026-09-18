@@ -77,7 +77,7 @@ O projeto adota o padrão **Monólito Modular (Modular Monolith)** aliado à **C
 │       ├── 📁 sprint-0-fundamentos/   <-- Materiais da Sprint 0
 │       │   ├── 📘 sprint-0-fundamentos.md
 │       │   └── 📝 revisao/            <-- Subdiretório exclusivo de revisão da Sprint 0
-│       │       └── 📜 revisao-sprint-0-passo-1-ao-4.md
+│       │       └── 📜 revisao-sprint-0-passos-1-ao-5.md
 │       │
 │       └── 📁 sprint-1-security-jwt/  <-- Materiais da Sprint 1
 │           ├── 🔐 sprint-1-security-jwt.md

@@ -14,7 +14,7 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 ### 📁 Sprint 0: Foundation (A Base Corporativa)
 - 📘 [Guia Oficial da Sprint 0](sprint-0-fundamentos/sprint-0-fundamentos.md)
 - 📝 **Revisão Técnica Modular:**
-  - 📄 [Revisão Sprint 0: Passos 1 ao 4](sprint-0-fundamentos/revisao/revisao-sprint-0-passo-1-ao-4.md)
+  - 📄 [Revisão Completa da Sprint 0: Passos 1 ao 5](sprint-0-fundamentos/revisao/revisao-sprint-0-passos-1-ao-5.md)
 
 ---
 
