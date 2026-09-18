@@ -1,132 +1,157 @@
-# 📁 Guia Definitivo: Estrutura de Pastas no Java e a Arquitetura do Nosso Projeto
+# 📁 Guia Definitivo: Estrutura de Pastas e Arquitetura do Projeto
 
-> **Documento de Mentoria & Preparação Técnica (Com Ícones Visuais do VS Code)**  
-> Este guia usa a representação visual idêntica ao que você enxerga no seu editor para facilitar o aprendizado e memorização imediata.
+> **Documento Oficial de Engenharia de Software & Mentoria Técnica**  
+> Mapeamento completo da estrutura física de diretórios e da arquitetura do projeto **Operação Aprovação**.
 
 ---
 
 ## 🌍 PARTE 1: A Estrutura Padrão Universal do Java (Maven)
 
-`	ext
-📁 meu-projeto/
-├── 🐘 pom.xml                     <-- Arquivo mestre de configuração (Project Object Model)
-├── 📦 target/                     <-- Pasta de saída do compilador (arquivos binários .class e .jar)
-└── 📁 src/                        <-- Código-fonte do projeto (Source)
-    ├── 📁 main/                   <-- Tudo que vai para PRODUÇÃO (código que o usuário final usa)
-    │   ├── ☕ java/               <-- Onde ficam os arquivos com código Java puro (.java)
-    │   └── 🍃 resources/          <-- Arquivos de configuração e recursos (YAML, SQL, propriedades)
-    └── 🧪 test/                   <-- Tudo que serve EXCLUSIVAMENTE para TESTES (não vai para produção)
-        ├── ☕ java/               <-- Classes de testes unitários e de integração (.java com JUnit)
-        └── 🍃 resources/          <-- Configurações exclusivas para o ambiente de testes
-`
+Todo projeto Java corporativo segue o padrão internacional do **Apache Maven** (*Standard Directory Layout*):
+
+```text
+operacao-aprovacao/
+├── pom.xml                     <-- O arquivo mestre de configuração (Project Object Model)
+├── target/                     <-- Pasta gerada pelo compilador (arquivos binários .class e .jar)
+└── src/                        <-- Código-fonte do sistema (Source)
+    ├── main/                   <-- Código de PRODUÇÃO (executado pelo usuário final)
+    │   ├── java/               <-- Código Java puro (.java compilável)
+    │   └── resources/          <-- Arquivos de configuração (YAML, SQL do Flyway, etc.)
+    └── test/                   <-- Código de TESTES AUTOMATIZADOS (não vai para produção)
+        ├── java/               <-- Classes de testes com JUnit 5 e MockMvc
+        └── resources/          <-- Configurações exclusivas do ambiente de teste
+```
+
+### 📋 Tabela de Propósito das Pastas Raiz:
+
+| Diretório / Arquivo | Tipo | Propósito no Ecossistema Java |
+| :--- | :--- | :--- |
+| `pom.xml` | Configuração Maven | Declara dependências (Spring Boot, JPA, PostgreSQL, JWT), plugins e versão do Java 21. |
+| `src/main/java/` | Código de Produção | Contém 100% da lógica de negócio, controllers, services e entidades Java. |
+| `src/main/resources/` | Recursos Estáticos | Configurações de ambiente (`application.yml`) e scripts de banco de dados (`db/migration/`). |
+| `src/test/java/` | Garantia de Qualidade | Testes unitários e de integração que garantem que nada quebre antes do deploy. |
+| `target/` | Binários Compilados | Pasta temporária onde o Maven gera os arquivos `.class` e o `.jar` executável final. |
 
 ---
 
-## 📦 PARTE 2: Pacotes e a Convenção de Domínio Invertido
+## 📦 PARTE 2: Organização de Pacotes (A Regra do Domínio Invertido)
 
-No Java, todo código fica dentro de **Pacotes**, organizados pela regra do domínio da internet ao contrário:
+No Java, classes não ficam soltas. Elas pertencem a **Pacotes (Packages)**, que seguem a convenção do domínio da internet invertido para garantir nomes únicos no mundo:
 
-`	ext
-📁 src/
-└── 📁 main/
-    └── ☕ java/
-        └── 📁 com/
-            └── 📁 operacaoaprovacao/
-                └── 📁 api/                <-- Pacote Raiz da Aplicação
-                    └── ☕ OperacaoAprovacaoApplication.java
-`
+```text
+src/main/java/
+└── com/
+    └── operacaoaprovacao/
+        └── api/                    <-- Pacote Raiz da Aplicação
+            └── OperacaoAprovacaoApplication.java
+```
 
 ---
 
-## 🏛️ PARTE 3: A Estrutura Completa do Nosso Projeto "Operação Aprovação"
+## 🏛️ PARTE 3: Arquitetura do Projeto "Operação Aprovação"
 
-Veja exatamente como o seu VS Code está organizado agora, com cada ícone temático:
+O projeto adota o padrão **Monólito Modular (Modular Monolith)** aliado à **Clean Architecture** (Arquitetura Limpa):
 
-`	ext
-📁 operacao-aprovacao/
-├── 📜 README.md                   <-- Apresentação oficial do projeto no GitHub com badges
-├── 🚫 .gitignore                  <-- Impede envio de lixo (target/, .idea/) para o repositório
-├── 📁 docs/                       <-- Documentação técnica de alto nível
-│   ├── 📁 adr/                    <-- Registros Formais de Decisões de Arquitetura
-│   │   ├── 📜 001-arquitetura-e-stack-tecnologica.md
-│   │   └── 📜 002-autenticacao-jwt-e-rbac.md
-│   └── 📁 estudos/                <-- Seus Guias de Estudos e Preparação para Entrevistas
-│       ├── 📜 00-estrutura-de-pastas.md
-│       ├── 📜 sprint-0-fundamentos.md
-│       └── 📜 sprint-1-security-jwt.md
-└── 📁 backend/
-    ├── 🐘 pom.xml                 <-- Declara Java 21, Spring Boot 3.3, Flyway, PostgreSQL, JWT
-    └── 📁 src/
-        ├── 📁 main/               <-- Código de Produção
-        │   ├── ☕ java/com/operacaoaprovacao/api/
+```text
+operacao-aprovacao/
+│
+├── README.md                       <-- Apresentação oficial do projeto no GitHub com badges
+├── .gitignore                      <-- Impede envio de pastas temporárias para o Git
+│
+├── docs/                           <-- Documentação Técnica de Engenharia
+│   ├── adr/                        <-- Registros Formais de Decisões de Arquitetura (ADRs)
+│   │   ├── 001-arquitetura-e-stack-tecnologica.md
+│   │   └── 002-autenticacao-jwt-e-rbac.md
+│   ├── cronograma/                 <-- Cronograma sincronizado para o Google Agenda (.ics)
+│   │   └── Cronograma_Operacao_Aprovacao_Google_Agenda.ics
+│   ├── guidelines/                 <-- Padrões corporativos de engenharia do arcabouço ECC
+│   │   ├── postgres-patterns.md
+│   │   ├── springboot-patterns.md
+│   │   └── springboot-security.md
+│   └── estudos/                    <-- Manuais de Mentoria e Preparação para Entrevistas
+│       ├── 00-estrutura-de-pastas.md
+│       ├── sprint-0-fundamentos.md
+│       ├── sprint-1-security-jwt.md
+│       └── revisoes/
+│           └── revisao-sprint-0-passo-1-ao-4.md
+│
+└── backend/
+    ├── pom.xml                     <-- Declaração das dependências Java 21 e Spring Boot 3.3.3
+    └── src/
+        ├── main/
+        │   ├── java/com/operacaoaprovacao/api/
         │   │   │
-        │   │   ├── ☕ OperacaoAprovacaoApplication.java  <-- Ponto de ignição do Spring Boot
+        │   │   ├── OperacaoAprovacaoApplication.java  <-- Ponto de ignição do Spring Boot
         │   │   │
-        │   │   ├── 🔒 config/             <-- Configurações de Segurança e Frameworks
-        │   │   │   ├── 🔒 SecurityConfig.java            <-- Regras do Spring Security (rotas públicas, CORS, stateless)
-        │   │   │   ├── 🔒 JwtAuthenticationFilter.java   <-- Filtro que intercepta e valida tokens JWT
-        │   │   │   └── 📄 OpenApiConfig.java             <-- Configuração visual do Swagger UI
+        │   │   ├── config/         <-- Infraestrutura de Frameworks e Segurança
+        │   │   │   ├── SecurityConfig.java            <-- Regras do Spring Security 6 (Stateless, CORS)
+        │   │   │   ├── JwtAuthenticationFilter.java   <-- Filtro que intercepta e valida tokens JWT
+        │   │   │   └── OpenApiConfig.java             <-- Documentação Swagger UI em /swagger-ui.html
         │   │   │
-        │   │   ├── 🧱 core/               <-- Núcleo transversal compartilhado
-        │   │   │   ├── 🧠 domain/
-        │   │   │   │   └── ☕ BaseEntity.java             <-- Superclasse com created_at e updated_at automáticos
-        │   │   │   ├── ✉️ dto/
-        │   │   │   │   └── ☕ ApiResponse.java            <-- Envelope padronizado de resposta REST
-        │   │   │   └── 🛡️ exception/
-        │   │   │       ├── ☕ BusinessException.java      <-- Exceção para regras de negócio violadas
-        │   │   │       └── ☕ GlobalExceptionHandler.java  <-- Intercepta erros e devolve JSON bonito
+        │   │   ├── core/           <-- Núcleo Transversal Compartilhado
+        │   │   │   ├── domain/
+        │   │   │   │   └── BaseEntity.java             <-- Superclasse com auditoria (created_at, updated_at)
+        │   │   │   ├── dto/
+        │   │   │   │   └── ApiResponse.java            <-- Envelope padronizado de resposta REST
+        │   │   │   └── exception/
+        │   │   │       ├── BusinessException.java      <-- Exceção de negócio para validações
+        │   │   │       └── GlobalExceptionHandler.java  <-- Interceptador global de erros (400, 401, 500)
         │   │   │
-        │   │   ├── 🧩 modules/            <-- Módulos de Negócio (Clean Architecture / DDD)
+        │   │   ├── modules/        <-- Módulos de Domínio Coesos (Bounded Contexts)
         │   │   │   │
-        │   │   │   ├── 🔐 auth/           <-- Módulo de Autenticação e Usuários (Sprint 1)
-        │   │   │   │   ├── 🧠 domain/
-        │   │   │   │   │   ├── ☕ Usuario.java            <-- Entidade JPA + UserDetails do Spring Security
-        │   │   │   │   │   ├── ☕ Role.java               <-- Enum de papéis (ROLE_STUDENT, ROLE_ADMIN)
-        │   │   │   │   │   └── 🗄️ UsuarioRepository.java  <-- Consultas JPA (findByEmail, existsByEmail)
-        │   │   │   │   ├── ✉️ application/dto/
-        │   │   │   │   │   ├── ☕ RegisterRequest.java     <-- Dados de entrada do cadastro (com @Valid)
-        │   │   │   │   │   ├── ☕ LoginRequest.java        <-- Dados de entrada do login
-        │   │   │   │   │   └── ☕ AuthResponse.java        <-- Resposta com o Token JWT gerado
-        │   │   │   │   ├── ⚙️ application/service/
-        │   │   │   │   │   ├── ☕ AuthService.java         <-- Caso de uso: cadastra com BCrypt e faz login
-        │   │   │   │   │   ├── ☕ JwtService.java          <-- Emite e valida a assinatura do JWT
-        │   │   │   │   │   └── ☕ CustomUserDetailsService.java <-- Carrega o usuário do banco pro Spring
-        │   │   │   │   └── 🌐 presentation/controller/
-        │   │   │   │       └── ☕ AuthController.java      <-- Endpoints /api/v1/auth/register e /login
+        │   │   │   ├── auth/       <-- Módulo de Autenticação e Gestão de Contas (Sprint 1)
+        │   │   │   │   ├── domain/model/
+        │   │   │   │   │   ├── Usuario.java            <-- Entidade JPA + UserDetails do Spring Security
+        │   │   │   │   │   └── Role.java               <-- Enum RBAC (ROLE_STUDENT, ROLE_ADMIN)
+        │   │   │   │   ├── domain/repository/
+        │   │   │   │   │   └── UsuarioRepository.java  <-- Consultas JPA (findByEmail, existsByEmail)
+        │   │   │   │   ├── application/dto/
+        │   │   │   │   │   ├── RegisterRequest.java     <-- Dados de entrada do cadastro com @Valid
+        │   │   │   │   │   ├── LoginRequest.java        <-- Dados de entrada do login
+        │   │   │   │   │   └── AuthResponse.java        <-- DTO de saída contendo o token JWT
+        │   │   │   │   ├── application/service/
+        │   │   │   │   │   ├── AuthService.java         <-- Caso de uso: registro com BCrypt e autenticação
+        │   │   │   │   │   ├── JwtService.java          <-- Geração e validação de assinatura HMAC-SHA256
+        │   │   │   │   │   └── CustomUserDetailsService.java <-- Ponte entre o banco e o Spring Security
+        │   │   │   │   └── presentation/controller/
+        │   │   │   │       └── AuthController.java      <-- Endpoints /api/v1/auth/register e /login
         │   │   │   │
-        │   │   │   ├── 📁 certame/        <-- Módulo de Concursos (Sprint 2: Bancas, Editais, Disciplinas)
-        │   │   │   ├── 📁 questao/        <-- Módulo de Questões (Sprint 2: Questões Cebraspe, Alternativas)
-        │   │   │   └── 📁 treinamento/    <-- Módulo do Treinador (Sprint 3: Simulados e Desempenho)
+        │   │   │   ├── certame/    <-- Módulo de Concursos (Sprint 2: Bancas, Editais, Disciplinas)
+        │   │   │   ├── questao/    <-- Módulo de Questões (Sprint 2: Banco Cebraspe, Alternativas)
+        │   │   │   └── treinamento/<-- Módulo do Treinador (Sprint 3: Simulados e Proficiência)
         │   │   │
-        │   │   └── 🌐 presentation/controller/
-        │   │       └── ☕ HealthController.java          <-- Endpoint /api/v1/health de monitoramento
+        │   │   └── presentation/controller/
+        │   │       └── HealthController.java          <-- Endpoint /api/v1/health de monitoramento
         │   │
-        │   └── 🍃 resources/              <-- Arquivos de Configuração e Recursos
-        │       ├── 🍃 application.yml                    <-- Configurações gerais da aplicação (porta 8080)
-        │       ├── 🍃 application-dev.yml                <-- Perfil dev local (banco H2 em memória)
-        │       ├── 🍃 application-prod.yml               <-- Perfil produção (PostgreSQL no Supabase)
-        │       └── 🗄️ db/migration/
-        │           └── 🗃️ V1__initial_schema.sql         <-- Primeiro script SQL versionado com Flyway
+        │   └── resources/
+        │       ├── application.yml                    <-- Configurações gerais da aplicação (porta 8080)
+        │       ├── application-dev.yml                <-- Perfil dev local (banco H2 em memória)
+        │       ├── application-prod.yml               <-- Perfil produção (PostgreSQL no Supabase)
+        │       └── db/migration/
+        │           └── V1__initial_schema.sql         <-- Primeiro script SQL versionado com Flyway
         │
-        └── 🧪 test/                       <-- Testes Automatizados (Zero impacto em produção)
-            └── ☕ java/com/operacaoaprovacao/api/
-                ├── 🧪 OperacaoAprovacaoApplicationTests.java <-- Smoke test e validação do /api/v1/health
-                └── 📁 modules/auth/
-                    └── 🧪 AuthControllerTest.java            <-- Testes com MockMvc (cadastro, login, erros)
-`
+        └── test/
+            └── java/com/operacaoaprovacao/api/
+                ├── OperacaoAprovacaoApplicationTests.java <-- Smoke test e validação do /api/v1/health
+                └── modules/auth/
+                    └── AuthControllerTest.java            <-- Testes de integração de auth com MockMvc
+```
 
 ---
 
-## 💡 Resumo dos Ícones para Você Bater o Olho e Identificar:
+## 🎯 PARTE 4: O Propósito das 3 Camadas Internas de Cada Módulo
 
-- 📁 **Pasta Comum:** Agrupador de arquivos.
-- 🐘 **Elefante (Maven):** Configuração de dependências (pom.xml).
-- ☕ **Xícara de Café (Java):** Código-fonte compilável (.java).
-- 🍃 **Folha Verde (Spring):** Configurações do framework (pplication.yml).
-- 🗄️ / 🗃️ **Banco de Dados (SQL):** Repositórios JPA e migrações do Flyway.
-- 🔒 **Cadeado (Segurança):** Classes que protegem a aplicação com Spring Security e JWT.
-- ✉️ **Envelope (DTO):** Objetos que transportam dados que entram ou saem da API.
-- 🌐 **Globo (Controller):** Portas de entrada da API que recebem requisições da web/mobile.
-- 🛡️ **Escudo (Exceptions):** Tratamento global e blindagem contra erros.
-- 🧪 **Tubo de Ensaio (Testes):** Classes que testam e garantem que o sistema não quebre.
-- 📜 **Pergaminho (Markdown):** Documentação técnica e guias de estudo.
+Em cada módulo (`auth`, `certame`, `questao`, `treinamento`), dividimos o código em 3 camadas estritas:
+
+```mermaid
+graph TD
+    Client[Cliente / App Flutter] --> Controller[Presentation: Controller]
+    Controller --> Service[Application: Service / Casos de Uso]
+    Service --> Entity[Domain: Entidades e Regras de Negócio]
+    Service --> Repository[Domain: Interfaces de Repositório]
+    Repository --> Database[(PostgreSQL / Supabase)]
+```
+
+1. **`domain/` (Domínio):** Contém as entidades e regras de negócio puras. É o coração do sistema e não depende de frameworks web nem de detalhes de interface.
+2. **`application/` (Aplicação):** Contém os Services (Casos de Uso) e DTOs. É onde reside a orquestração: validações de negócio, criptografia e regras de fluxo.
+3. **`presentation/` (Apresentação):** Contém os Controllers REST. Responsável estritamente por receber requisições HTTP, validar payloads (`@Valid`) e retornar respostas padronizadas com o status code correto.
