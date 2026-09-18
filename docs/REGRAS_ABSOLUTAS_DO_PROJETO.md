@@ -34,3 +34,21 @@
 ## 💾 CLÁUSULA 4: GOVERNANÇA DE DOCUMENTAÇÃO E REPOSITÓRIO
 1. Toda decisão técnica relevante, explicação conceitual e revisão deve ser registrada na documentação oficial em docs/estudos/ e sincronizada via Git.
 2. Os arquivos de documentação técnica devem conter a matéria explicada, o porquê de cada decisão e as perguntas/respostas modelo para preparação do desenvolvedor.
+
+---
+
+## 🎨 CLÁUSULA 5: PADRÃO VISUAL E EDITORIAL OFICIAL
+1. **Formatação Impecável:** Todo documento em `docs/estudos/` deve seguir o padrão visual oficial consolidado:
+   - Uso de ícones temáticos do VS Code (Material Icon Theme): ⚙️ Maven, ☕ Java, 🗃️ Flyway/SQL, 🛡️ Security, 🧪 Testes, 🏛️ Arquitetura, ⚡ Performance, 🗺️ Navegação.
+   - Cercas de código Markdown estritas com 3 crases (```java, ```sql, ```xml, ```bash, etc.) sem tabulações ou crases soltas.
+   - Estruturação em seções com cabeçalhos claros, tabelas de apoio e caixas de destaque alertando pontos críticos (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`).
+
+---
+
+## 🚀 CLÁUSULA 6: GATILHO OPERACIONAL DE ENCERRAMENTO DIÁRIO ("atualizar repositorio")
+1. Ao final de cada dia/sessão de produção, quando o Usuário emitir o comando **"atualizar repositorio"**:
+   - O Mentor DEVE inspecionar o status do Git (`git status`).
+   - Adicionar todos os arquivos produzidos e revisados (`git add .`).
+   - Criar commit semântico padronizado (`git commit -m "docs/feat: ..."`).
+   - Realizar o envio para a branch principal no GitHub (`git push origin main`).
+   - Confirmar a integridade e fornecer o link direto do repositório/arquivos atualizados.
