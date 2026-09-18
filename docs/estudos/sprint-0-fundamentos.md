@@ -1,85 +1,99 @@
 # 📘 Guia de Estudos — Sprint 0: Foundation (A Base Corporativa)
 
-> **Documento Pessoal de Preparação Técnica para Entrevistas e Domínio do Código**  
-> Este documento explica detalhadamente o que foi construído na Sprint 0, por que foi feito dessa forma e como você deve defender cada decisão em uma entrevista de emprego para Desenvolvedor Java / Spring Boot.
+> **Documento Oficial de Engenharia de Software & Mentoria Técnica**  
+> Mapeamento completo dos fundamentos, decisões de arquitetura e padrões corporativos da Sprint 0 com os ícones temáticos do VS Code.
 
 ---
 
-## 1. O que é o projeto e a sua Arquitetura?
+## 🏛️ 1. O Projeto e a Escolha da Clean Architecture
 
-O **Operação Aprovação** foi estruturado no padrão **Monólito Modular (Modular Monolith)** aplicando os princípios da **Clean Architecture** (Arquitetura Limpa) de Robert C. Martin (Uncle Bob).
+O **Operação Aprovação** foi desenhado como um **Monólito Modular (Modular Monolith)** aplicando os princípios da **Clean Architecture** (Arquitetura Limpa) de Robert C. Martin (Uncle Bob):
+
+```mermaid
+graph TD
+    Client[Cliente / App Flutter] --> Presentation[🌐 Presentation Layer: Controllers REST]
+    Presentation --> Application[⚙️ Application Layer: Services & DTOs]
+    Application --> Domain[🧠 Domain Layer: Entidades & Regras de Negócio]
+    Domain --> Infrastructure[🗄️ Infrastructure Layer: Spring Data JPA & Flyway]
+    Infrastructure --> Database[(PostgreSQL / Supabase)]
+```
 
 ### Por que Clean Architecture?
-Na Clean Architecture, o objetivo principal é a **independência de frameworks e bancos de dados**. As regras de negócio não sabem se o banco é PostgreSQL, Oracle ou MySQL, nem se o frontend é Flutter ou React.
-
-A estrutura de camadas obedece à **Regra da Dependência**:
-1. **Domain (Domínio):** O coração da aplicação. Contém entidades e regras que nunca mudam por motivos técnicos.
-2. **Application (Aplicação):** Casos de uso (Services e DTOs) que orquestram a lógica do sistema.
-3. **Presentation / Infrastructure (Apresentação e Infraestrutura):** Controllers REST, integrações com banco (Spring Data JPA) e configurações de segurança.
+- **Independência de Frameworks e Bancos:** A regra de negócio central não sabe se o banco é PostgreSQL, H2 ou Oracle, nem se o cliente é Flutter ou React.
+- **Testabilidade:** Módulos desacoplados permitem testes unitários rápidos e isolados com MockMvc e Mocks, sem necessidade de banco real em cada teste.
 
 ---
 
-## 2. Raio-X dos Arquivos da Sprint 0
+## 📂 2. Raio-X dos Arquivos da Sprint 0
 
-### 2.1 pom.xml (Maven Project Object Model)
-- **O que é:** O arquivo de configuração central do gerenciador de dependências e build (Apache Maven).
+| Arquivo / Componente | Camada | Ícone | Responsabilidade Técnica Principal |
+| :--- | :--- | :--- | :--- |
+| `pom.xml` | Configuração | 🐘 | Manifesto Maven: gerencia dependências, versões e ciclo de vida do build. |
+| `OperacaoAprovacaoApplication.java` | Bootstrap | ☕ | Ponto de partida (`main`): sobe o servidor Tomcat e inicializa o `@ComponentScan`. |
+| `BaseEntity.java` | Core / Domain | 🧠 | Superclasse abstrata com auditoria JPA automática (`created_at`, `updated_at`). |
+| `ApiResponse.java` | Core / DTO | ✉️ | Envelope padronizado de respostas da API com Generics `<T>` e padrão Builder. |
+| `SecurityConfig.java` | Config / Security | 🔒 | Configuração do Spring Security 6: arquitetura Stateless, CORS e desativação de CSRF. |
+| `HealthController.java` | Presentation | 🌐 | Endpoint `/api/v1/health` para monitoramento de liveness e readiness da API. |
+| `V1__initial_schema.sql` | Database / Flyway | 🗃️ | Script DDL inicial versionado que cria as tabelas de bancas, concursos e usuários. |
+| `OperacaoAprovacaoApplicationTests.java` | Test / QA | 🧪 | Teste de integração automatizado com `@SpringBootTest` e `MockMvc`. |
+
+---
+
+## 🔍 3. Detalhamento Técnico Arquitetural
+
+### 3.1 🐘 `pom.xml` (Maven Project Object Model)
+- **`<parent>` Spring Boot 3.3.3:** Fornece a matriz de compatibilidade testada e aprovada pelo time de engenharia do Spring, eliminando conflitos de bibliotecas.
 - **Principais dependências explicadas:**
-  - spring-boot-starter-web: Traz o Spring MVC e o servidor web embutido Apache Tomcat.
-  - spring-boot-starter-data-jpa: Traz o Hibernate e a abstração de repositórios para conversar com bancos relacionais.
-  - spring-boot-starter-security: Fornece os filtros de segurança, controle de acesso e autenticação.
-  - postgresql: O driver JDBC oficial para comunicação com bancos PostgreSQL (Supabase).
-  - lyway-core: Gerencia migrações versionadas do schema do banco.
-  - springdoc-openapi-starter-webmvc-ui: Gera automaticamente a documentação Swagger interativa em /swagger-ui.html.
-  - lombok: Reduz código repetitivo (getters, setters, builders) gerando-os em tempo de compilação.
-  - mapstruct: Biblioteca ultra rápida para converter Entidades em DTOs e vice-versa sem reflexão custosa.
+  - `spring-boot-starter-web`: Traz o Spring MVC e o servidor web embutido **Apache Tomcat** na porta 8080.
+  - `spring-boot-starter-data-jpa`: Traz o Hibernate para mapeamento objeto-relacional (ORM) e abstração de repositórios.
+  - `spring-boot-starter-security`: Fornece a infraestrutura de filtros para segurança, autenticação e controle de acesso.
+  - `postgresql`: Driver JDBC oficial para comunicação com o PostgreSQL na nuvem.
+  - `flyway-core`: Gerenciador de migrações que garante versionamento ordenado do schema do banco.
+  - `springdoc-openapi-starter-webmvc-ui`: Gera automaticamente a documentação visual e interativa do Swagger em `/swagger-ui.html`.
 
-### 2.2 OperacaoAprovacaoApplication.java
-- **O que é:** O ponto de entrada da aplicação (main).
-- **Anotações:**
-  - @SpringBootApplication: Combina @Configuration, @EnableAutoConfiguration e @ComponentScan. Faz o Spring varrer e instanciar todos os componentes da aplicação.
-  - @EnableJpaAuditing: Habilita o preenchimento automático das datas de criação e alteração nas entidades.
+### 3.2 ☕ `OperacaoAprovacaoApplication.java`
+- **`@SpringBootApplication`:** Anotação composta que reúne `@Configuration` (declaração de Beans), `@EnableAutoConfiguration` (leitura do pom.xml) e `@ComponentScan` (varredura automática de classes anotadas a partir do pacote raiz `com.operacaoaprovacao.api`).
+- **`@EnableJpaAuditing`:** Ativa a captura de eventos de inserção e atualização para preenchimento automático de datas nas entidades.
 
-### 2.3 BaseEntity.java
-- **O que é:** Superclasse abstrata com @MappedSuperclass.
-- **Por que criamos:** Para que todas as entidades do banco herdem os campos created_at e updated_at.
-- **Anotações:**
-  - @CreatedDate: O Spring Data carimba a hora do INSERT.
-  - @LastModifiedDate: O Spring Data carimba a hora de cada UPDATE.
-  - @EntityListeners(AuditingEntityListener.class): O ouvinte que intercepta o ciclo de vida do Hibernate.
+### 3.3 🧠 `BaseEntity.java`
+- **`@MappedSuperclass`:** Avisa ao provedor JPA que esta classe serve exclusivamente para herança de colunas. O banco de dados **não cria uma tabela física** chamada `base_entity`.
+- **`@EntityListeners(AuditingEntityListener.class)`:** Ouvinte que intercepta o ciclo de vida do Hibernate para preencher `@CreatedDate` e `@LastModifiedDate`.
 
-### 2.4 ApiResponse.java (Response Envelope Pattern)
-- **O que é:** Um DTO genérico com success, message, data e 	imestamp.
-- **Por que criamos:** Em APIs corporativas de alto nível, nunca se devolve dados soltos. O envelope padroniza todas as respostas, facilitando o tratamento de erros e parsing no Flutter.
-- **Conceito:** Uso de Generics (<T>) para suportar qualquer tipo de dado de retorno mantendo type safety.
+### 3.4 ✉️ `ApiResponse.java` (Response Envelope Pattern)
+- Padroniza 100% das saídas da API em uma estrutura previsível:
+```json
+{
+  "success": true,
+  "message": "Operação realizada com sucesso",
+  "data": { ... },
+  "timestamp": "2026-09-18T15:00:00"
+}
+```
+- **Generics (`<T>`):** Permite transportar com type safety qualquer objeto dentro do campo `data`.
 
-### 2.5 SecurityConfig.java
-- **O que é:** A configuração de segurança do Spring Security 6.
-- **Decisões arquiteturais fundamentais:**
-  - SessionCreationPolicy.STATELESS: O servidor não guarda sessão em memória; cada requisição carrega seu próprio token JWT.
-  - csrf.disable(): Desabilitado porque APIs REST stateless que usam tokens em cabeçalhos HTTP não são vulneráveis ao ataque clássico de CSRF baseado em cookies de navegador.
-  - BCryptPasswordEncoder: Algoritmo seguro e lento por design (com salt aleatório) para garantir que senhas nunca sejam armazenadas em texto plano.
+### 3.5 🔒 `SecurityConfig.java`
+- **`SessionCreationPolicy.STATELESS`:** O servidor Tomcat não armazena sessões HTTP em memória, tornando a aplicação preparada para balanceamento de carga e alta escala.
+- **`csrf.disable()`:** APIs REST stateless que utilizam tokens em cabeçalhos HTTP (`Authorization: Bearer`) não utilizam cookies de sessão de navegador e, portanto, não são vulneráveis a CSRF.
+- **`BCryptPasswordEncoder`:** Algoritmo com salt aleatório embutido que previne ataques com Rainbow Tables.
 
-### 2.6 HealthController.java
-- **O que é:** Endpoint HTTP GET em /api/v1/health.
-- **Por que criamos:** Implementa o padrão de Liveness/Readiness Probe exigido por orquestradores de nuvem (como Kubernetes ou AWS ECS) para verificar se a API está de pé.
+### 3.6 🌐 `HealthController.java`
+- Endpoint `/api/v1/health` que atende ao padrão de Liveness/Readiness Probe exigido por orquestradores como Kubernetes e AWS ECS para verificar a saúde do container.
 
-### 2.7 V1__initial_schema.sql (Flyway Migration)
-- **O que é:** O primeiro script SQL versionado.
-- **Por que usamos Flyway:** Em produção, o Hibernate nunca deve alterar tabelas sozinho (ddl-auto=update é perigoso). O Flyway garante que o histórico de criação do banco esteja registrado no código e seja reproduzível em qualquer ambiente.
+### 3.7 🗃️ `V1__initial_schema.sql` (Flyway Migration)
+- Script SQL DDL executado de forma imutável e idempotente pelo Flyway, criando tabelas com chaves primárias `BIGINT GENERATED BY DEFAULT AS IDENTITY` e chaves estrangeiras com integridade referencial.
 
 ---
 
-## 3. Perguntas Reais de Entrevistas Técnicas
+## 💼 4. Perguntas Reais de Entrevistas Técnicas
 
-### Pergunta 1: "Qual a diferença entre Injeção de Dependências e Inversão de Controle (IoC)?"
-**Como responder:**
-> "A Inversão de Controle (IoC) é o princípio de design em que o controle do fluxo da aplicação é transferido para um container ou framework, em vez de o desenvolvedor instanciar manualmente objetos com 
-ew. A Injeção de Dependências (DI) é a implementação concreta desse princípio: o Spring instancia os Beans e os injeta automaticamente nos componentes que precisam deles (via construtor ou @Autowired), garantindo baixo acoplamento e permitindo que usemos Mocks nos testes unitários."
+### 🎯 Pergunta 1: "Qual a diferença entre Inversão de Controle (IoC) e Injeção de Dependências (DI)?"
+> **Resposta Modelo:**  
+> "A Inversão de Controle (IoC) é o princípio de design em que o fluxo de execução e a gestão do ciclo de vida dos objetos deixam de ser feitos manualmente pelo desenvolvedor (via operador `new`) e passam a ser controlados por um container ou framework. A Injeção de Dependências (DI) é o padrão de projeto concreto que implementa o IoC: o Spring instancia os componentes (Beans) e os fornece automaticamente onde forem necessários (via construtor ou `@Autowired`), desacoplando o código e permitindo a substituição por Mocks em testes unitários."
 
-### Pergunta 2: "Por que você escolheu uma arquitetura Stateless com JWT em vez de sessões com Cookies?"
-**Como responder:**
-> "A arquitetura Stateless não armazena estado de sessão no servidor. Isso permite que a aplicação escale horizontalmente adicionando novos nós ou pods atrás de um Load Balancer sem precisar de sessões compartilhadas (como Redis Session). Além disso, o token JWT trafega facilmente em qualquer cliente, seja um aplicativo mobile em Flutter, um frontend web ou integrações via API de terceiros."
+### 🎯 Pergunta 2: "Por que escolhemos uma arquitetura Stateless com JWT em vez de sessões com Cookies?"
+> **Resposta Modelo:**  
+> "Em uma arquitetura Stateful baseada em cookies e sessões no servidor, cada instância precisa guardar o estado do usuário logado na memória RAM. Para escalar horizontalmente adicionando réplicas da aplicação, você seria obrigado a usar sessões distribuídas (como Redis Session) ou sticky sessions no balanceador de carga. Com a arquitetura Stateless e tokens JWT, o servidor não armazena estado: toda requisição carrega no cabeçalho `Authorization: Bearer` os dados necessários para validação criptográfica, permitindo escalabilidade horizontal imediata e integração nativa com aplicativos mobile em Flutter."
 
-### Pergunta 3: "O que é o Flyway e por que não usar hibernate.hbm2ddl.auto=update em produção?"
-**Como responder:**
-> "O hbm2ddl.auto=update não tem rastreabilidade histórica, não suporta reversão estruturada de mudanças e pode causar bloqueios de tabela (table locks) ou comportamento imprevisível em produção. O Flyway atua como um 'Git para o banco de dados', executando scripts SQL ordenados e imutáveis (V1, V2, etc.) validados por checksum na tabela lyway_schema_history, garantindo que Dev, Staging e Produção tenham rigorosamente o mesmo estado."
+### 🎯 Pergunta 3: "O que é o Flyway e por que é proibido usar `hibernate.ddl-auto=update` em produção?"
+> **Resposta Modelo:**  
+> "O `ddl-auto=update` não possui controle de versão, não suporta reversão planejada de alterações e costuma duplicar colunas em vez de renomeá-las, além do risco de causar locks severos em tabelas concorridas. O Flyway atua como o versionador oficial do banco de dados (o 'Git das tabelas'): ele executa scripts SQL ordenados e imutáveis (`V1`, `V2`, etc.) validados por checksum na tabela `flyway_schema_history`, garantindo que os ambientes de Dev, Testes e Produção tenham rigorosamente o mesmo estado sem desvios de schema (*Schema Drift*)."
