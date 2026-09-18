@@ -1,39 +1,45 @@
-# 📝 Registro de Revisão & Mentoria — Sprint 0 (Passos 1 e 2)
+# 📝 Registro de Revisão Técnica — Sprint 0 (Passos 1 e 2)
 
-> **Status:** Pausado em 17/09/2026.  
-> **Próximo Ponto de Retomada:** PASSO 3 — O Modelo de Banco BaseEntity e o Padrão de Resposta ApiResponse.
-
----
-
-## 🐘 PASSO 1: O pom.xml e o Maven (Revisado com Sucesso)
-
-### O que você aprendeu:
-- **POM (Project Object Model):** É o manifesto mestre do projeto. Gerencia versões e baixa dependências automaticamente do Maven Central.
-- **<parent> do Spring Boot:** O spring-boot-starter-parent traz compatibilidade garantida entre todas as bibliotecas sem que a gente precise adivinhar ou digitar versões.
-- **Java 21 LTS:** Versão mais moderna e estável com suporte de longo prazo adotada para o projeto.
-- **Por que usamos Flyway e NÃO hibernate.ddl-auto=update:**
-  - *Sua resposta na revisão:* O Hibernate nunca deve alterar as tabelas sozinho em produção; esse papel é exclusivo do Flyway para que o histórico de criação e alteração do banco fique registrado e versionado no código (no Git). **(Resposta 100% correta!).**
+> **Documento de Formação Técnica & Mentoria**  
+> Focado nos Três Pilares da Engenharia de Software: Arquitetura, Escalabilidade e Dimensões Técnicas.
 
 ---
 
-## ☕ PASSO 2: OperacaoAprovacaoApplication.java (Revisado com Sucesso)
+## 🐘 PASSO 1: O pom.xml, Maven e Gestão de Dependências
 
-### O que você aprendeu:
-- **public static void main:** O ponto de partida universal do Java. Ao rodar SpringApplication.run(...), ele sobe o servidor web Apache Tomcat embutido na porta 8080 e inicia o contexto Spring.
-- **A tríade do @SpringBootApplication:**
-  1. @Configuration: Permite registrar Beans e configurações.
-  2. @EnableAutoConfiguration: Olha para o pom.xml e configura automaticamente os drivers e starters.
-  3. @ComponentScan: É o **radar** que varre as classes Java com anotações do Spring.
-- **@EnableJpaAuditing:** Ativa o preenchimento automático das datas de criação e alteração nas entidades de banco.
+### 1. Arquitetura & Governança de Dependências
+- **POM (Project Object Model):** O manifesto declarativo do projeto. Elimina o download manual de binários e estabelece rastreabilidade de bibliotecas auditadas contra vulnerabilidades.
+- **<parent> do Spring Boot (spring-boot-starter-parent):** Fornece uma matriz de compatibilidade testada e aprovada pelo time de engenharia do Spring, garantindo que versões de JPA, Security, Hibernate e drivers JDBC funcionem em harmonia sem conflitos de classpath (*Jar Hell*).
+- **Java 21 LTS:** Versão corporativa moderna de suporte de longo prazo, permitindo uso de Virtual Threads (Project Loom), Sequenced Collections e Records.
 
-### ⚠️ Pegadinha de Entrevista Dominada:
-- **Pergunta:** *"Se eu criar uma classe fora do pacote raiz com.operacaoaprovacao.api (ex: em com.meuoutroprojeto), o Spring Boot encontra essa classe?"*
-- **Regra de Ouro:** **NÃO!** O radar do @ComponentScan só varre o pacote onde a classe principal está localizada e as pastas que estão **abaixo** dele. Classes em pastas irmãs ou fora da árvore não são encontradas a menos que sejam configuradas manualmente.
+### 2. Dimensões Técnicas: Flyway vs. hibernate.ddl-auto=update
+- **Pergunta Técnica de Entrevista:**  
+  *"Por que em ambientes de produção sérios é proibido usar hibernate.hbm2ddl.auto=update e o Flyway é a escolha padrão?"*
+- **Resposta Técnica Esperada:**  
+  O hbm2ddl.auto=update não possui governança de schema, não suporta rollbacks estruturados, cria colunas duplicadas em vez de renomear e pode gerar *table locks* severos em produção. O **Flyway** atua como o versionador do banco de dados (o 'Git das tabelas'), executando scripts SQL (V1, V2, etc.) validados por *checksum* na tabela lyway_schema_history, garantindo **idempotência**, **rastreabilidade** e **reprodutibilidade estrita** em todos os ambientes da esteira CI/CD.
 
 ---
 
-## 🚀 Ponto de Retomada para o Próximo Encontro:
-Quando você voltar, começaremos diretamente por:
-- **PASSO 3:** O Modelo de Banco BaseEntity.java (@MappedSuperclass, @EntityListeners, JPA Auditing) e o Envelope de Resposta ApiResponse.java (Response Pattern, Generics <T>, Builder).
-- **PASSO 4:** A primeira migração de banco de dados (V1__initial_schema.sql e Flyway).
-- **PASSO 5:** O primeiro endpoint (HealthController.java) e o teste automatizado (OperacaoAprovacaoApplicationTests.java).
+## ☕ PASSO 2: OperacaoAprovacaoApplication.java e o Ciclo de Vida do Spring
+
+### 1. Inversão de Controle (IoC) e Bootstrap
+- **public static void main:** O ponto de entrada padrão da JVM. Invoca SpringApplication.run(), que sobe o servidor web embutido Apache Tomcat na porta 8080 e inicializa o container de IoC/DI.
+- **A Tríade da Anotação @SpringBootApplication:**
+  1. @Configuration: Registra a classe como fonte de definições de Beans.
+  2. @EnableAutoConfiguration: Analisa as dependências do pom.xml e instancia automaticamente a infraestrutura correspondente (ex: DataSource, EntityManagerFactory).
+  3. @ComponentScan: O radar de descoberta automática de componentes.
+
+### 2. Arquitetura de Pacotes: O Funcionamento do @ComponentScan
+- **Pergunta Técnica de Entrevista:**  
+  *"Se criarmos uma classe anotada com @RestController em um pacote fora da árvore do @SpringBootApplication (ex: em com.outroprojeto), ela será carregada pelo Spring?"*
+- **Resposta Técnica Esperada:**  
+  **Não.** Por padrão, o @ComponentScan adota a convenção de varredura hierárquica a partir do pacote onde a classe anotada está localizada (com.operacaoaprovacao.api) e seus subpacotes descendentes. Classes fora dessa árvore de pacotes são ignoradas pelo mecanismo de reflexão, a menos que sejam explicitamente mapeadas no parâmetro asePackages da anotação.
+
+### 3. Auditoria Temporal Nativa (@EnableJpaAuditing)
+- Habilita a infraestrutura de *listeners* do Spring Data JPA que captura eventos de ciclo de vida das entidades para preenchimento automatizado de carimbos de criação (created_at) e atualização (updated_at).
+
+---
+
+## 📌 Ponto de Retomada:
+- **PASSO 3:** O Modelo de Banco BaseEntity.java (@MappedSuperclass, @EntityListeners) e o Envelope de Resposta ApiResponse.java (Response Pattern, Generics <T>, Builder).
+- **PASSO 4:** A primeira migração de banco de dados (V1__initial_schema.sql, DDL vs DML, Flyway e modelagem dos concursos).
