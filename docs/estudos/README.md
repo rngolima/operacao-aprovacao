@@ -21,4 +21,4 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 ### 📁 Sprint 1: Security & Identity (Autenticação JWT & RBAC)
 - 🔐 [Guia Oficial da Sprint 1](sprint-1-security-jwt/sprint-1-security-jwt.md)
 - 📝 **Revisão Técnica Modular:**
-  - *(Em andamento — será gerada após concluirmos a Sprint 0)*
+  - 📄 [Revisão Sprint 1: Passos 1 e 2 (Identidade e JWT)](sprint-1-security-jwt/revisao/revisao-sprint-1-passo-1-e-2.md)
