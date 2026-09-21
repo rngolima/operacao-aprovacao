@@ -19,30 +19,74 @@
 
 ## 🧠 PASSO 1: O Domínio de Identidade & Controle de Acesso (RBAC)
 
-### 1. 📂 Localização dos Arquivos no VS Code:
+---
+
+### 🗺️ FASE 1: O MAPA E LOCALIZAÇÃO NO VS CODE
+
+No Passo 1, criamos a representação do Usuário no banco de dados e ensinamos o Spring Security a reconhecê-lo como uma entidade autenticável através de um contrato padronizado.
+
+#### 📂 Abra agora no seu VS Code os arquivos deste passo:
 - 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/modules/auth/domain/model/` ➔ `🧠 Usuario.java`
 - 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/modules/auth/domain/model/` ➔ `☕ Role.java`
 - 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/modules/auth/domain/repository/` ➔ `🗄️ UsuarioRepository.java`
 
-### 2. O que são esses componentes e por que existem?
+#### 📊 Diagrama Arquitetural do Passo 1:
+```mermaid
+flowchart TD
+    subgraph "🏛️ Camada de Domínio (auth/domain)"
+        BaseEntity["☕ BaseEntity (Auditoria: created_at, updated_at)"] -->|extends| Usuario["🧠 Usuario (@Entity)"]
+        UserDetails["🛡️ Spring Security: UserDetails"] -.->|implements| Usuario
+        Role["☕ Role (Enum: ROLE_STUDENT, ROLE_ADMIN)"] -->|composição| Usuario
+        Usuario -->|gerenciado por| UsuarioRepo["🗄️ UsuarioRepository (Spring Data JPA)"]
+    end
+    UsuarioRepo -->|Persistência na tabela tb_usuario| DB[(PostgreSQL)]
+```
+
+#### 🗺️ O que são esses componentes e por que existem?
 - 🧠 **`Usuario.java`:** Entidade de domínio central que representa o concurseiro ou administrador no banco relacional (`tb_usuario`). Implementa a interface `UserDetails` para criar uma ponte transparente com o Spring Security.
 - ☕ **`Role.java`:** Enum que define os papéis de acesso do sistema (`ROLE_STUDENT` e `ROLE_ADMIN`) segundo a convenção padrão exigida pelo Spring Security para controle RBAC (Role-Based Access Control).
-- 🗄️ **`UsuarioRepository.java`:** Interface Spring Data JPA que disponibiliza consultas otimizadas no banco de dados (`findByEmail` e `existsByEmail`) sem necessidade de SQL manual.
+- 🗄️ **`UsuarioRepository.java`:** Interface Spring Data JPA que disponibiliza consultas otimizadas no banco de dados (`findByEmail` e `existsByEmail`) sem necessidade de escrever SQL manual.
 
-### 3. Fundamentos da Linguagem & Anotações
+---
 
-| Recurso / Anotação | Origem | Papel Técnico Corporativo |
+### 💻 FASE 2: FUNDAMENTOS DA LINGUAGEM E TECNOLOGIAS
+
+| Recurso / Anotação | De Onde Vem? | O Que Significa / Papel Técnico Corporativo |
 | :--- | :--- | :--- |
-| **`@Entity` e `@Table`** | Jakarta Persistence | Mapeia a classe para a tabela relacional física `tb_usuario`. |
-| **`@Enumerated(EnumType.STRING)`** | Jakarta Persistence | Grava o nome textual do papel (`'ROLE_STUDENT'`) no banco, evitando corrupção de dados se a ordem do enum mudar. |
-| **`@Builder.Default`** | Lombok | Garante que valores padrão (como `role = Role.ROLE_STUDENT` e `ativo = true`) sejam preservados no padrão Builder. |
-| **`UserDetails`** | Spring Security | Interface contrato que fornece ao Spring Security os métodos padronizados de autenticação (`getUsername()`, `getPassword()`, `getAuthorities()`, `isEnabled()`). |
-| **`SimpleGrantedAuthority`** | Spring Security | Encapsula o nome da role como uma autoridade reconhecida pelo container de segurança. |
-| **`JpaRepository<Usuario, Long>`** | Spring Data JPA | Fornece operações CRUD completas e suporte a Derived Queries automáticas com segurança de tipos. |
+| **`@Entity`** | `jakarta.persistence` | Informa ao Hibernate que esta classe Java é uma entidade gerenciada mapeada para uma tabela no banco relacional. |
+| **`@Table(name = "tb_usuario")`** | `jakarta.persistence` | Vincula a entidade à tabela física `tb_usuario` criada na migration Flyway `V1__initial_schema.sql`. |
+| **`@Enumerated(EnumType.STRING)`** | `jakarta.persistence` | **Regra Crítica de Engenharia:** Grava o nome textual do papel (`'ROLE_STUDENT'`) no banco em vez do seu índice numérico (`0` ou `1`). Isso evita corrupção de dados caso novos papéis sejam adicionados futuramente. |
+| **`@Builder.Default`** | `lombok` | Garante que valores padrão de atributos (como `role = Role.ROLE_STUDENT` e `ativo = true`) não sejam sobrescritos com `null` ao usar o padrão Builder. |
+| **`UserDetails`** | `org.springframework.security.core.userdetails` | Interface contrato que fornece ao Spring Security os métodos padronizados de autenticação: `getUsername()`, `getPassword()`, `getAuthorities()` e `isEnabled()`. |
+| **`SimpleGrantedAuthority`** | `org.springframework.security.core.authority` | Encapsula o nome do papel (role) como uma autoridade reconhecida pelo container do Spring Security. |
+| **`JpaRepository<Usuario, Long>`** | `org.springframework.data.jpa.repository` | Fornece operações CRUD completas e suporte a *Derived Queries* com geração automática de SQL pelo Spring Data JPA. |
 
-### 4. Código Fonte Comentado
+---
 
-#### 🧠 `Usuario.java`
+### 🏛️ FASE 3: ANÁLISE SOB OS TRÊS PILARES COM TRADUÇÃO PRÁTICA
+
+#### 1. Arquitetura de Software (DDD & Coesão)
+- **Bounded Context de Autenticação (`modules/auth`):** Todas as classes de identidade residem em um pacote coeso e autocontido. Se no futuro a plataforma migrar para um microsserviço independente de autenticação (Keycloak ou Cognito), a regra de negócio central permanece intacta.
+- **Herança de Auditoria (`extends BaseEntity`):** A classe `Usuario` herda automaticamente `created_at` e `updated_at`, sem duplicar código nas entidades.
+
+#### 2. Escalabilidade & Performance (Índices e Derived Queries)
+- **Índice B-Tree no E-mail:** A coluna `email` possui restrição de unicidade (`unique = true`), gerando um índice B-Tree no PostgreSQL. A busca de autenticação ocorre em tempo logarítmico O(log n), respondendo em microssegundos mesmo com 1 milhão de alunos.
+- **Derived Query `existsByEmail`:** Gera um `SELECT 1` ultraleve para checar se o e-mail já existe durante o cadastro, sem a sobrecarga de instanciar entidades pesadas na memória RAM da JVM.
+
+#### 3. Dimensões Técnicas & Segurança do Mundo Real
+- **Isolamento de Credenciais:** O atributo `senha` armazena exclusivamente o hash BCrypt com salt aleatório. A senha pura nunca é salva no disco nem trafega em DTOs de resposta da API.
+- **Flag de Ativação (`ativo`):** O método `isEnabled()` consome a coluna booleana `ativo`, permitindo suspensão de contas sem perda de dados históricos.
+
+#### 💡 O QUE ISSO SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> 🏢 **Caso Prático: O Concurseiro que Pausou a Assinatura**  
+> Se um estudante atrasar o pagamento da mensalidade ou decidir dar uma pausa nos estudos, a plataforma nunca deve deletar a conta dele (o que destruiria o histórico de milhares de questões e simulados resolvidos).  
+> **Na prática:** O administrador do sistema simplesmente altera a coluna `ativo` para `false`. O método `isEnabled()` do Spring Security recusa o login instantaneamente com a mensagem "Usuário desativado", mas todo o histórico de simulados e métricas fica 100% preservado no banco para quando ele reativar a assinatura.
+
+---
+
+### ☕ FASE 4: O CÓDIGO FONTE COMENTADO
+
+#### 1. 🧠 `Usuario.java`
 ```java
 package com.operacaoaprovacao.api.modules.auth.domain.model;
 
@@ -67,28 +111,31 @@ public class Usuario extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // Chave primaria BIGINT autoincrementada
 
     @Column(nullable = false, length = 150)
     private String nome;
 
     @Column(nullable = false, unique = true, length = 150)
-    private String email;
+    private String email; // Identificador unico de autenticacao (username)
 
     @Column(nullable = false, length = 255)
-    private String senha;
+    private String senha; // Hash BCrypt protegido
 
-    @Enumerated(EnumType.STRING) // Garante a gravacao de 'ROLE_STUDENT' como texto
+    @Enumerated(EnumType.STRING) // Grava 'ROLE_STUDENT' como texto, garantindo seguranca contra reordenacao
     @Column(nullable = false, length = 50)
     @Builder.Default
     private Role role = Role.ROLE_STUDENT;
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean ativo = true;
+    private boolean ativo = true; // Permite suspensao de conta sem delecao fisica
+
+    // --- Metodos do contrato da interface UserDetails do Spring Security ---
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Converte o enum Role em uma autoridade compreendida pelo Spring Security
         return List.of(new SimpleGrantedAuthority(this.role.name()));
     }
 
@@ -99,7 +146,7 @@ public class Usuario extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // O e-mail e o login oficial
+        return this.email; // O e-mail e o login oficial da aplicacao
     }
 
     @Override
@@ -119,60 +166,135 @@ public class Usuario extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.ativo;
+        return this.ativo; // Vinculado a coluna ativo
     }
 }
 ```
 
-### 5. Análise sob os Três Pilares Corporativos
+#### 2. ☕ `Role.java`
+```java
+package com.operacaoaprovacao.api.modules.auth.domain.model;
 
-#### 🏛️ Pilar 1: Arquitetura (DDD & Coesão)
-- **Módulo Coeso (`modules/auth`):** Todas as classes de identidade residem em um pacote autocontido. Se for necessário migrar para um servidor OAuth2 externo (como Keycloak), a regra de negócio central permanece isolada.
-- **Auditoria Transversal Automática:** Por estender `BaseEntity`, a entidade herda auditoria sem duplicação de código.
+/**
+ * Papeis de autorizacao (RBAC) do sistema.
+ * Segue a convencao de prefixo ROLE_ exigida pelo Spring Security.
+ */
+public enum Role {
+    ROLE_STUDENT, // Aluno da plataforma (acesso a simulados, resolucao de questoes e trilhas)
+    ROLE_ADMIN    // Administrador (cadastro de editais, disciplinas, bancas e gestao de usuarios)
+}
+```
 
-#### ⚡ Pilar 2: Escalabilidade & Performance
-- **Índice Único no E-mail:** A restrição `unique = true` no PostgreSQL gera um índice B-Tree, permitindo que a autenticação encontre o usuário em tempo logarítmico O(log n).
-- **Derived Query `existsByEmail`:** Gera um `SELECT 1` otimizado para validar se um e-mail já existe durante o cadastro, sem instanciar entidades pesadas na memória.
+#### 3. 🗄️ `UsuarioRepository.java`
+```java
+package com.operacaoaprovacao.api.modules.auth.domain.repository;
 
-#### 🛡️ Pilar 3: Dimensões Técnicas & Segurança
-- **Controle Fino de Acesso:** O método `isEnabled()` consome a coluna booleana `ativo`.
-- **Prevenção de Corrupção via `EnumType.STRING`:** Elimina a fragilidade do padrão `EnumType.ORDINAL` que grava índices inteiros no banco de dados.
+import com.operacaoaprovacao.api.modules.auth.domain.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-### 💡 O QUE ISSO SIGNIFICA NA PRÁTICA NO MUNDO REAL?
-> 🏢 **Caso 1: O Aluno que Pausou a Assinatura**  
-> Se um concurseiro decidir pausar os estudos temporariamente, a administração não apaga a linha dele no banco de dados (o que destruiria o histórico de milhares de questões e simulados resolvidos). Basta alterar a coluna `ativo` para `false`. Automaticamente, o Spring Security bloqueia qualquer tentativa de login via `isEnabled()`, mantendo o histórico de progresso 100% preservado para quando ele reativar o plano.
+import java.util.Optional;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    // Derived Query: busca pelo e-mail indexado retornando Optional para tratar ausencia com seguranca
+    Optional<Usuario> findByEmail(String email);
+
+    // Derived Query otimizada: checagem booleana ultraleve para validacao de cadastro sem alocar entidade
+    boolean existsByEmail(String email);
+}
+```
 
 ---
 
-### 🎯 Simulação de Entrevista Técnica (Passo 1):
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA E FIXAÇÃO
+
 > **Pergunta do Tech Lead:**  
 > *"Na classe `Usuario`, por que fizemos questão de anotar o atributo `role` com `@Enumerated(EnumType.STRING)` em vez de deixar o padrão do JPA que é `EnumType.ORDINAL`? E por que a interface `UserDetails` foi implementada diretamente na nossa entidade de domínio `Usuario`?"*
 > 
 > **Resposta Técnica Modelo:**  
-> *"Adotamos `EnumType.STRING` porque o padrão `EnumType.ORDINAL` grava no banco de dados apenas o índice posicional numérico do enum (`0`, `1`, etc.). Se novos papéis forem inseridos no futuro em posições intermediárias do código Java, todos os registros antigos do banco sofreriam corrupção imediata de permissões. Já a implementação da interface `UserDetails` funciona como um contrato/ponte para que o Spring Security consiga ler as credenciais e authorities de forma transparente e agnóstica, sem necessidade de conversores adicionais na camada de persistência."*
+> *"Adotamos `EnumType.STRING` porque o padrão `EnumType.ORDINAL` grava no banco de dados apenas o índice numérico sequencial (`0`, `1`, etc.). Se um novo papel (como `ROLE_TEACHER`) for inserido no meio do enum Java, todos os registros antigos do banco sofreriam corrupção imediata de permissões. Com `EnumType.STRING`, o texto exato fica gravado de forma imutável.  
+> Quanto à interface `UserDetails`, ela atua como o contrato oficial do Spring Security. Ao implementá-la diretamente na entidade `Usuario`, unificamos o modelo de persistência com o modelo de segurança sem a necessidade de criar camadas extras de adaptação ou conversores manuais."*
 
+---
 ---
 
 ## 🔐 PASSO 2: O Motor Criptográfico (`JwtService.java`)
 
-### 1. 📂 Localização do Arquivo no VS Code:
+---
+
+### 🗺️ FASE 1: O MAPA E LOCALIZAÇÃO NO VS CODE
+
+No Passo 1, preparamos as credenciais do usuário. No **Passo 2**, construímos o motor de criptografia simétrica que gera o passaporte digital (JWT) no login e confere sua autenticidade em cada requisição à API.
+
+#### 📂 Abra agora no seu VS Code o arquivo deste passo:
 - 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/modules/auth/application/service/` ➔ `⚙️ JwtService.java`
 
-### 2. O que é este componente e por que ele existe?
-O `JwtService` é a central de inteligência criptográfica da aplicação. Ele é responsável por emitir tokens JWT (JSON Web Tokens) assinados digitalmente após o login bem-sucedido e validar matematicamente as credenciais em cada requisição subsequente.
+#### 📊 Diagrama Arquitetural do Motor Criptográfico:
+```mermaid
+flowchart LR
+    subgraph "⚙️ JwtService (Motor Criptográfico)"
+        direction TB
+        Generate["generateToken(UserDetails)"] -->|Calcula HMAC-SHA256| Token["JWT: AAAAA.BBBBB.CCCCC"]
+        Token -->|Em cada requisição| Validate["isTokenValid(token, UserDetails)"]
+        Validate --> CheckSub["1. O e-mail confere?"]
+        Validate --> CheckExp["2. Está dentro das 24h?"]
+        Validate --> CheckSig["3. A assinatura matemática é legítima?"]
+    end
+```
 
-### 3. Fundamentos da Linguagem & Anotações
+#### 🗺️ O que é a Anatomia do JWT (RFC 7519)?
+Um JSON Web Token é composto por 3 partes separadas por ponto (`.`):
+```text
+eyJhbGciOi... . eyJzdWIiOi... . 4Z9kL1mP...
+  [HEADER]          [PAYLOAD]      [SIGNATURE]
+```
+1. **Header (Cabeçalho):** Informa o algoritmo de criptografia (`HS256` = HMAC com SHA-256).
+2. **Payload (Claims / Declarações):** Dados do usuário (`sub` = e-mail, `iat` = data de geração, `exp` = data de vencimento em 24h).
+3. **Signature (Assinatura Digital):** O lacre criptográfico gerado com a nossa chave secreta privada (`secretKey`).
 
-| Recurso / Classe | Origem | Papel Técnico Corporativo |
+---
+
+### 💻 FASE 2: FUNDAMENTOS DA LINGUAGEM E TECNOLOGIAS
+
+| Recurso / Classe | De Onde Vem? | O Que Significa / Papel Técnico Corporativo |
 | :--- | :--- | :--- |
-| **`@Service`** | Spring Framework | Registra a classe como componente de serviço injetável no ecossistema Spring. |
-| **`@Value`** | Spring Framework | Injeta parâmetros do `application.yml` (chave secreta e tempo de expiração) com valores de contingência (*fallback*). |
-| **`SecretKey`** | `javax.crypto` | Interface padrão da JCA (Java Cryptography Architecture) para chaves simétricas. |
-| **`Keys.hmacShaKeyFor`** | JJWT (`io.jsonwebtoken`) | Cria a chave criptográfica segura a partir dos bytes da chave secreta configurada. |
-| **`Jwts.builder()`** | JJWT (`io.jsonwebtoken`) | Construtor fluente para compor o Header, Payload (Claims), data de emissão, validade e assinatura digital. |
-| **`Jwts.parser()`** | JJWT (`io.jsonwebtoken`) | Motor de decodificação e conferência que valida a integridade matemática da assinatura do token. |
+| **`@Service`** | `org.springframework.stereotype` | Registra a classe como um Bean de serviço gerenciado pelo Spring, permitindo injeção de dependência via construtor ou `@Autowired`. |
+| **`@Value`** | `org.springframework.beans.factory.annotation` | Injeta parâmetros do arquivo `application.yml` (chave secreta e tempo de expiração) com valores padrão de segurança (*fallback*). |
+| **`SecretKey`** | `javax.crypto` | Interface nativa da especificação JCA (*Java Cryptography Architecture*) para representar chaves simétricas seguras. |
+| **`Keys.hmacShaKeyFor`** | JJWT (`io.jsonwebtoken.security`) | Converte a sequência de bytes da nossa chave secreta em um objeto criptográfico compatível com o algoritmo HMAC-SHA256. |
+| **`Jwts.builder()`** | JJWT (`io.jsonwebtoken`) | Construtor fluente da biblioteca JJWT para compor o Header, Payload (Claims), data de emissão, validade e assinatura digital com `.compact()`. |
+| **`Jwts.parser()`** | JJWT (`io.jsonwebtoken`) | Motor de decodificação e validação da biblioteca JJWT. Ele confere a assinatura matemática contra a nossa chave secreta e extrai os dados do payload. |
+| **`Function<Claims, T>`** | `java.util.function` | Interface funcional do Java 8+ que permite passar referências de métodos (como `Claims::getSubject`) para extrair campos específicos do token com tipagem estrita. |
 
-### 4. Código Fonte Comentado
+---
+
+### 🏛️ FASE 3: ANÁLISE SOB OS TRÊS PILARES COM TRADUÇÃO PRÁTICA
+
+#### 1. Arquitetura de Software (Single Responsibility Principle)
+- **Isolamento de Infraestrutura Criptográfica:** O `JwtService` é uma classe pura da camada de aplicação. Ele não conhece Controllers nem banco de dados; sua única responsabilidade é codificar, decodificar e validar tokens. Se amanhã a aplicação mudar para chaves assimétricas (RSA/ECC) ou OAuth2, apenas este serviço será alterado.
+
+#### 2. Escalabilidade & Performance (Zero Database I/O)
+- **Validação Puramente Matemática em Memória:** A validação de um token JWT é um cálculo matemático executado na memória RAM e registradores de CPU do servidor em nanossegundos. Não existe nenhuma consulta ao banco de dados PostgreSQL para checar autenticação em cliques de simulados.
+
+#### 3. Dimensões Técnicas & Segurança do Mundo Real
+- **Entropia Mínima de 256 bits:** O algoritmo HMAC-SHA256 exige uma chave secreta de no mínimo 32 bytes (256 bits). Chaves fracas são rejeitadas pelo JJWT logo na inicialização da JVM para impedir ataques de dicionário.
+- **Expiração Temporal Controlada (24h):** Evita que tokens antigos fiquem válidos indefinidamente caso vazem do dispositivo do cliente.
+
+#### 💡 O QUE ISSO SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> 🎟️ **Caso 1: O "Crachá do Prédio Corporativo" (Escalabilidade Infinita)**  
+> Pense no JWT como um crachá de empresa plastificado com holograma e data de validade.  
+> Toda vez que o funcionário passa na catraca, o segurança não precisa ligar para o RH e perguntar: *"Esse cara trabalha aqui?"*. Ele apenas olha o holograma (a Assinatura) e a validade (a Expiração).  
+> **No nosso sistema:** Com 50.000 concurseiros resolvendo questões simultaneamente no dia da prova, se o backend tivesse que fazer um `SELECT` no banco a cada clique para checar o login (como nos cookies tradicionais), o banco cairia por excesso de conexões. Com o JWT, o servidor apenas calcula a matemática em memória, suportando milhões de requisições por minuto com custo quase zero.
+> 
+> 🚨 **Caso 2: A Tentativa de Fraude de Perfil (Inviolabilidade Matemática)**  
+> Imagine que um aluno com perfil de estudante (`ROLE_STUDENT`) decida adulterar o token no próprio celular, trocando o texto para administrador (`ROLE_ADMIN`) para tentar ver o gabarito das questões antes da hora.  
+> **Na prática:** Como ele não possui a nossa chave secreta privada (`secretKey`), no momento em que a requisição chega à nossa API, o cálculo da assinatura digital não bate. O sistema bloqueia a requisição **no mesmo milissegundo**, garantindo segurança absoluta sem consumir recursos do banco de dados.
+
+---
+
+### ☕ FASE 4: O CÓDIGO FONTE COMENTADO
 
 #### ⚙️ `JwtService.java`
 ```java
@@ -192,60 +314,89 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Service
+@Service // Registra a classe como um componente de servico gerenciado pelo Spring
 public class JwtService {
 
+    // Chave secreta de 256 bits injetada do application.yml ou variavel de ambiente do servidor
     @Value("${jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
     private String secretKey;
 
+    // Tempo de vida do token configurado para 24 horas
     @Value("${jwt.expiration-hours:24}")
     private long expirationHours;
 
+    /**
+     * Extrai o e-mail (username) de dentro do payload do token JWT.
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    /**
+     * Metodo generico que extrai qualquer informacao (Claim) do token com seguranca de tipos.
+     */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
+    /**
+     * Sobrecarga facilitadora: gera o token apenas com os dados basicos do UserDetails.
+     */
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    /**
+     * Monta e assina o token JWT completo com claims extras, e-mail, data de emissao e expiracao.
+     */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        long expirationMillis = expirationHours * 60 * 60 * 1000;
+        long expirationMillis = expirationHours * 60 * 60 * 1000; // Converte horas em milissegundos
         return Jwts.builder()
-                .claims(extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(getSigningKey())
-                .compact();
+                .claims(extraClaims) // Informacoes customizadas (ex: roles)
+                .subject(userDetails.getUsername()) // O e-mail do concurseiro
+                .issuedAt(new Date(System.currentTimeMillis())) // Data/hora atual de geracao
+                .expiration(new Date(System.currentTimeMillis() + expirationMillis)) // Vencimento em 24h
+                .signWith(getSigningKey()) // Aplica o algoritmo criptografico HMAC-SHA256
+                .compact(); // Converte tudo na string compacta final (AAAA.BBBB.CCCC)
     }
 
+    /**
+     * Valida se o token pertence ao usuario correto e se ainda nao expirou.
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
+    /**
+     * Checa se a data de expiracao do token e anterior ao momento atual do relogio.
+     */
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    /**
+     * Extrai a data de expiracao registrada no payload do token.
+     */
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    /**
+     * Decodifica o token completo, confere a assinatura com a SecretKey e extrai o Payload.
+     */
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getSigningKey())
+                .verifyWith(getSigningKey()) // Usa a chave secreta privada para validar a integridade
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseSignedClaims(token) // Dispara erro caso o token tenha sido adulterado ou vencido
+                .getPayload(); // Retorna os dados desempacotados
     }
 
+    /**
+     * Transforma a String da secretKey em um objeto SecretKey seguro compativel com HMAC-SHA256.
+     */
     private SecretKey getSigningKey() {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -253,28 +404,10 @@ public class JwtService {
 }
 ```
 
-### 5. Análise sob os Três Pilares Corporativos
-
-#### 🏛️ Pilar 1: Arquitetura (Single Responsibility Principle)
-- **Isolamento de Domínio:** O `JwtService` atua como componente puro de infraestrutura/aplicação, desacoplando completamente a geração de tokens dos Controllers e Filtros de Rede.
-
-#### ⚡ Pilar 2: Escalabilidade & Performance
-- **Validação In-Memory (Zero Database I/O):** A verificação de validade de um token é uma operação de cálculo criptográfico que consome apenas ciclos de CPU e memória RAM local, eliminando qualquer consulta ao banco PostgreSQL para autenticar requisições de leitura de simulados.
-
-#### 🛡️ Pilar 3: Dimensões Técnicas & Segurança
-- **Entropia Criptográfica de 256 bits:** A chave secreta possui entropia suficiente para atender aos padrões rigorosos do algoritmo HMAC-SHA256, inviabilizando ataques de força bruta.
-- **Validade Temporal Rígida:** Os tokens possuem vida útil controlada (24 horas), mitigando riscos de reutilização indevida.
-
-### 💡 O QUE ISSO SIGNIFICA NA PRÁTICA NO MUNDO REAL?
-> 🎟️ **Caso 1: O "Crachá do Prédio Corporativo"**  
-> O JWT funciona como um crachá plastificado com holograma oficial. O segurança na catraca (o servidor) só precisa bater o olho no holograma (a Assinatura) e na data de validade (Expiração). Ele não precisa ligar para o RH (o Banco de Dados) toda vez que a pessoa entra ou sai. Isso permite que 100.000 pessoas passem pelas catracas ao mesmo tempo sem formar fila.
-> 
-> 🚨 **Caso 2: A Tentativa de Fraude de Perfil**  
-> Se um estudante mal-intencionado alterar seu perfil no token de `ROLE_STUDENT` para `ROLE_ADMIN` no celular, a conta matemática da assinatura digital é quebrada na hora ao chegar no backend. O sistema barra o acesso no mesmo milissegundo, garantindo segurança total sem onerar o banco de dados.
-
 ---
 
-### 🎯 Simulação de Entrevista Técnica (Passo 2):
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA E FIXAÇÃO
+
 > **Pergunta do Tech Lead:**  
 > *"Na nossa arquitetura, por que a validação de um token JWT no `JwtService` é muito mais escalável para suportar milhares de concurseiros simultâneos do que o modelo tradicional de sessão com cookies em banco de dados? E o que aconteceria se um usuário mal-intencionado alterasse o payload do token para tentar virar administrador (`ROLE_ADMIN`)?"*
 > 
