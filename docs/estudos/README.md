@@ -8,6 +8,7 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 
 ### 📁 Fundamentos & Arquitetura Global
 - 📄 [00: Guia Definitivo: Estrutura de Pastas e Arquitetura do Projeto](00-estrutura-de-pastas.md)
+- 📄 [01: Governança Corporativa & Arcabouço ECC (Guia de Auditoria Sênior)](01-governanca-e-arcabouco-ecc.md)
 
 ---
 
