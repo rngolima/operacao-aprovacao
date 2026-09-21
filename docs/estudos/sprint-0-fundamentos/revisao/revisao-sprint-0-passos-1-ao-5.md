@@ -198,7 +198,28 @@ CREATE TABLE tb_concurso (
 
 ## 🌐 PASSO 5: A Camada Web (`HealthController`) e a Blindagem com Testes (`MockMvc`)
 
-### 1. O que são esses componentes e por que existem?
+### 1. 🗺️ O Mapa Visual e Localização no VS Code:
+- 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/presentation/controller/` ➔ `🌐 HealthController.java`
+- 👉 `📁 backend/src/test/java/com/operacaoaprovacao/api/` ➔ `🧪 OperacaoAprovacaoApplicationTests.java`
+
+```mermaid
+flowchart LR
+    Client["🌐 Cliente HTTP / Mobile / Frontend"] -->|GET /api/v1/health| Controller["☕ HealthController (@RestController)"]
+    Controller -->|Status HTTP 200 + JSON Envelope| Client
+    
+    subgraph "🧪 Test Suite (Pipeline CI/CD)"
+        Runner["JUnit 5 (@Test)"] --> MockEnv["AutoConfigureMockMvc (Tomcat Simulado em Memória)"]
+        MockEnv -->|Simula Requisição| Controller
+        MockEnv -->|Valida JSON e Status| Asserts["Asserts (jsonPath, status)"]
+    end
+```
+
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o painel de batimentos cardíacos de uma UTI de hospital e o treino dos paramédicos:  
+> 1. **O Health Check (`/api/v1/health`):** Funciona como o monitor cardíaco da API. Os balanceadores de carga na nuvem (AWS / Kubernetes) consultam esse endpoint a cada 10 segundos. Se o servidor travar ou superaquecer, o monitor acusa e o sistema redireciona os concurseiros para outra máquina saudável antes que qualquer pessoa perceba instabilidade.  
+> 2. **O Teste com `MockMvc`:** É o simulador de voo dos pilotos. Antes de o código ir para a nuvem de verdade, os testes automatizados disparam chamadas em memória ultrarrápidas para garantir que todas as portas e respostas estão perfeitas, sem gastar tempo subindo servidores reais.
+
+### 2. O que são esses componentes e por que existem?
 - 🌐 **`HealthController.java`:** Ponto de entrada REST público responsável por expor a saúde operacional do serviço (`/api/v1/health`). É consumido por orquestradores de containers (Kubernetes, AWS ECS) e balanceadores de carga para monitorar *Liveness* (se a JVM travou) e *Readiness* (se o sistema está pronto para receber tráfego).
 - 🧪 **`OperacaoAprovacaoApplicationTests.java`:** Bateria de testes automatizados de integração que sobe o contexto completo da aplicação Spring Boot (`@SpringBootTest`) e valida os endpoints HTTP em memória (`MockMvc`) sem necessidade de abrir conexões de rede físicas lentas.
 

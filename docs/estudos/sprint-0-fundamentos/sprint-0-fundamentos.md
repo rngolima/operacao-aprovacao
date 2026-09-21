@@ -18,6 +18,15 @@ graph TD
     Infrastructure --> Database[(PostgreSQL / Supabase)]
 ```
 
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine a estrutura de um hospital de alta complexidade:  
+> 1. **`🌐 Presentation (Recepção)`:** O paciente (o app Flutter do estudante) chega pela recepção. O recepcionista só checa se o documento é válido e o encaminha para o setor correto.  
+> 2. **`⚙️ Application (Médicos Especialistas)`:** O médico atende o paciente, aplica os protocolos clínicos de estudo (ex: lógica de pontuação do concurso) e receita o tratamento.  
+> 3. **`🧠 Domain (O Conhecimento Médico Puro)`:** As regras biológicas e diagnósticos que nunca mudam, independente de qual hospital o médico trabalha.  
+> 4. **`🗄️ Infrastructure (Prontuário Eletrônico / Arquivo)`:** Onde as fichas são armazenadas (PostgreSQL). Se o hospital trocar de sistema de prontuário, a medicina e os médicos continuam atuando da mesma forma.  
+> 
+> *Aplicação no Projeto:* Garante que o motor de aprovação de concursos nunca fique amarrado a detalhes externos de banco de dados ou telas.
+
 ### Por que Clean Architecture?
 - **Independência de Frameworks e Bancos:** A regra de negócio central não sabe se o banco é PostgreSQL, H2 ou Oracle, nem se o cliente é Flutter ou React.
 - **Testabilidade:** Módulos desacoplados permitem testes unitários rápidos e isolados com MockMvc e Mocks, sem necessidade de banco real em cada teste.

@@ -53,6 +53,15 @@ sequenceDiagram
     Ctrl-->>App: Resposta HTTP 200/201 em JSON padronizado
 ```
 
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o controle de embarque prioritário em um aeroporto:  
+> 1. **`📱 App (Passageiro)`:** O aluno tenta acessar uma área restrita (ex: fazer o Simulado da PC-PE) apresentando seu cartão de embarque digital (`Authorization: Bearer <token>`).  
+> 2. **`🔒 JwtAuthenticationFilter (Portão Eletrônico)`:** O filtro intercepta a pessoa antes que ela pise na aeronave.  
+> 3. **`⚙️ JwtService (Scanner do QR Code)`:** Faz a checagem rápida da assinatura digital. Se o QR Code for falso ou estiver vencido, o portão apita e barra na hora!  
+> 4. **`🧠 CustomUserDetailsService (Lista de Passageiros)`:** Confere se o passageiro consta como ativo no voo (`tb_usuario`).  
+> 5. **`🛡️ SecurityContextHolder (Crachá Temporário de Bordo)`:** O sistema coloca o passageiro na lista oficial de pessoas autorizadas dentro daquela thread de processamento.  
+> 6. **`🌐 Controller (A Cabine)`:** O endpoint atende o concurseiro com total confiança de que ele é realmente quem diz ser e devolve os dados com segurança!
+
 ---
 
 ## 📂 3. Raio-X dos Arquivos da Sprint 1

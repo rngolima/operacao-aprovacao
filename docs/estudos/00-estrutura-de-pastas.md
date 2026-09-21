@@ -160,6 +160,15 @@ graph TD
     Repository --> Database[(PostgreSQL / Supabase)]
 ```
 
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o fluxo da vida real de um concurseiro respondendo a um simulado no celular:  
+> 1. **`🌐 Presentation (Controller)` — O Garçom:** Recebe o clique do aluno no app Flutter, confere se o JSON veio no formato correto (`@Valid`) e passa o pedido para a cozinha. Ele não calcula regras de negócio nem fala direto com o banco de dados.  
+> 2. **`⚙️ Application (Service)` — O Chefe de Cozinha:** Executa a regra do negócio. Confere se o simulado ainda está no prazo, computa a pontuação segundo os critérios da banca (ex: Cebraspe, onde uma errada anula uma certa) e orquestra a resposta.  
+> 3. **`🧠 Domain (Entidade)` — A Receita Oficial:** Representa o conceito puro do negócio (`Questao`, `Simulado`, `Usuario`) com suas regras imutáveis.  
+> 4. **`🗄️ Repository` — A Despensa de Ingredientes:** O JPA faz a ponte com o banco relacional PostgreSQL, salvando a resposta do aluno com segurança e integridade transacional.  
+> 
+> *Resultado para o Desenvolvedor:* Se o banco mudar de PostgreSQL para MySQL, ou se o app mudar de Flutter para React, a regra de cálculo da pontuação (`Service` e `Domain`) não muda uma única linha!
+
 1. **`🧠 domain/` (Domínio):** Contém as entidades e regras de negócio puras. É o coração do sistema e não depende de frameworks web nem de detalhes de interface.
 2. **`⚙️ application/` (Aplicação):** Contém os Services (Casos de Uso) e DTOs. É onde reside a orquestração: validações de negócio, criptografia e regras de fluxo.
 3. **`🌐 presentation/` (Apresentação):** Contém os Controllers REST. Responsável estritamente por receber requisições HTTP, validar payloads (`@Valid`) e retornar respostas padronizadas com o status code correto.
