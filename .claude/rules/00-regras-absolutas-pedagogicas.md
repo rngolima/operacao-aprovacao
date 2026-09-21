@@ -20,11 +20,13 @@
      - Mostrar onde estamos, para onde vamos e os objetivos da etapa.
      - **OBRIGATÓRIO:** Indicar o caminho exato das pastas e arquivos para o usuário abrir no VS Code e se familiarizar com a estrutura:  
        `📁 backend/src/... -> ☕ Arquivo.java`.
+     - **OBRIGATÓRIO NOS DIAGRAMAS:** Todo diagrama visual Mermaid DEVE vir acompanhado logo abaixo de uma seção explicativa:  
+       **"💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?"**, traduzindo o fluxo visual para o dia a dia de um Dev Júnior e a experiência real de negócio do sistema.
    - **Fase 2 - Fundamentos da Linguagem Primeiro:** Explicar a sintaxe, os símbolos (ex: o que é @), tipos, classes, interfaces e bibliotecas de origem.
    - **Fase 3 - Análise sob os Três Pilares com Tradução Prática:**
      - Analisar a decisão sob a ótica de **Arquitetura**, **Escala/Performance** e **Dimensões Técnicas**.
      - **OBRIGATÓRIO:** Incluir sempre uma seção de **"💡 O que isso significa na prática no mundo real"**, com exemplos do cotidiano de um negócio/sistema (ex: suspensão de assinatura sem perda de histórico, proteção contra vazamento em logs) para que o desenvolvedor domine tanto a resposta técnica sênior quanto a explicação clara para recrutadores e líderes.
-   - **Fase 4 - O Código Comentado:** Mostrar a implementação e o significado de cada linha.
+   - **Fase 4 - O Código Comentado:** Mostrar a implementação e o significado de cada linha de todos os arquivos envolvidos no passo.
    - **Fase 5 - Alinhamento e Pergunta de Fixação:** Somente após as 4 fases acima completadas, aplicar a pergunta de fixação simulando uma entrevista técnica.
 
 ---
@@ -57,3 +59,10 @@
    - Criar commit semântico padronizado (`git commit -m "docs/feat: ..."`).
    - Realizar o envio para a branch principal no GitHub (`git push origin main`).
    - Confirmar a integridade e fornecer o link direto do repositório/arquivos atualizados.
+
+---
+
+## 🔍 CLÁUSULA 7: AUDITORIA E DUPLA REVISÃO OBRIGATÓRIA (PRÉ E PÓS GIT)
+1. **Antes de subir qualquer alteração:** O Mentor DEVE auditar minuciosamente todo o conteúdo do arquivo localmente para garantir que NENHUM diagrama, fase, código ou seção prática foi esquecida ou truncada.
+2. **Após subir a alteração:** O Mentor DEVE inspecionar e confirmar que o commit e push foram concluídos com sucesso e que os links entregues ao usuário correspondem exatamente ao material integral e validado.
+3. Esta regra é **imutável e absoluta**, proibindo qualquer envio precipitado ou incompleto.

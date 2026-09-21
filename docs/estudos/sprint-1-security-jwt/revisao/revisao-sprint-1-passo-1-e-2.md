@@ -42,6 +42,12 @@ flowchart TD
     UsuarioRepo -->|Persistência na tabela tb_usuario| DB[(PostgreSQL)]
 ```
 
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o fluxo de cadastro e login de um novo aluno no app:  
+> 1. A entidade `Usuario` herda automaticamente de `BaseEntity` para que a administração saiba o segundo exato em que a conta nasceu ou foi alterada (`created_at`, `updated_at`).  
+> 2. O `Usuario` "veste o uniforme" do Spring Security implementando `UserDetails`. É isso que permite ao framework ler e-mail, senha criptografada e o papel do aluno (`ROLE_STUDENT` ou `ROLE_ADMIN`).  
+> 3. O `UsuarioRepository` é o mensageiro especialista do Spring Data JPA: ele pega o objeto Java e o grava com integridade na tabela física `tb_usuario` no PostgreSQL, permitindo buscas instantâneas por e-mail.
+
 #### 🗺️ O que são esses componentes e por que existem?
 - 🧠 **`Usuario.java`:** Entidade de domínio central que representa o concurseiro ou administrador no banco relacional (`tb_usuario`). Implementa a interface `UserDetails` para criar uma ponte transparente com o Spring Security.
 - ☕ **`Role.java`:** Enum que define os papéis de acesso do sistema (`ROLE_STUDENT` e `ROLE_ADMIN`) segundo a convenção padrão exigida pelo Spring Security para controle RBAC (Role-Based Access Control).
@@ -243,6 +249,15 @@ flowchart LR
         Validate --> CheckSig["3. A assinatura matemática é legítima?"]
     end
 ```
+
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Pense no `JwtService` como uma máquina de emitir e checar passaportes de aeroporto:  
+> 1. **No Login (`generateToken`):** Assim que o concurseiro acerta e-mail e senha, o serviço gera uma credencial compacta assinada digitalmente com nossa chave secreta privada.  
+> 2. **Em Cada Clique de Questão (`isTokenValid`):** O app envia essa credencial no cabeçalho HTTP. O segurança na catraca faz 3 checagens matemáticas instantâneas na memória RAM, sem ligar para o banco de dados:  
+>    - *O e-mail bate com o usuário atual?*  
+>    - *O passaporte ainda está dentro das 24 horas de validade?*  
+>    - *O selo holográfico (assinatura) está 100% autêntico e sem adulteração?*  
+> Se todas as respostas forem "SIM", o concurseiro acessa o simulado na hora!
 
 #### 🗺️ O que é a Anatomia do JWT (RFC 7519)?
 Um JSON Web Token é composto por 3 partes separadas por ponto (`.`):
