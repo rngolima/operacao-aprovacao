@@ -127,4 +127,4 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 
 ## 👤 Autor & Desenvolvedor
 
-Desenvolvido por **Rodrigo Lima** ([GitHub](https://github.com/rngolima)).
+Desenvolvido por **Rudson Americo** ([GitHub](https://github.com/rngolima)).
