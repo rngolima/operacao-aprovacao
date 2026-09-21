@@ -13,7 +13,7 @@
 
 O **Operação Aprovação** é uma plataforma comercial e um **agente pessoal de treinamento** desenvolvido com padrões de engenharia de software sênior para potencializar a aprovação em concursos públicos de alta concorrência.
 
-O sistema é **completamente agnóstico a certames**: sua engine inteligente é capaz de receber qualquer edital, banca examinadora (Cebraspe, FGV, FCC, etc.) e estrutura de disciplinas, adaptando dinamicamente o plano de estudos, simulados com pesos ponderados e métricas de proficiência.
+O sistema é **universal e adaptável a qualquer concurso público do país**: sua engine inteligente foi projetada para funcionar com qualquer edital e qualquer banca examinadora (Cebraspe, FGV, FCC, Cesgranrio, etc.), adaptando dinamicamente o cronograma de estudos, os simulados com regras oficiais e as métricas de desempenho do estudante.
 
 O caso de homologação inicial (MVP) é o concurso da **Polícia Civil do Estado de Pernambuco (PC-PE)** com a banca **Cebraspe**.
 
@@ -50,7 +50,7 @@ graph TD
 
 ### 🧩 Módulos do Sistema (Bounded Contexts)
 - **auth**: Gestão de identidade, controle de acesso baseado em papéis (RBAC) e emissão de tokens JWT.
-- **certame**: Engine agnóstica de modelagem de Bancas, Concursos, Editais, Disciplinas e Assuntos.
+- **certame**: Módulo de Concursos: cadastro e gestão flexível de Bancas, Editais, Disciplinas e Assuntos de prova.
 - **questao**: Gestão do banco de questões (Múltipla Escolha e Certo/Errado), com gabaritos comentados e justificativas.
 - **treinamento**: Núcleo do agente inteligente de estudos, gerador de simulados ponderados e métricas de proficiência.
 
