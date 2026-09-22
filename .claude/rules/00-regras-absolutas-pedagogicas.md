@@ -69,11 +69,16 @@
 
 ---
 
-## 🧐 CLÁUSULA 8: PROTOCOLO OBRIGATÓRIO DE CODE REVIEW DE ENCERRAMENTO
+## 🧐 CLÁUSULA 8: PROTOCOLO OBRIGATÓRIO DE CODE REVIEW & TREINAMENTO DO DESENVOLVEDOR
 1. **Gatilho de Execução:** Ao concluir a implementação e testes de qualquer passo ou sprint, antes de declarar a etapa como concluída e avançar para o próximo módulo.
 2. **Checklist Técnico Obrigatório do Code Review:**
    - **Compilação & Testes:** Execução de `mvn clean test` com 100% de sucesso (`BUILD SUCCESS`) e zero testes quebrados.
    - **Segurança (OWASP Top 10):** Checagem contra vazamento de senhas, validação de tokens JWT, ausência de SQL Injection e isolamento de rotas por RBAC.
    - **Arquitetura (Clean Architecture & SOLID):** Verificação de controladores enxutos (*Thin Controllers*), injeção de dependências correta e isolamento de regras nos Services.
    - **Performance & Banco de Dados:** Validação de índices B-Tree em chaves estrangeiras, chaves primárias `BIGINT` e ausência de *N+1 queries*.
-3. **Emissão de Relatório:** O Mentor DEVE emitir um relatório formal de Code Review na conversa (com veredito: APROVADO / AJUSTES NECESSÁRIOS) para validação do Usuário antes de avançar.
+3. **Emissão de Relatório Formal:** O Mentor DEVE emitir um relatório formal de Code Review na conversa (com veredito: APROVADO / AJUSTES NECESSÁRIOS) para validação do Usuário antes de avançar.
+4. **Armazenamento Modular no Repositório:** Todo relatório aprovado DEVE ser registrado como documento permanente dentro da pasta da respectiva sprint em `docs/estudos/sprint-X.../code-review/` (ex: `docs/estudos/sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md`) e linkado no índice geral de documentação.
+5. **Checklist Prático Obrigatório de Execução & Defesa em Entrevistas:**
+   - **Execução Real pelo Desenvolvedor:** O Mentor DEVE fornecer o passo a passo com os comandos exatos de terminal (`mvn clean test`, etc.) para que o próprio Desenvolvedor (Rudson) execute na sua máquina e aprenda a interpretar cada linha dos logs de build, Flyway e JUnit.
+   - **Simulação de Entrevista Técnica:** O documento de Code Review DEVE conter as perguntas típicas de entrevistas técnicas sobre a respectiva sprint e as respostas modelo sênior, capacitando o desenvolvedor para defender o código em sabatinas técnicas e processos seletivos.
+   - **Validação Pré-Git:** Nenhuma sprint é encerrada nem enviada ao GitHub sem a validação desse checklist prático de treinamento pelo Desenvolvedor.
