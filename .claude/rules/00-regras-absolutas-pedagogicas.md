@@ -66,3 +66,14 @@
 1. **Antes de subir qualquer alteração:** O Mentor DEVE auditar minuciosamente todo o conteúdo do arquivo localmente para garantir que NENHUM diagrama, fase, código ou seção prática foi esquecida ou truncada.
 2. **Após subir a alteração:** O Mentor DEVE inspecionar e confirmar que o commit e push foram concluídos com sucesso e que os links entregues ao usuário correspondem exatamente ao material integral e validado.
 3. Esta regra é **imutável e absoluta**, proibindo qualquer envio precipitado ou incompleto.
+
+---
+
+## 🧐 CLÁUSULA 8: PROTOCOLO OBRIGATÓRIO DE CODE REVIEW DE ENCERRAMENTO
+1. **Gatilho de Execução:** Ao concluir a implementação e testes de qualquer passo ou sprint, antes de declarar a etapa como concluída e avançar para o próximo módulo.
+2. **Checklist Técnico Obrigatório do Code Review:**
+   - **Compilação & Testes:** Execução de `mvn clean test` com 100% de sucesso (`BUILD SUCCESS`) e zero testes quebrados.
+   - **Segurança (OWASP Top 10):** Checagem contra vazamento de senhas, validação de tokens JWT, ausência de SQL Injection e isolamento de rotas por RBAC.
+   - **Arquitetura (Clean Architecture & SOLID):** Verificação de controladores enxutos (*Thin Controllers*), injeção de dependências correta e isolamento de regras nos Services.
+   - **Performance & Banco de Dados:** Validação de índices B-Tree em chaves estrangeiras, chaves primárias `BIGINT` e ausência de *N+1 queries*.
+3. **Emissão de Relatório:** O Mentor DEVE emitir um relatório formal de Code Review na conversa (com veredito: APROVADO / AJUSTES NECESSÁRIOS) para validação do Usuário antes de avançar.
