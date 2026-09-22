@@ -1,4 +1,4 @@
-# 🎯 Operação Aprovação — Plataforma Corporativa & Agente de Estudos
+# 🎯 Operação Aprovação — Plataforma & Engine de Estudos para Concursos
 
 [![Java 21](https://img.shields.io/badge/Java-21%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Spring Boot 3.3.3](https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
@@ -9,19 +9,26 @@
 
 ---
 
-## 📌 Sobre o Projeto
+## 📌 O Problema Real de Negócio & Nossa Solução
 
-O **Operação Aprovação** é uma plataforma comercial e um **agente pessoal de treinamento** desenvolvido com padrões de engenharia de software sênior para potencializar a aprovação em concursos públicos de alta concorrência.
+### 🚨 A Dor do Concurseiro:
+Milhares de candidatos estudam anos a fio acumulando PDFs teóricos e resolvendo questões avulsas na internet, mas são reprovados porque **não treinam a mecânica real de pontuação da banca examinadora**.
+- Na banca **Cebraspe**, por exemplo, adota-se o critério rigoroso em que **uma questão errada anula uma questão certa** (pontuação líquida). Sem treinamento cirúrgico, o candidato zera a pontuação líquida mesmo acertando 60% da prova.
 
-O sistema é **universal e adaptável a qualquer concurso público do país**: sua engine inteligente foi projetada para funcionar com qualquer edital e qualquer banca examinadora (Cebraspe, FGV, FCC, Cesgranrio, etc.), adaptando dinamicamente o cronograma de estudos, os simulados com regras oficiais e as métricas de desempenho do estudante.
-
-O caso de homologação inicial (MVP) é o concurso da **Polícia Civil do Estado de Pernambuco (PC-PE)** com a banca **Cebraspe**.
+### 💡 A Solução da Engenharia:
+O **Operação Aprovação** é uma API backend corporativa de alta performance que atua como uma engine inteligente de treinamento e simulados:
+1. **Caso de Uso Real (MVP):** Homologado inicialmente no concurso da **Polícia Civil de Pernambuco (PC-PE)** com a banca **Cebraspe**.
+2. **Simulados Ponderados:** Gera simulados calibrados estritamente com os pesos e matérias do edital oficial.
+3. **Cálculo de Nota Líquida Cebraspe:** Computa acertos, erros e questões em branco, aplicando a penalidade real da banca.
+4. **Diagnóstico Cirúrgico de Proficiência:** Informa com precisão matemática em quais assuntos específicos do edital o aluno precisa reforçar os estudos.
 
 ---
 
 ## 🏛️ Governança de Engenharia & Arcabouço ECC (Enterprise Coding Catalyst)
 
-Este projeto adota formalmente o **Arcabouço ECC (Enterprise Coding Catalyst)**, aplicando diretrizes rigorosas de governança corporativa, padrões de design e segurança OWASP Top 10.
+O projeto é desenvolvido sob o **Arcabouço ECC (Enterprise Coding Catalyst)**, aplicando governança corporativa de times seniores, Clean Architecture e segurança OWASP:
+- **Code Review Contínuo:** Validação de conformidade de código e segurança ao término de cada etapa.
+- **Pipeline de Testes Isolado:** Execução de testes em memória com `MockMvc` sem conflitos de portas de rede.
 
 > 📄 **Para Recrutadores, Arquitetos e Tech Leads:**  
 > Consulte o manual completo de governança e auditoria do código em:  
@@ -29,30 +36,48 @@ Este projeto adota formalmente o **Arcabouço ECC (Enterprise Coding Catalyst)**
 
 ---
 
-## 🏗️ Arquitetura do Sistema (Clean Architecture & Monólito Modular)
+## 🧱 Entregas Modulares em Fatias Verticais (Vertical Slices)
 
-A solução foi projetada seguindo rigorosamente os princípios de **Clean Architecture**, **Domain-Driven Design (DDD)** e **SOLID**:
+O backend é construído em **módulos independentes e desacoplados** que funcionam por si sós e se conectam para formar o produto completo. **Não é necessário esperar um app mobile para avaliar o sistema:** cada módulo entrega uma API REST funcional, testada e interativa via Swagger UI:
 
 ```mermaid
-graph TD
-    Client[Cliente / Mobile Flutter] -->|REST API + JWT| Security[Spring Security 6]
-    Security --> Controllers[Presentation Layer / REST Controllers]
-    Controllers --> UseCases[Application Layer / Services & DTOs]
-    UseCases --> Domain[Domain Layer / Entities & Business Rules]
-    Domain --> Repositories[Domain Repositories / Interfaces]
-    Repositories --> Infrastructure[Infrastructure Layer / Spring Data JPA]
-    Infrastructure --> Flyway[Flyway Migrations]
-    Flyway --> Database[(PostgreSQL / Supabase)]
+flowchart LR
+    subgraph "Módulos Independentes (Entregas da API Backend)"
+        M1["🔐 MÓDULO 1: Auth & Identidade<br/>(Cadastro, Login, JWT HMAC-SHA256, RBAC)"]
+        M2["🏛️ MÓDULO 2: Certames & Editais<br/>(Bancas, Editais PC-PE, Disciplinas)"]
+        M3["📝 MÓDULO 3: Banco de Questões<br/>(Questões Cebraspe Certo/Errado, Gabaritos)"]
+        M4["⚡ MÓDULO 4: Treinador & Simulados<br/>(Cálculo de Nota Líquida e Diagnósticos)"]
+    end
+    
+    M1 -->|Injeta Usuário Autenticado| M4
+    M2 -->|Fornece Estrutura do Edital| M4
+    M3 -->|Alimenta Questões| M4
+    M4 --> Swagger["🌐 Swagger UI (Endpoints Prontos para Teste)"]
 ```
 
 #### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
-> Garante que a regra de negócio central (o cálculo de pontuação dos simulados da banca e o algoritmo do treinador) fique completamente isolada de detalhes externos de interface e banco de dados. Se amanhã o banco mudar de PostgreSQL para MySQL ou o cliente mudar de Flutter para Web, o núcleo do sistema não sofre alterações.
+> Significa que o recrutador ou líder técnico pode testar e validar o valor de engenharia de cada etapa isoladamente. O Módulo de Segurança (Sprint 1) já entrega autenticação corporativa completa; o Módulo de Certames (Sprint 2) entrega a gestão de editais; e o Módulo de Treinamento (Sprint 3) entrega a inteligência de cálculo de pontuação.
 
-### 🧩 Módulos do Sistema (Bounded Contexts)
-- **auth**: Gestão de identidade, controle de acesso baseado em papéis (RBAC) e emissão de tokens JWT.
-- **certame**: Módulo de Concursos: cadastro e gestão flexível de Bancas, Editais, Disciplinas e Assuntos de prova.
-- **questao**: Gestão do banco de questões (Múltipla Escolha e Certo/Errado), com gabaritos comentados e justificativas.
-- **treinamento**: Núcleo do agente inteligente de estudos, gerador de simulados ponderados e métricas de proficiência.
+---
+
+## 🗄️ Mapeamento Completo das Entidades do Domínio (100% Planejadas)
+
+A modelagem relacional de dados já está 100% concebida e versionada no banco PostgreSQL via migrações imutáveis do Flyway (`V1__initial_schema.sql`). Ela é dividida em 4 blocos coesos:
+
+| Módulo / Pacote | Entidade / Modelo | Ícone | Responsabilidade no Sistema |
+| :--- | :--- | :--- | :--- |
+| **👤 Identidade (`auth`)** | `Usuario` | 🧠 | Cadastro de alunos e administradores (implementa `UserDetails` do Spring Security). |
+| **👤 Identidade (`auth`)** | `Role` | ☕ | Enum RBAC (`ROLE_STUDENT`, `ROLE_ADMIN`) para controle fino de permissões. |
+| **🏛️ Concurso (`certame`)** | `Banca` | 🏛️ | Instituição organizadora do concurso (ex: Cebraspe, FGV, FCC). |
+| **🏛️ Concurso (`certame`)** | `Concurso` | 📜 | O certame oficial homologado (ex: PC-PE 2026/2027). |
+| **🏛️ Concurso (`certame`)** | `Edital` | 📋 | Regras oficiais, datas, critérios de eliminação e vagas. |
+| **🏛️ Concurso (`certame`)** | `Disciplina` | 📚 | Matérias do certame (Direito Penal, Informática, Língua Portuguesa, etc.). |
+| **🏛️ Concurso (`certame`)** | `Assunto` | 📑 | Tópicos específicos do edital (ex: Crimes contra a Pessoa, Redes de Computadores). |
+| **📝 Questões (`questao`)** | `Questao` | ✍️ | Enunciado, ano da prova, cargo e modalidade (Certo/Errado ou Múltipla Escolha). |
+| **📝 Questões (`questao`)** | `Alternativa` | 🏷️ | Opções de resposta, gabarito oficial e justificativa técnica comentada. |
+| **🧠 Treinador (`treinamento`)** | `Simulado` | ⏱️ | Prova gerada dinamicamente com peso balanceado pelas regras do edital. |
+| **🧠 Treinador (`treinamento`)** | `RespostaUsuario` | 📊 | Registro de cada marcação do aluno com telemetria de tempo gasto. |
+| **🧠 Treinador (`treinamento`)** | `Desempenho` | 📈 | Pontuação líquida (Cebraspe: errada anula certa) e taxa de acerto por assunto. |
 
 ---
 
@@ -114,12 +139,12 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 
 ---
 
-## 📋 Roadmap de Entregas (Sprints)
+## 📋 Roadmap de Entregas (Módulos da API)
 
 - [x] **Sprint 0: Foundation** — Setup inicial Java 21, Spring Boot 3.3, Clean Architecture, Flyway V1, OpenAPI, H2/PostgreSQL e testes MockMvc.
-- [x] **Sprint 1: Security & Identity** — Autenticação JWT Stateless, hashing BCrypt, controle RBAC e testes de integração.
-- [ ] **Sprint 2: Core Domain (Certames & Questões)** — Modelagem agnóstica de bancas, concursos e ingestão de questões da PC-PE.
-- [ ] **Sprint 3: Engine de Treinamento & Simulados** — Geração dinâmica de simulados ponderados e tracking de proficiência.
+- [x] **Sprint 1: Security & Identity (Módulo 1)** — Autenticação JWT Stateless, hashing BCrypt, controle RBAC e testes de integração.
+- [ ] **Sprint 2: Core Domain (Módulos 2 e 3)** — Gestão de certames, editais e ingestão de questões Cebraspe da PC-PE.
+- [ ] **Sprint 3: Engine de Treinamento (Módulo 4)** — Geração de simulados ponderados, cálculo de nota líquida e diagnósticos.
 - [ ] **Sprint 4: Testes Corporativos & QA** — Testcontainers, cobertura massiva de testes e esteira CI/CD.
 - [ ] **Sprint 5: Frontend Flutter** — Aplicativo mobile e web integrado à API.
 
