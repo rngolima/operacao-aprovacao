@@ -14,18 +14,18 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 
 ### 📁 Sprint 0: Foundation (A Base Corporativa)
 - 📘 [Guia Oficial da Sprint 0](sprint-0-fundamentos/sprint-0-fundamentos.md)
-- 📝 **Revisão Técnica Modular:**
-  - 📄 [Revisão Completa da Sprint 0: Passos 1 ao 5](sprint-0-fundamentos/revisao/revisao-sprint-0-passos-1-ao-5.md)
-- 📑 **Code Review & Testes:**
-  - 🧪 [Code Review Oficial & Procedimento de Teste](sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
+- 🧠 **Manual Teórico & Fundamentos:**
+  - 📄 [Manual de Engenharia da Sprint 0 (Passos 1 ao 5)](sprint-0-fundamentos/manual-teorico/manual-de-engenharia-sprint-0.md)
+- 📑 **Code Review & Procedimento de Testes:**
+  - 🧪 [Code Review Oficial & Testes Práticos](sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
 
 ---
 
 ### 📁 Sprint 1: Security & Identity (Autenticação JWT & RBAC)
 - 🔐 [Guia Oficial da Sprint 1](sprint-1-security-jwt/sprint-1-security-jwt.md)
-- 📝 **Revisão Técnica Modular:**
-  - 📄 [Revisão Sprint 1: Passos 1 e 2 (Identidade e JWT)](sprint-1-security-jwt/revisao/revisao-sprint-1-passo-1-e-2.md)
-- 📑 **Code Review & Testes:**
+- 🧠 **Manual Teórico & Fundamentos:**
+  - 📄 [Manual de Engenharia da Sprint 1 (Passos 1 e 2)](sprint-1-security-jwt/manual-teorico/manual-de-engenharia-sprint-1-passos-1-e-2.md)
+- 📑 **Code Review & Procedimento de Testes:**
   - ⏳ *(Em andamento - Homologação ao término do Passo 5)*
 
 ---

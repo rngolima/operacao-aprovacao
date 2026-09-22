@@ -76,12 +76,16 @@ O projeto adota o padrão **Monólito Modular (Modular Monolith)** aliado à **C
 │       │
 │       ├── 📁 sprint-0-fundamentos/   <-- Materiais da Sprint 0
 │       │   ├── 📘 sprint-0-fundamentos.md
-│       │   └── 📝 revisao/            <-- Subdiretório exclusivo de revisão da Sprint 0
-│       │       └── 📜 revisao-sprint-0-passos-1-ao-5.md
+│       │   ├── 🧠 manual-teorico/     <-- Manual conceitual e fundamentos de engenharia
+│       │   │   └── 📜 manual-de-engenharia-sprint-0.md
+│       │   └── 📑 code-review/        <-- Relatório de Auditoria ECC e Procedimentos de Teste
+│       │       └── 🧪 code-review-e-procedimento-de-testes.md
 │       │
 │       └── 📁 sprint-1-security-jwt/  <-- Materiais da Sprint 1
 │           ├── 🔐 sprint-1-security-jwt.md
-│           └── 📝 revisao/            <-- Subdiretório exclusivo de revisão da Sprint 1
+│           ├── 🧠 manual-teorico/     <-- Manual conceitual e fundamentos de engenharia
+│           │   └── 📜 manual-de-engenharia-sprint-1-passos-1-e-2.md
+│           └── 📑 code-review/        <-- Relatório de Auditoria ECC e Procedimentos de Teste (ao final da sprint)
 │
 └── 📁 backend/
     ├── 🐘 pom.xml                     <-- Declaração das dependências Java 21 e Spring Boot 3.3.3

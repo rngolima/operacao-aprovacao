@@ -135,7 +135,7 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 - 📖 [Central de Estudos (Índice Geral)](docs/estudos/README.md)
 - 🏛️ [Guia de Governança & Arcabouço ECC](docs/estudos/01-governanca-e-arcabouco-ecc.md)
 - 📑 [Code Review Oficial & Testes — Sprint 0](docs/estudos/sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
-- 📘 [Sprint 0: Foundation (Base Corporativa)](docs/estudos/sprint-0-fundamentos/sprint-0-fundamentos.md)
+- 🧠 [Manual Teórico de Engenharia — Sprint 0](docs/estudos/sprint-0-fundamentos/manual-teorico/manual-de-engenharia-sprint-0.md)
 - 🔐 [Sprint 1: Security & Identity (JWT & RBAC)](docs/estudos/sprint-1-security-jwt/sprint-1-security-jwt.md)
 
 ---
