@@ -36,27 +36,40 @@ O projeto é desenvolvido sob o **Arcabouço ECC (Enterprise Coding Catalyst)**,
 
 ---
 
-## 🧱 Entregas Modulares em Fatias Verticais (Vertical Slices)
+## 🧱 Arquitetura: Monólito Modular & Fatias Verticais (Vertical Slices)
 
-O backend é construído em **módulos independentes e desacoplados** que funcionam por si sós e se conectam para formar o produto completo. **Não é necessário esperar um app mobile para avaliar o sistema:** cada módulo entrega uma API REST funcional, testada e interativa via Swagger UI:
+O backend adota o padrão de **Monólito Modular (Modular Monolith)** estruturado em **Fatias Verticais (Vertical Slices)** e orientado aos princípios de *Domain-Driven Design (DDD)* e *Clean Architecture*.
+
+### 🚫 Por que NÃO usamos Microsserviços Prematuros?
+Conforme formalizado em nosso [ADR 001](docs/adr/001-arquitetura-e-stack-tecnologica.md), microsserviços distribuídos desde o início trariam complexidade operacional desnecessária (Kubernetes, Service Mesh, latência de rede, transações distribuídas e custos de nuvem excessivos).
+
+### 💡 A Solução: Monólito Modular com Fronteiras Rígidas
+Em vez de um monólito acoplado (*"espaguete disfarçado em pastas bonitas"*), o sistema é construído com **módulos de domínio coesos (*Bounded Contexts*)** que executam no mesmo processo Spring Boot e compartilham a governança transacional ACID do PostgreSQL, mas mantêm suas fronteiras protegidas através de contratos, DTOs e interfaces públicas:
 
 ```mermaid
-flowchart LR
-    subgraph "Módulos Independentes (Entregas da API Backend)"
-        M1["🔐 MÓDULO 1: Auth & Identidade<br/>(Cadastro, Login, JWT HMAC-SHA256, RBAC)"]
-        M2["🏛️ MÓDULO 2: Certames & Editais<br/>(Bancas, Editais PC-PE, Disciplinas)"]
-        M3["📝 MÓDULO 3: Banco de Questões<br/>(Questões Cebraspe Certo/Errado, Gabaritos)"]
-        M4["⚡ MÓDULO 4: Treinador & Simulados<br/>(Cálculo de Nota Líquida e Diagnósticos)"]
+flowchart TD
+    subgraph Monolito["🏛️ Monólito Modular Único (Spring Boot 3.3 / Java 21 LTS)"]
+        subgraph Modulos["Módulos de Domínio Coesos (Bounded Contexts)"]
+            M1["🔐 MÓDULO 1: Auth & Identidade<br/>(Usuários, Roles, Tokens JWT, RBAC)"]
+            M2["🏛️ MÓDULO 2: Certames & Editais<br/>(Bancas, Editais PC-PE, Disciplinas, Assuntos)"]
+            M3["📝 MÓDULO 3: Banco de Questões<br/>(Enunciados, Alternativas Cebraspe, Gabaritos)"]
+            M4["⚡ MÓDULO 4: Treinador & Simulados<br/>(Engine de Provas, Nota Líquida, Diagnóstico)"]
+        end
+        
+        M1 -.->|Contrato / Usuário Autenticado| M4
+        M2 -.->|Contrato / Estrutura do Edital| M3
+        M3 -.->|Contrato / Questões Ponderadas| M4
+        
+        M1 & M2 & M3 & M4 --> Swagger["🌐 Swagger UI / API REST Consolidada"]
     end
     
-    M1 -->|Injeta Usuário Autenticado| M4
-    M2 -->|Fornece Estrutura do Edital| M4
-    M3 -->|Alimenta Questões| M4
-    M4 --> Swagger["🌐 Swagger UI (Endpoints Prontos para Teste)"]
+    Monolito --> DB[("🐘 PostgreSQL Único<br/>(Transações ACID & Migrações Flyway)")]
 ```
 
 #### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
-> Significa que o recrutador ou líder técnico pode testar e validar o valor de engenharia de cada etapa isoladamente. O Módulo de Segurança (Sprint 1) já entrega autenticação corporativa completa; o Módulo de Certames (Sprint 2) entrega a gestão de editais; e o Módulo de Treinamento (Sprint 3) entrega a inteligência de cálculo de pontuação.
+> 1. **Não são microsserviços isolados:** Não há tráfego de rede nem chamadas HTTP lentas entre os módulos; toda a comunicação é direta em memória com altíssima performance.
+> 2. **Não é um monólito desordenado ("pastas bonitas"):** Cada módulo respeita seu domínio. Se amanhã o motor de simulados precisar atender milhões de requisições concorrentes, ele já está delimitado e pode ser desacoplado para um microsserviço autônomo sem refatorar regras de negócio.
+> 3. **Entregas em Fatias Verticais:** O sistema evolui em sprints com APIs funcionais e testáveis no Swagger a cada etapa, garantindo previsibilidade e qualidade contínua.
 
 ---
 
