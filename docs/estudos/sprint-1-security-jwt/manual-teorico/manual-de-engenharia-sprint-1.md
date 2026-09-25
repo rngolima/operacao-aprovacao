@@ -11,8 +11,8 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Passo 1** | `Usuario.java`, `Role.java`, `UsuarioRepository.java` | 🧠 | **Concluído** | Domínio de Identidade, interface `UserDetails` do Spring Security e controle de acesso RBAC. |
 | **Passo 2** | `JwtService.java` | 🔐 | **Concluído** | Motor Criptográfico: especificação RFC 7519, algoritmo HMAC-SHA256, geração e validação matemática de tokens. |
-| **Passo 3** | `JwtAuthenticationFilter.java` & `CustomUserDetailsService` | 🛡️ | Próximo | Interceptação de rede com `OncePerRequestFilter`, ponte com o banco e `SecurityContextHolder`. |
-| **Passo 4** | DTOs (`RegisterRequest`, `LoginRequest`, `AuthResponse`) & `AuthService` | ⚙️ | Planejado | Casos de uso de autenticação, hashing seguro de senhas com **BCrypt + Salt** e validações com Bean Validation. |
+| **Passo 3** | `JwtAuthenticationFilter.java` & `CustomUserDetailsService` | 🛡️ | **Concluído** | Interceptação de rede com `OncePerRequestFilter`, ponte com o banco e `SecurityContextHolder`. |
+| **Passo 4** | DTOs (`RegisterRequest`, `LoginRequest`, `AuthResponse`) & `AuthService` | ⚙️ | **Próximo** | Casos de uso de autenticação, hashing seguro de senhas com **BCrypt + Salt** e validações com Bean Validation. |
 | **Passo 5** | `AuthController.java`, `GlobalExceptionHandler` & Testes | 🌐 | Planejado | Camada Web REST (endpoints `/register` e `/login`), interceptador global de erros e suíte com `MockMvc`. |
 
 ---
@@ -429,3 +429,238 @@ public class JwtService {
 > **Resposta Técnica Modelo:**  
 > *"A validação com JWT escala infinitamente porque é puramente stateless e matemática. No modelo tradicional de cookies, cada requisição exige uma consulta de I/O em banco de dados ou cluster de sessão distribuída para verificar o ID da sessão, criando um funil de garrafa com alta concorrência. Com o JWT, a verificação da assinatura HMAC-SHA256 e da expiração ocorre na memória RAM e registradores da CPU em nanossegundos, sem tocar no banco de dados.  
 > E caso um invasor altere o payload do token para forjar a role `ROLE_ADMIN`, a assinatura criptográfica não coincidirá com a chave secreta privada do servidor. O parser do JJWT lançará uma exceção de integridade imediata, rejeitando a requisição sem qualquer risco de vazamento ou consumo indevido de recursos."*
+
+
+---
+
+## 🛡️ PASSO 3: A Catraca Interceptadora (Filtro JWT) e a Ponte com o Banco
+
+---
+
+### 🗺️ FASE 1: O MAPA E LOCALIZAÇÃO NO VS CODE
+
+No Passo 3, implementamos os dois componentes que operam em conjunto para interceptar e autenticar cada requisição HTTP que chega na API:
+- `CustomUserDetailsService.java`: A ponte oficial com o PostgreSQL via `UsuarioRepository`.
+- `JwtAuthenticationFilter.java`: O filtro de segurança (`OncePerRequestFilter`) que valida o Bearer Token e registra o usuário no `SecurityContextHolder`.
+
+#### 📂 Abra agora no seu VS Code os arquivos deste passo:
+- 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/modules/auth/application/service/` ➔ `☕ CustomUserDetailsService.java`
+- 👉 `📁 backend/src/main/java/com/operacaoaprovacao/api/config/` ➔ `🔒 JwtAuthenticationFilter.java`
+
+#### 📊 Diagrama de Sequência da Interceptação HTTP:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Aluno as 📱 Aluno / App Frontend
+    participant Filter as 🔒 JwtAuthenticationFilter (A Catraca)
+    participant JwtSvc as 🔑 JwtService (Validador de Token)
+    participant UserDetailsSvc as 🗄️ CustomUserDetailsService (A Ponte)
+    participant Repo as 🐘 UsuarioRepository (PostgreSQL)
+    participant SecContext as 🧠 SecurityContextHolder (Memória da Thread)
+    participant Controller as 🌐 Controller Protegido (Simulados PC-PE)
+
+    Aluno->>Filter: Requisição HTTP com Header "Authorization: Bearer <token>"
+    
+    alt Cenário A: Sem Token ou Rota Pública (ex: /login, /health)
+        Filter->>Filter: Não autentica e passa o bastão adiante
+        Filter->>Controller: Requisição segue como Anônima
+    else Cenário B: Com Token JWT Presente
+        Filter->>JwtSvc: extractUsername(jwt)
+        JwtSvc-->>Filter: email do aluno ("rudson@email.com")
+        Filter->>UserDetailsSvc: loadUserByUsername("rudson@email.com")
+        UserDetailsSvc->>Repo: findByEmail("rudson@email.com")
+        Repo-->>UserDetailsSvc: Entidade Usuario do Banco
+        UserDetailsSvc-->>Filter: Objeto UserDetails
+        Filter->>JwtSvc: isTokenValid(jwt, userDetails)
+        
+        alt Token Válido, Assinado e Não Expirado
+            Filter->>SecContext: Injeta o "Crachá Autenticado" (UsernamePasswordAuthenticationToken)
+            Filter->>Controller: Requisição Autenticada com Sucesso!
+            Controller-->>Aluno: Resposta 200 OK com os dados do simulado
+        else Token Forjado / Expirado
+            Filter->>Filter: Rejeita a autenticação
+            Filter-->>Aluno: Resposta 401 Unauthorized / 403 Forbidden
+        end
+    end
+```
+
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o controle de acesso de uma **delegacia ou repartição pública de alta segurança**:
+> 1. O cidadão (aluno) chega na porta (`JwtAuthenticationFilter`) e apresenta seu crachá eletrônico (`Bearer Token`).
+> 2. Se a pessoa está indo na recepção pública (`/health` ou `/login`), ela passa sem crachá.
+> 3. Se ela quer acessar as salas restritas (fazer simulados, ver notas), a catraca lê o chip do crachá (`JwtService`) e liga para o RH central (`CustomUserDetailsService` consultando o PostgreSQL) para checar: *"O Rudson ainda é um aluno ativo do nosso curso? A matrícula dele está válida?"*.
+> 4. Com a confirmação do banco, a catraca libera a roleta e carimba no crachá dele uma autorização temporária na memória (`SecurityContextHolder`).
+> 5. A partir desse momento, todas as salas internas reconhecem o Rudson instantaneamente sem precisar pedir senha de novo!
+
+---
+
+### 💻 FASE 2: FUNDAMENTOS DA LINGUAGEM E TECNOLOGIAS
+
+| Recurso / Classe | De Onde Vem? | O Que Significa / Papel Técnico Corporativo |
+| :--- | :--- | :--- |
+| **`OncePerRequestFilter`** | `org.springframework.web.filter` | Classe abstrata que garante a execução do filtro **exatamente uma única vez por requisição**, prevenindo reprocessamentos em despachos assíncronos (`ASYNC`) ou reencaminhamentos internos (`FORWARD`). |
+| **`Authorization: Bearer`** | Padrão RFC 6750 | Cabeçalho HTTP padrão onde o cliente envia o token. A palavra `Bearer` significa 'ao portador'. Usamos `substring(7)` para cortar os 7 caracteres ('Bearer ') e isolar o token puro. |
+| **`UserDetailsService`** | `org.springframework.security.core.userdetails` | Interface contratual do Spring Security com o método `loadUserByUsername(String email)`. Permite ao framework consultar usuários no banco sem saber o nome físico das tabelas. |
+| **`SecurityContextHolder`** | `org.springframework.security.core.context` | Armazenamento centralizado na memória da `Thread` local (`ThreadLocal`) onde o Spring Security guarda o usuário autenticado da requisição atual. |
+| **`UsernamePasswordAuthenticationToken`** | `org.springframework.security.authentication` | Implementação oficial da interface `Authentication`. Representa o 'crachá aprovado', contendo o `UserDetails`, credenciais limpas (`null`) e as permissões (`Authorities`). |
+| **`FilterChain`** | `jakarta.servlet` | Esteira ordenada de filtros. O método `doFilter(request, response)` passa o bastão da requisição para o próximo filtro até atingir o Controller. |
+
+---
+
+### 🏛️ FASE 3: ANÁLISE SOB OS TRÊS PILARES COM TRADUÇÃO PRÁTICA
+
+#### 1. Arquitetura de Software (SOLID & Baixo Acoplamento)
+- **Princípio da Responsabilidade Única (SRP):** O `JwtAuthenticationFilter` cuida apenas de interceptar o tráfego HTTP. A criptografia é delegada ao `JwtService` e a consulta de banco ao `CustomUserDetailsService`.
+- **Fail-Safe contra Tokens Adulterados:** O bloco `try-catch` encapsula a extração de claims. Se um token inválido for fornecido, a requisição não quebra o servidor: ela segue como não-autenticada para ser bloqueada na esteira de autorização.
+
+#### 2. Escalabilidade & Performance (Short-Circuit & B-Tree)
+- **Rejeição Rápida (Short-Circuit):** Requisições sem o cabeçalho `Authorization` nem tocam no banco de dados. Elas avançam diretamente, poupando conexões do pool HikariCP.
+- **Consulta Otimizada no PostgreSQL:** A busca por e-mail no `CustomUserDetailsService` consome o índice B-Tree único (`idx_usuario_email`), executando em tempo logarítmico O(log n).
+
+#### 3. Dimensões Técnicas & Robustez
+- **Idempotência no Contexto:** A verificação `SecurityContextHolder.getContext().getAuthentication() == null` garante que o usuário não seja consultado nem autenticado duas vezes na mesma requisição.
+- **Higienização de Credenciais:** As credenciais são passadas como `null` no `UsernamePasswordAuthenticationToken`, assegurando que o hash da senha não permaneça na memória da Thread após a autenticação.
+
+#### 💡 O QUE ISSO SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> 🚀 **Caso Prático: O Pico de 50.000 Concurseiros no Domingo de Simulado**  
+> Quando o edital da PC-PE for publicado e dezenas de milhares de alunos acessarem a plataforma simultaneamente, esse filtro impede o colapso do PostgreSQL. Requisições anônimas, navegação no Swagger e tokens inválidos são processados puramente na memória RAM em microssegundos sem onerar o banco de dados.
+
+---
+
+### ☕ FASE 4: O CÓDIGO FONTE COMENTADO
+
+#### 1. 🗄️ `CustomUserDetailsService.java`
+```java
+package com.operacaoaprovacao.api.modules.auth.application.service;
+
+import com.operacaoaprovacao.api.modules.auth.domain.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+/**
+ * Servico que atua como a ponte oficial entre o Spring Security e o banco PostgreSQL.
+ */
+@Service // Registra a classe como componente de servico gerenciado pelo Spring Container
+@RequiredArgsConstructor // O Lombok gera o construtor com o usuarioRepository automaticamente
+public class CustomUserDetailsService implements UserDetailsService {
+
+    // Repositorio injetado via construtor (imutavel com final)
+    private final UsuarioRepository usuarioRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Busca o usuario no PostgreSQL pelo e-mail
+        // Se encontrar, retorna a propria entidade Usuario (que implementa UserDetails)
+        // Se nao encontrar, lanca a excecao padrao UsernameNotFoundException
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado com o e-mail: " + email));
+    }
+}
+```
+
+---
+
+#### 2. 🔒 `JwtAuthenticationFilter.java`
+```java
+package com.operacaoaprovacao.api.config;
+
+import com.operacaoaprovacao.api.modules.auth.application.service.CustomUserDetailsService;
+import com.operacaoaprovacao.api.modules.auth.application.service.JwtService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+/**
+ * Filtro de seguranca HTTP que intercepta todas as chamadas para autenticar tokens JWT.
+ */
+@Component // Registra a classe como um Bean Spring gerenciado
+@RequiredArgsConstructor // Injeta jwtService e userDetailsService via construtor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtService jwtService;
+    private final CustomUserDetailsService userDetailsService;
+
+    @Override
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        // 1. Extrai o cabecalho 'Authorization' da requisicao HTTP
+        final String authHeader = request.getHeader("Authorization");
+
+        // 2. Se nao houver cabecalho ou se nao comecar com 'Bearer ', passa adiante sem autenticar
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 3. Isola o token puro removendo os 7 caracteres de 'Bearer '
+        final String jwt = authHeader.substring(7);
+        final String userEmail;
+
+        try {
+            // 4. Decodifica o token e extrai o e-mail (subject) do usuario
+            userEmail = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            // Se o token for invalido, malformado ou adulterado, segue o fluxo como anonimo
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 5. Se temos o e-mail e o usuario AINDA NAO esta autenticado nesta requisicao
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            
+            // 6. Busca os dados atualizados do usuario no banco de dados
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+            // 7. Valida a assinatura HMAC-SHA256 e a data de expiracao do token
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                
+                // 8. Cria o cracha oficial (UsernamePasswordAuthenticationToken) com as roles
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null, // Senha nula por seguranca (nao mantemos senha em memoria)
+                        userDetails.getAuthorities()
+                );
+                
+                // 9. Vincula detalhes tecnicos da requisicao web (ex: endereco IP de origem)
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                
+                // 10. Registra o usuario como autenticado no contexto do Spring Security!
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+
+        // 11. Passa a requisicao adiante na cadeia de filtros ate alcancar o Controller
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+---
+
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA E FIXAÇÃO
+
+> **Pergunta do Tech Lead / Entrevistador:**  
+> *"No seu filtro JWT, por que você utilizou a classe `OncePerRequestFilter` em vez do tradicional `Filter` do Java Servlet? E por que você checa se `SecurityContextHolder.getContext().getAuthentication() == null` antes de carregar o usuário?"*
+> 
+> **Resposta Técnica Modelo (Nível Sênior):**  
+> *"Eu herdei de `OncePerRequestFilter` para garantir o princípio da **idempotência de execução**. No ecossistema de Servlets do Spring, requisições com despachos internos ou assíncronos (`FORWARD`, `ASYNC`) podem fazer com que um `Filter` comum seja acionado duas ou mais vezes no mesmo ciclo de vida HTTP. O `OncePerRequestFilter` garante que a extração do token, a descriptografia e a validação ocorram rigorosamente **uma única vez por requisição**, economizando ciclos de CPU.*  
+> 
+> *Já a verificação `getAuthentication() == null` é uma proteção de **performance e consistência**: ela evita realizar uma consulta desnecessária ao PostgreSQL (`loadUserByUsername`) caso a requisição já tenha sido autenticada previamente por algum outro filtro da cadeia, poupando conexões do pool HikariCP e tempo de resposta."*

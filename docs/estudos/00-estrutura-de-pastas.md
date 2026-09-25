@@ -84,7 +84,7 @@ O projeto adota o padrão **Monólito Modular (Modular Monolith)** aliado à **C
 │       └── 📁 sprint-1-security-jwt/  <-- Materiais da Sprint 1
 │           ├── 🔐 sprint-1-security-jwt.md
 │           ├── 🧠 manual-teorico/     <-- Manual conceitual e fundamentos de engenharia
-│           │   └── 📜 manual-de-engenharia-sprint-1-passos-1-e-2.md
+│           │   └── 📜 manual-de-engenharia-sprint-1.md
 │           └── 📑 code-review/        <-- Relatório de Auditoria ECC e Procedimentos de Teste (ao final da sprint)
 │
 └── 📁 backend/

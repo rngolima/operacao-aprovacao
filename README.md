@@ -150,6 +150,7 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 - 📑 [Code Review Oficial & Testes — Sprint 0](docs/estudos/sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
 - 🧠 [Manual Teórico de Engenharia — Sprint 0](docs/estudos/sprint-0-fundamentos/manual-teorico/manual-de-engenharia-sprint-0.md)
 - 🔐 [Sprint 1: Security & Identity (JWT & RBAC)](docs/estudos/sprint-1-security-jwt/sprint-1-security-jwt.md)
+- 🧠 [Manual Teórico de Engenharia — Sprint 1](docs/estudos/sprint-1-security-jwt/manual-teorico/manual-de-engenharia-sprint-1.md)
 
 ---
 
