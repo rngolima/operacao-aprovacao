@@ -12,8 +12,8 @@
 | **Passo 1** | `Usuario.java`, `Role.java`, `UsuarioRepository.java` | 🧠 | **Concluído** | Domínio de Identidade, interface `UserDetails` do Spring Security e controle de acesso RBAC. |
 | **Passo 2** | `JwtService.java` | 🔐 | **Concluído** | Motor Criptográfico: especificação RFC 7519, algoritmo HMAC-SHA256, geração e validação matemática de tokens. |
 | **Passo 3** | `JwtAuthenticationFilter.java` & `CustomUserDetailsService` | 🛡️ | **Concluído** | Interceptação de rede com `OncePerRequestFilter`, ponte com o banco e `SecurityContextHolder`. |
-| **Passo 4** | DTOs (`RegisterRequest`, `LoginRequest`, `AuthResponse`) & `AuthService` | ⚙️ | **Próximo** | Casos de uso de autenticação, hashing seguro de senhas com **BCrypt + Salt** e validações com Bean Validation. |
-| **Passo 5** | `AuthController.java`, `GlobalExceptionHandler` & Testes | 🌐 | Planejado | Camada Web REST (endpoints `/register` e `/login`), interceptador global de erros e suíte com `MockMvc`. |
+| **Passo 4** | DTOs (`RegisterRequest`, `LoginRequest`, `AuthResponse`), `AuthService` & `AuthController` | ⚙️ | **Concluído** | Casos de uso de autenticação, hashing com **BCrypt + Salt**, Bean Validation, endpoints REST e testes com **Mockito puro**. |
+| **Passo 5** | Tratamento Global de Exceções (`GlobalExceptionHandler`) & Configuração de Segurança (`SecurityFilterChain`) | 🛡️ | **Concluído** | Fechamento da cadeia de filtros, liberação de rotas públicas (`/api/v1/auth/**`), proteção das rotas restritas e tratamento padronizado RFC 7807. |
 
 ---
 
@@ -664,3 +664,769 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 > *"Eu herdei de `OncePerRequestFilter` para garantir o princípio da **idempotência de execução**. No ecossistema de Servlets do Spring, requisições com despachos internos ou assíncronos (`FORWARD`, `ASYNC`) podem fazer com que um `Filter` comum seja acionado duas ou mais vezes no mesmo ciclo de vida HTTP. O `OncePerRequestFilter` garante que a extração do token, a descriptografia e a validação ocorram rigorosamente **uma única vez por requisição**, economizando ciclos de CPU.*  
 > 
 > *Já a verificação `getAuthentication() == null` é uma proteção de **performance e consistência**: ela evita realizar uma consulta desnecessária ao PostgreSQL (`loadUserByUsername`) caso a requisição já tenha sido autenticada previamente por algum outro filtro da cadeia, poupando conexões do pool HikariCP e tempo de resposta."*
+
+---
+
+## ⚙️ PASSO 4: Casos de Uso de Autenticação, DTOs, BCrypt & Endpoints REST
+
+---
+
+### 🗺️ FASE 1: O MAPA E LOCALIZAÇÃO NO VS CODE
+
+No Passo 4, conectamos a camada Web (onde chegam as requisições HTTP do mundo externo) à camada de Aplicação e Negócio, garantindo validação estrita de dados de entrada, hashing seguro de senhas com salting e emissão dos tokens JWT.
+
+#### 📂 Abra agora no seu VS Code os arquivos deste passo:
+- 👉 `📁 backend/src/main/java/.../modules/auth/application/dto/` ➔ `☕ LoginRequest.java`
+- 👉 `📁 backend/src/main/java/.../modules/auth/application/dto/` ➔ `☕ RegisterRequest.java`
+- 👉 `📁 backend/src/main/java/.../modules/auth/application/dto/` ➔ `☕ AuthResponse.java`
+- 👉 `📁 backend/src/main/java/.../modules/auth/application/service/` ➔ `⚙️ AuthService.java`
+- 👉 `📁 backend/src/main/java/.../modules/auth/presentation/controller/` ➔ `🌐 AuthController.java`
+- 👉 `📁 backend/src/test/java/.../modules/auth/` ➔ `🧪 AuthServiceTest.java` *(Mockito puro)*
+- 👉 `📁 backend/src/test/java/.../modules/auth/` ➔ `🧪 AuthControllerTest.java` *(Integração com MockMvc)*
+
+#### 📊 Diagrama Arquitetural de Fluxo do Passo 4:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as 📱 Cliente (Postman / App Mobile)
+    participant Controller as 🌐 AuthController (@RestController)
+    participant Validator as 🛡️ Bean Validation (@Valid)
+    participant Service as ⚙️ AuthService (@Service)
+    participant BCrypt as 🔒 PasswordEncoder (BCrypt)
+    participant Repo as 🗄️ UsuarioRepository (Spring Data JPA)
+    participant JWT as 🔐 JwtService (HMAC-SHA256)
+    participant DB as 🐘 PostgreSQL (tb_usuario)
+
+    Note over Cliente,DB: Fluxo de Registro (/api/v1/auth/register)
+    Cliente->>Controller: POST /register {nome, email, senha}
+    Controller->>Validator: Executa Bean Validation (@NotBlank, @Email, @Size)
+    alt Payload Inválido
+        Validator-->>Cliente: 400 Bad Request (lista de campos inválidos)
+    else Payload Válido
+        Controller->>Service: register(RegisterRequest)
+        Service->>Repo: existsByEmail(email)
+        Repo->>DB: SELECT 1 FROM tb_usuario WHERE email = ?
+        alt E-mail já cadastrado
+            Service-->>Controller: Lança BusinessException("Já existe...")
+            Controller-->>Cliente: 400 Bad Request
+        else E-mail disponível
+            Service->>BCrypt: encode(rawPassword)
+            BCrypt-->>Service: $2a$10$SaltAleatorio...HashSeguro
+            Service->>Repo: save(novoUsuario)
+            Repo->>DB: INSERT INTO tb_usuario ...
+            Service->>JWT: generateToken(novoUsuario)
+            JWT-->>Service: eyJhbGciOi... (Token JWT)
+            Service-->>Controller: AuthResponse {token, id, nome, email, role}
+            Controller-->>Cliente: 201 CREATED {success: true, data: AuthResponse}
+        end
+    end
+```
+
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o cadastro de um concurseiro no Operação Aprovação:
+> 1. **Barreira Sanitária Imediata (Bean Validation):** Se o candidato esquecer de colocar a senha ou digitar um e-mail sem `@`, a requisição é barrada no portão de entrada (`Controller`). A CPU nem gasta tempo consultando banco de dados.
+> 2. **Anti-Duplicação e Integridade:** O `AuthService` pergunta ao PostgreSQL se aquele e-mail já pertence a outro aluno. Se pertencer, bloqueia com uma mensagem de negócio clara, evitando corrupção de contas.
+> 3. **Cofre Blindado (BCrypt):** A senha crua digitada pelo aluno (`Delta2026!`) **JAMAIS** é salva no banco. Ela passa pelo motor BCrypt que injeta um salt criptográfico imprevisível gerando um hash de mão única (`$2a$10$...`). Nem os administradores do sistema têm acesso à senha real do aluno.
+> 4. **Entrega de Credencial (JWT):** O aluno é persistido no banco e já recebe seu crachá digital JWT válido por 24 horas, pronto para navegar pelas questões e simulados sem precisar fazer login novamente.
+
+---
+
+### 💻 FASE 2: FUNDAMENTOS DA LINGUAGEM & OS 5 PILARES FUNDAMENTAIS
+
+#### 🏛️ PILAR 1: BASE SÓLIDA DE JAVA MODERNO (JAVA 17/21 LTS)
+1. **DTOs (Data Transfer Objects) vs Entidades de Banco (`@Entity`):**
+   - **Por que NUNCA expor uma `@Entity` na Controller?**
+     - **Segurança (Mass Assignment & Leaks):** Uma entidade `Usuario` possui o campo `senha`, campos de auditoria (`created_at`) e controle de perfil (`role`). Se a Controller recebesse a entidade diretamente, um usuário mal-intencionado poderia enviar no JSON `"role": "ROLE_ADMIN"` e se autopromover a administrador do sistema!
+     - **Desacoplamento e Performance:** O modelo de banco pode sofrer alterações de schema sem que a API pública quebre contratos com os aplicativos mobile e frontend.
+2. **Imutabilidade e Records vs Classes Lombok (`@Data`):**
+   - Um **Java Record** (`public record LoginRequest(...)`) é nativamente imutável no Java 17/21: todos os atributos são `private final`, não possui setters, e o compilador gera automaticamente construtor canônico, `equals()`, `hashCode()` e `toString()`.
+   - Classes com Lombok (`@Data`) geram getters/setters mutáveis. DTOs modernos priorizam imutabilidade para serem thread-safe e evitarem efeitos colaterais na memória Heap.
+3. **Tratamento Semântico de Exceções (Checked vs Unchecked):**
+   - `BusinessException` herda de `RuntimeException` (Unchecked).
+   - **Por que no Spring usamos Unchecked Exceptions para regras de negócio?**
+     - O mecanismo de controle transacional `@Transactional` do Spring por padrão realiza **Rollback automático** apenas para exceções da hierarquia de `RuntimeException` (e `Error`). Exceções do tipo Checked (`Exception`) exigem anotação explícita (`rollbackFor = Exception.class`), caso contrário a transação faz commit mesmo com erro!
+
+#### 🍃 PILAR 2: ECOSSISTEMA SPRING SEM "MÁGICA"
+1. **Inversão de Controle (IoC) & Injeção de Dependências (DI):**
+   - O `AuthService` não instancia `new UsuarioRepository()` nem `new BCryptPasswordEncoder()`. Ele declara suas dependências como `private final`.
+   - Através da anotação `@RequiredArgsConstructor` do Lombok, o Java gera um construtor recebendo essas dependências. Quando a aplicação sobe, o **Spring IoC Container** injeta as instâncias gerenciadas (Beans) automaticamente.
+   - **Por que injeção por construtor é o padrão sênior em vez de `@Autowired` no campo?**
+     - Torna as classes 100% testáveis com Mockito puro sem precisar carregar o framework Spring, e garante que as referências nunca sejam nulas após a instanciação (`final`).
+2. **Bean Validation (`@Valid`, `@NotBlank`, `@Email`, `@Size`):**
+   - Como o Spring intercepta? O Spring MVC utiliza um interceptador baseado em AOP (`MethodValidationPostProcessor`). Antes que o método `register()` ou `login()` do `AuthController` execute, o validador inspeciona os campos anotados do objeto. Se houver violação, a execução é interrompida e uma exceção `MethodArgumentNotValidException` é disparada antes de consumir recursos da camada de serviço.
+3. **Gerenciamento Transacional (`@Transactional`):**
+   - No método `register()`, a anotação `@Transactional` garante o princípio **ACID**: se ocorrer qualquer falha durante a persistência ou emissão do token, nenhuma alteração parcial é gravada no banco relacional.
+   - No método `login()`, **não utilizamos `@Transactional`** para não prender uma conexão de escrita do pool HikariCP desnecessariamente, já que o login é uma operação primordialmente de leitura e verificação matemática.
+
+#### 🗄️ PILAR 3: BANCO DE DADOS & SQL REAL
+1. **Otimização de Consultas com `existsByEmail`:**
+   - Em vez de carregar a entidade completa `Usuario` com todos os seus atributos e metadados (`findByEmail`), o método `existsByEmail` dispara um SQL enxuto:
+     ```sql
+     SELECT 1 FROM tb_usuario WHERE email = ? LIMIT 1;
+     ```
+   - Graças ao índice único criado na migration Flyway `V1__initial_schema.sql` (`CREATE UNIQUE INDEX idx_usuario_email ON tb_usuario(email);`), essa busca é executada em complexidade $O(\log N)$ através de uma árvore B-Tree, respondendo em frações de milissegundo.
+2. **O Ciclo de Vida do BCrypt com Salting:**
+   - O algoritmo BCrypt gera um salt aleatório de 16 bytes e realiza 10 rounds de hashing ($2^{10} = 1024$ iterações). O formato final gravado na coluna `senha` do banco é:
+     ```text
+     $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+     |--||--||----------------------||-----------------------------|
+      |   |             |                           |
+     Versão Custo     Salt (22 chars)          Hash real (31 chars)
+     ```
+   - O salt fica embutido no próprio hash, permitindo que o `matches(rawPassword, encodedPassword)` extraia o salt e verifique a correspondência matematicamente sem nunca descriptografar a senha.
+
+#### 🧪 PILAR 4: TESTES AUTOMATIZADOS CORPORATIVOS (JÚNIOR ➔ PLENO)
+1. **Mockito Puro (`@ExtendWith(MockitoExtension.class)`) vs `@SpringBootTest`:**
+   - **O Teste Júnior (`@SpringBootTest`):** Sobe todo o contexto Spring, inicializa Hibernate, HikariCP, flyway e base em memória H2. **Tempo gasto: 30 segundos!**
+   - **O Teste Pleno/Sênior com Mockito Puro (`AuthServiceTest.java`):** Isola a classe em teste. Cria dublês leves (`@Mock`) para `UsuarioRepository`, `PasswordEncoder` e `JwtService`. **Tempo gasto: 2 segundos para rodar todos os testes!**
+2. **A Tripla A (Arrange, Act, Assert):**
+   - **Arrange:** Prepara o cenário simulando o comportamento dos mocks com `when(repo.existsByEmail("...")).thenReturn(false)`.
+   - **Act:** Invoca o método real de negócio: `authService.register(request)`.
+   - **Assert:** Verifica o resultado com asserções fluentes `assertThat(response.getToken()).isNotNull()`.
+   - **Verify:** Audita se os mocks foram chamados exatamente as vezes esperadas (`verify(repo, times(1)).save(any())`) ou se métodos críticos foram impedidos de executar em cenários de erro (`verify(repo, never()).save(any())`).
+
+#### 🛠️ PILAR 5: FERRAMENTAS, GIT & PROTOCOLO HTTP
+1. **Status HTTP Semânticos Corporativos:**
+   - `201 CREATED`: Retornado no cadastro para indicar formalmente a criação de um novo recurso no servidor, acompanhado do corpo da resposta.
+   - `200 OK`: Retornado no login para indicar sucesso em uma operação idempotente de consulta/autenticação.
+   - `400 BAD REQUEST`: Erro de validação de dados de entrada ou violação de regra de negócio (e-mail duplicado).
+   - `401 UNAUTHORIZED`: Credenciais incorretas (usuário ou senha inválidos).
+
+---
+
+### 🎯 FASE 3: ANÁLISE SOB OS TRÊS PILARES & A RÉGUA DE MATURIDADE
+
+| Dimensão | Decisão Técnica | Tradeoff / Por que não fazer diferente? |
+| :--- | :--- | :--- |
+| **🏛️ Arquitetura** | Separação estrita: `Controller` (camada HTTP) ➔ `Service` (regras e transações) ➔ `Repository` (persistência). DTOs específicos para entrada e saída. | Controladores magros (*Thin Controllers*). Nenhuma regra de validação de unicidade ou criptografia fica no Controller, facilitando reuso e testes unitários. |
+| **⚡ Performance** | Busca por existência indexada (`existsByEmail`) e validação prévia em memória (`@Valid`) antes de abrir transação. | Economiza transações de banco de dados e conexões do pool para requisições malformadas. |
+| **🛡️ Robustez** | Normalização de e-mail (`.toLowerCase().trim()`) e tratamento de credenciais com BCrypt saltado. | Impede que o usuário não consiga logar devido a espaços acidentais no teclado mobile ou letras maiúsculas/minúsculas divergentes. |
+
+#### 💡 O que isso significa na prática no mundo real?
+> Em um concurso público com milhares de inscrições abrindo simultaneamente, centenas de candidatos preenchem o formulário pelo celular usando o preenchimento automático, que costuma inserir um espaço no final do e-mail (`"aluno@gmail.com "`).
+> Se o sistema não aplicar `.toLowerCase().trim()`, esse aluno cadastra uma conta com espaço e depois não consegue logar pelo computador porque digitou o e-mail sem espaço. O suporte é inundado de chamados. Pequenos detalhes de robustez na camada de serviço salvam a operação de uma empresa.
+
+#### 🎯 A RÉGUA DE MATURIDADE: JÚNIOR vs PLENO vs SÊNIOR
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│  🟢 NÍVEL JÚNIOR:                                                      │
+│  - Sabe criar uma Controller com @PostMapping e chamar o Service.       │
+│  - Conhece @NotBlank e @Email nos atributos do DTO.                    │
+│  - Entende o fluxo: requisição chega -> salva no banco -> retorna token│
+├────────────────────────────────────────────────────────────────────────┤
+│  🟡 NÍVEL PLENO:                                                       │
+│  - Sabe explicar por que NUNCA expor @Entity na Controller.            │
+│  - Constrói testes unitários rápidos com Mockito (@Mock, @InjectMocks).│
+│  - Entende como o BCrypt funciona internamente com Salt e Work Factor. │
+│  - Normaliza inputs (.toLowerCase().trim()) e gerencia transações.     │
+├────────────────────────────────────────────────────────────────────────┤
+│  🔴 NÍVEL SÊNIOR / TECH LEAD:                                          │
+│  - Projeta isolamento arquitetural e proteção contra mass assignment.   │
+│  - Avalia o impacto do Work Factor do BCrypt na CPU dos containers.   │
+│  - Modela tolerância a falhas, auditoria e rollback transacional ACID. │
+│  - Garante conformidade com OWASP Top 10 e LGPD na gestão de dados.    │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 💻 FASE 4: O CÓDIGO COMENTADO LINHA A LINHA
+
+#### ☕ 1. `LoginRequest.java` e `RegisterRequest.java`
+```java
+package com.operacaoaprovacao.api.modules.auth.application.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+/**
+ * DTO com dados de entrada para cadastro de novo usuário.
+ * Aplica Bean Validation estrito para blindar a entrada da API.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class RegisterRequest {
+
+    // 1. Garante que o nome não seja nulo nem formado apenas por espaços em branco
+    @NotBlank(message = "O nome é obrigatório.")
+    @Size(min = 3, max = 150, message = "O nome deve ter entre 3 e 150 caracteres.")
+    private String nome;
+
+    // 2. Valida o formato padrão de e-mail (RFC 5322)
+    @NotBlank(message = "O e-mail é obrigatório.")
+    @Email(message = "Formato de e-mail inválido.")
+    private String email;
+
+    // 3. Exige um tamanho mínimo de senha para mitigar ataques de força bruta
+    @NotBlank(message = "A senha é obrigatória.")
+    @Size(min = 6, max = 50, message = "A senha deve ter no mínimo 6 caracteres.")
+    private String senha;
+}
+```
+
+#### ⚙️ 2. `AuthService.java`
+```java
+package com.operacaoaprovacao.api.modules.auth.application.service;
+
+import com.operacaoaprovacao.api.core.exception.BusinessException;
+import com.operacaoaprovacao.api.modules.auth.application.dto.*;
+import com.operacaoaprovacao.api.modules.auth.domain.model.Role;
+import com.operacaoaprovacao.api.modules.auth.domain.model.Usuario;
+import com.operacaoaprovacao.api.modules.auth.domain.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Caso de Uso responsável pelas regras de negócio de registro e login.
+ */
+@Service
+@RequiredArgsConstructor // Injeção de dependências por construtor para todos os campos 'final'
+public class AuthService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    @Transactional // Garante atomicidade: se o JWT falhar, o usuário não é persistido
+    public AuthResponse register(RegisterRequest request) {
+        // 1. Verificação semântica de unicidade
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException("Já existe um usuário cadastrado com o e-mail informado.");
+        }
+
+        // 2. Construção da Entidade com normalização e hashing de senha
+        Usuario usuario = Usuario.builder()
+                .nome(request.getNome())
+                .email(request.getEmail().toLowerCase().trim())
+                .senha(passwordEncoder.encode(request.getSenha())) // Criptografia com BCrypt + Salt
+                .role(Role.ROLE_STUDENT) // Papel padrão de concurseiro
+                .ativo(true)
+                .build();
+
+        // 3. Persistência no PostgreSQL via JPA
+        Usuario salvo = usuarioRepository.save(usuario);
+
+        // 4. Emissão do Token JWT assinado com HMAC-SHA256
+        String jwtToken = jwtService.generateToken(salvo);
+
+        // 5. Retorno do DTO de resposta imutável
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .tipo("Bearer")
+                .id(salvo.getId())
+                .nome(salvo.getNome())
+                .email(salvo.getEmail())
+                .role(salvo.getRole().name())
+                .build();
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        // 1. O Spring Security valida as credenciais internamente com o DaoAuthenticationProvider
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail().toLowerCase().trim(),
+                        request.getSenha()
+                )
+        );
+
+        // 2. Busca o usuário persistido para compor o token
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail().toLowerCase().trim())
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado."));
+
+        // 3. Emite o novo token para a sessão
+        String jwtToken = jwtService.generateToken(usuario);
+
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .tipo("Bearer")
+                .id(usuario.getId())
+                .nome(usuario.getNome())
+                .email(usuario.getEmail())
+                .role(usuario.getRole().name())
+                .build();
+    }
+}
+```
+
+#### 🌐 3. `AuthController.java`
+```java
+package com.operacaoaprovacao.api.modules.auth.presentation.controller;
+
+import com.operacaoaprovacao.api.core.dto.ApiResponse;
+import com.operacaoaprovacao.api.modules.auth.application.dto.*;
+import com.operacaoaprovacao.api.modules.auth.application.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Controller REST com endpoints de autenticação e registro.
+ */
+@RestController
+@RequestMapping("/api/v1/auth")
+@Tag(name = "Autenticação", description = "Endpoints para registro de novos usuários e login")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+
+    @PostMapping("/register")
+    @Operation(summary = "Cadastrar novo usuário", description = "Registra um novo estudante e retorna o token JWT.")
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED) // HTTP 201 Created
+                .body(ApiResponse.ok("Usuário registrado com sucesso.", response));
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Autenticar usuário", description = "Realiza login com e-mail e senha.")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.ok("Login realizado com sucesso.", response)); // HTTP 200 OK
+    }
+}
+```
+
+#### 🧪 4. `AuthServiceTest.java` (Testes com Mockito Puro)
+```java
+package com.operacaoaprovacao.api.modules.auth;
+
+import com.operacaoaprovacao.api.core.exception.BusinessException;
+import com.operacaoaprovacao.api.modules.auth.application.dto.*;
+import com.operacaoaprovacao.api.modules.auth.application.service.AuthService;
+import com.operacaoaprovacao.api.modules.auth.application.service.JwtService;
+import com.operacaoaprovacao.api.modules.auth.domain.model.*;
+import com.operacaoaprovacao.api.modules.auth.domain.repository.UsuarioRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+/**
+ * Teste unitário corporativo: executa em milissegundos sem subir o Spring.
+ */
+@ExtendWith(MockitoExtension.class)
+class AuthServiceTest {
+
+    @Mock private UsuarioRepository usuarioRepository;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private JwtService jwtService;
+    @Mock private AuthenticationManager authenticationManager;
+
+    @InjectMocks private AuthService authService;
+
+    @Test
+    @DisplayName("Deve registrar um novo estudante com sucesso e retornar token JWT")
+    void shouldRegisterNewUserSuccessfully() {
+        RegisterRequest request = RegisterRequest.builder()
+                .nome("Rudson Americo")
+                .email("rudson@policiacivil.pe.gov.br")
+                .senha("Delta2026!")
+                .build();
+
+        Usuario usuarioSalvo = Usuario.builder()
+                .id(1L)
+                .nome("Rudson Americo")
+                .email("rudson@policiacivil.pe.gov.br")
+                .senha("hash_bcrypt")
+                .role(Role.ROLE_STUDENT)
+                .build();
+
+        when(usuarioRepository.existsByEmail("rudson@policiacivil.pe.gov.br")).thenReturn(false);
+        when(passwordEncoder.encode("Delta2026!")).thenReturn("hash_bcrypt");
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioSalvo);
+        when(jwtService.generateToken(usuarioSalvo)).thenReturn("jwt.token.simulado");
+
+        AuthResponse response = authService.register(request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getToken()).isEqualTo("jwt.token.simulado");
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+    }
+}
+```
+
+---
+
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA E FIXAÇÃO
+
+> **Pergunta do Tech Lead / Entrevistador:**  
+> *"Por que na sua arquitetura você utilizou DTOs (`RegisterRequest` e `LoginRequest`) validados com `@Valid` na camada Web em vez de receber diretamente a entidade `Usuario` mapeada pelo JPA? E por que você injetou suas dependências via construtor com campos `final` em vez de utilizar `@Autowired` nos atributos do Service?"*
+> 
+> **Resposta Técnica Modelo (Nível Sênior):**  
+> *"Utilizar DTOs na fronteira de entrada da API atende a dois pilares fundamentais: **Segurança** e **Desacoplamento**. Se recebêssemos a entidade `@Entity` diretamente, ficaríamos vulneráveis a ataques de Mass Assignment, onde um cliente poderia forçar atributos indevidos no payload (como alterar sua própria `role` para `ROLE_ADMIN` ou sobrescrever a data de auditoria `created_at`). Além disso, o DTO desacopla o contrato público da API da estrutura física do banco de dados relacional, permitindo que o schema evolua sem quebrar as integrações existentes.*
+> 
+> *Já a injeção de dependências por construtor com campos `final` é a boa prática recomendada pelo Spring Framework porque garante a **imutabilidade das referências**, impede problemas de referências nulas em tempo de execução e, crucialmente, torna o serviço **100% desacoplado do container Spring**, permitindo a escrita de testes unitários com Mockito puro (`@ExtendWith(MockitoExtension.class)`) que executam em frações de segundo sem o overhead de inicialização do Spring Context."*
+
+---
+
+## 🛡️ PASSO 5: A Muralha de Segurança (`SecurityFilterChain`) & Tratamento Global de Erros (`GlobalExceptionHandler`)
+
+---
+
+### 🗺️ FASE 1: O MAPA E LOCALIZAÇÃO NO VS CODE
+
+No Passo 5, amarramos todas as pontas soltas da Sprint 1:
+1. Criamos a configuração central que governa quais portas estão abertas ao público e quais exigem crachá JWT válido (`SecurityConfig.java`).
+2. Criamos o "pronto-socorro" centralizado da API que intercepta qualquer erro em qualquer endpoint e o traduz para um JSON padronizado com código HTTP correto (`GlobalExceptionHandler.java`).
+
+#### 📂 Abra agora no seu VS Code os arquivos deste passo:
+- 👉 `📁 backend/src/main/java/.../config/` ➔ `🛡️ SecurityConfig.java`
+- 👉 `📁 backend/src/main/java/.../core/exception/` ➔ `🩺 GlobalExceptionHandler.java`
+- 👉 `📁 backend/src/main/java/.../core/exception/` ➔ `⚠️ BusinessException.java`
+- 👉 `📁 backend/src/main/java/.../core/dto/` ➔ `📦 ApiResponse.java`
+- 👉 `📁 backend/src/test/java/.../core/exception/` ➔ `🧪 GlobalExceptionHandlerTest.java` *(Testes unitários isolados)*
+
+#### 📊 Diagrama Arquitetural de Segurança e Exceções:
+```mermaid
+flowchart TD
+    Req["📱 Requisição HTTP Externa"] --> FilterChain["🛡️ SecurityFilterChain (Spring Security)"]
+
+    subgraph "Filtros de Segurança (SecurityConfig)"
+        FilterChain --> CORS["🌐 CorsFilter (Liberar Origens)"]
+        CORS --> CSRF["🚫 CSRF Disabled (Stateless)"]
+        CSRF --> Session["⚡ SessionCreationPolicy.STATELESS"]
+        Session --> Matchers{"🚦 Rota é Pública?"}
+        Matchers -->|Sim: /api/v1/auth/**, /swagger-ui/**| PassPublic["🔓 Permite Acesso Direto"]
+        Matchers -->|Não: /api/v1/questoes/**| JWTFilter["🔍 JwtAuthenticationFilter"]
+        JWTFilter -->|Token Ausente/Inválido| Ret401["🔴 401 Unauthorized"]
+        JWTFilter -->|Token Válido| Context["✅ Injeta Usuário no SecurityContext"]
+    end
+
+    PassPublic --> Controller["🌐 AuthController / Outras Controllers"]
+    Context --> Controller
+
+    subgraph "Interceptação de Erros (GlobalExceptionHandler)"
+        Controller -->|Lança Exceção| Advice["🩺 @RestControllerAdvice"]
+        Advice -->|BusinessException| Resp400["🟡 400 Bad Request (Regra de Negócio)"]
+        Advice -->|MethodArgumentNotValidException| RespVal["🟡 400 Bad Request (Erros de Validação)"]
+        Advice -->|BadCredentialsException| Resp401["🔴 401 Unauthorized (Senha Errada)"]
+        Advice -->|Exception Genérica| Resp500["⚫ 500 Internal Error (Sem vazar Stacktrace)"]
+    end
+
+    Resp400 --> JSON["📦 JSON Padronizado (ApiResponse)"]
+    RespVal --> JSON
+    Resp401 --> JSON
+    Resp500 --> JSON
+    JSON --> Cliente["📱 Resposta Limpa para o Cliente"]
+```
+
+#### 💡 O QUE ESTE DIAGRAMA SIGNIFICA NA PRÁTICA NO MUNDO REAL?
+> Imagine o sistema Operação Aprovação no ar em produção:
+> 1. **O Portão de Acesso:** Se um concurseiro entra na página de login ou na documentação do Swagger, o `SecurityConfig` sabe que essas rotas são públicas e abre passagem imediata.
+> 2. **A Área Restrita dos Concursos:** Se o aluno tenta responder a um simulado da PC-PE (`/api/v1/simulados`), o filtro JWT exige o crachá. Se o token não existir ou expirou, a porta fecha imediatamente com HTTP 401.
+> 3. **O Pronto-Socorro Central (`@RestControllerAdvice`):** Não importa se deu erro de banco, senha errada ou e-mail com formato inválido: o usuário **NUNCA** vê aquela tela feia de erro cinza do Tomcat nem um log assustador de Java com 200 linhas de stacktrace. Ele recebe um JSON polido, profissional e explicativo dizendo exatamente o que deu errado.
+
+---
+
+### 💻 FASE 2: FUNDAMENTOS DA LINGUAGEM & OS 5 PILARES FUNDAMENTAIS
+
+#### 🏛️ PILAR 1: BASE SÓLIDA DE JAVA MODERNO (JAVA 17/21 LTS)
+1. **Hierarquia de Exceções em Java (`Throwable` ➔ `Exception` ➔ `RuntimeException`):**
+   - Em Java puro, todo erro deriva de `Throwable`.
+   - Abaixo temos `Error` (falhas catastróficas da JVM como `OutOfMemoryError`) e `Exception`.
+   - As exceções filhas diretas de `Exception` são **Checked**: o compilador nos obriga a tratar com `try-catch` ou declarar `throws`.
+   - As exceções filhas de `RuntimeException` são **Unchecked**: ocorrem em tempo de execução e não exigem burocracia sintática de `throws`.
+2. **Generics no Java (`ApiResponse<T>`):**
+   - O envelope `ApiResponse<T>` utiliza o mecanismo de **Tipos Genéricos (Generics)** introduzido no Java 5.
+   - O parâmetro `<T>` é um placeholder que permite empacotar qualquer tipo de dado de forma fortemente tipada:
+     - No registro: `ApiResponse<AuthResponse>` (o `data` é um `AuthResponse`).
+     - Nos erros de validação: `ApiResponse<Map<String, String>>` (o `data` é um mapa de campo/mensagem).
+     - Em respostas sem payload: `ApiResponse<Void>` (o `data` é nulo).
+
+#### 🍃 PILAR 2: ECOSSISTEMA SPRING SEM "MÁGICA"
+1. **O que é `@Configuration` e `@Bean`?**
+   - `@Configuration`: Indica ao Spring que a classe contém receitas de fabricação de objetos gerenciados pelo framework.
+   - `@Bean`: Anotação colocada sobre um **método**. O retorno desse método é entregue ao Spring IoC Container para se tornar um objeto compartilhado (Singleton por padrão).
+2. **Como o `@RestControllerAdvice` funciona por baixo dos panos?**
+   - O `@RestControllerAdvice` é uma especialização de `@Component` que utiliza o conceito de **Programação Orientada a Aspectos (AOP)**.
+   - O Spring envolve todas as chamadas de métodos de todos os `@RestController` em um interceptador dinâmico. Se qualquer método lançar uma exceção, o Spring intercepta o disparo antes de devolver a resposta HTTP e procura um método anotado com `@ExceptionHandler(TipoDaExcecao.class)` correspondente.
+3. **CORS vs CSRF:**
+   - **CORS (Cross-Origin Resource Sharing):** Mecanismo de segurança do navegador que bloqueia páginas web em um domínio (ex: `http://localhost:3000`) de fazer requisições a uma API em outro domínio (ex: `http://localhost:8080`), a menos que a API envie os cabeçalhos de autorização (`Access-Control-Allow-Origin`).
+   - **CSRF (Cross-Site Request Forgery):** Ataque onde um site malicioso força o navegador do usuário a enviar requisições com os cookies salvos da sessão dele. Como a nossa API é **Stateless com JWT nos cabeçalhos Authorization**, não usamos cookies de sessão. Logo, o CSRF pode e deve ser desabilitado com segurança (`csrf.disable()`).
+
+#### 🗄️ PILAR 3: BANCO DE DADOS & SQL REAL
+1. **Proteção de Informações do Banco de Dados (Information Disclosure):**
+   - Se uma consulta SQL falhar por violação de constraint ou timeout de conexão, o driver do PostgreSQL lança uma `PSQLException`.
+   - Se o backend devolver essa exceção diretamente para o frontend, o cliente verá o nome exato da tabela, os nomes das colunas, versões de software e até trechos de comandos SQL.
+   - O `handleGenericException` do `GlobalExceptionHandler` captura qualquer erro não tratado e devolve uma mensagem genérica amigável, blindando o schema do banco contra engenharia reversa por invasores.
+
+#### 🧪 PILAR 4: TESTES AUTOMATIZADOS CORPORATIVOS
+1. **Testando o `@RestControllerAdvice` em Isolamento Puro:**
+   - Em vez de rodar um teste pesado que sobe o servidor web inteiro, podemos instanciar a classe `GlobalExceptionHandler` diretamente no JUnit 5 como um objeto Java comum:
+     ```java
+     GlobalExceptionHandler handler = new GlobalExceptionHandler();
+     ResponseEntity<ApiResponse<Void>> response = handler.handleBusinessException(new BusinessException("Erro"));
+     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+     ```
+   - Esse teste valida a lógica de conversão de status HTTP e montagem do DTO em **menos de 5 milissegundos**!
+
+#### 🛠️ PILAR 5: FERRAMENTAS & ROTINA CORPORATIVA
+1. **Semântica dos Códigos de Status HTTP na Gestão de Erros:**
+   - **`400 BAD REQUEST`**: Erro do cliente (dados inválidos ou regra de negócio violada).
+   - **`401 UNAUTHORIZED`**: Falta de autenticação (não enviou token ou e-mail/senha incorretos).
+   - **`403 FORBIDDEN`**: Falta de autorização (o usuário está autenticado como aluno, mas tentou acessar uma rota restrita de admin).
+   - **`404 NOT FOUND`**: O recurso solicitado não existe.
+   - **`500 INTERNAL SERVER ERROR`**: Bug não previsto ou falha de infraestrutura do servidor.
+
+---
+
+### 🎯 FASE 3: ANÁLISE SOB OS TRÊS PILARES & A RÉGUA DE MATURIDADE
+
+#### 💡 O que isso significa na prática no mundo real?
+> Se a sua API não tiver um `GlobalExceptionHandler`, quando um aluno errar a senha no app móvel, o Spring devolverá uma página HTML de erro padrão do Tomcat.
+> O aplicativo móvel espera receber um JSON. Ao tentar converter o HTML em JSON, o aplicativo sofre um *crash* no celular do candidato e fecha na tela dele!
+> Com o `@RestControllerAdvice`, o app recebe sempre o mesmo formato `{ success: false, message: "E-mail ou senha inválidos." }`, exibindo um alerta elegante em vermelho para o usuário.
+
+---
+
+### 🎯 A RÉGUA DE MATURIDADE: JÚNIOR vs PLENO vs SÊNIOR
+
+#### 🟢 NÍVEL JÚNIOR (Aprenda a fugir dos erros clássicos de início de carreira):
+- **O Erro Clássico do Júnior:** Colocar bloco `try-catch` dentro de cada método de Controller!
+  ```java
+  // ❌ JEITO AMADOR DE JÚNIOR:
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+      try {
+          return ResponseEntity.ok(service.login(req));
+      } catch (Exception e) {
+          // O Júnior costuma capturar Exception genérica e retornar HTTP 200 com erro dentro!
+          return ResponseEntity.ok("Deu erro: " + e.getMessage()); // ❌ VIOLAÇÃO GRAVE DE HTTP!
+      }
+  }
+  ```
+- **Por que isso é ruim?**
+  1. Polui o código: se você tiver 50 controllers, terá que duplicar 50 blocos `try-catch`.
+  2. Retornar HTTP 200 para erros quebra o protocolo HTTP: ferramentas de monitoramento (como Datadog ou Prometheus) acharão que sua API está 100% saudável quando na verdade está falhando.
+- **O que o Júnior deve dominar no Passo 5:**
+  - Saber configurar o `SecurityConfig` para não bloquear as rotas que precisam ser públicas (`/api/v1/auth/**`).
+  - Entender a diferença entre **401 (Quem é você?)** e **403 (Você não tem permissão aqui!)**.
+  - Deixar a Controller limpa, delegando o tratamento de erros para o `@RestControllerAdvice`.
+
+#### 🟡 NÍVEL PLENO (Autonomia, padronização e boas práticas):
+- **A Abordagem do Pleno:** Cria um manipulador centralizado com `@RestControllerAdvice` e `@ExceptionHandler`.
+- Mapeia exceções semânticas para seus códigos de status HTTP corretos:
+  - `BusinessException` ➔ `400 BAD REQUEST`
+  - `BadCredentialsException` ➔ `401 UNAUTHORIZED`
+  - `MethodArgumentNotValidException` ➔ `400 BAD REQUEST` com mapa de campos `{"email": "Formato inválido"}`.
+- Configura o `SecurityFilterChain` usando a sintaxe moderna de expressões Lambda do Spring Security 6 (sem classes obsoletas como `WebSecurityConfigurerAdapter`).
+- Define explicitamente a política de sessão como `SessionCreationPolicy.STATELESS` para economizar memória do servidor em APIs com JWT.
+- Constrói testes unitários sem Spring para o Handler e testes com `MockMvc` para as rotas protegidas.
+
+#### 🔴 NÍVEL SÊNIOR / TECH LEAD (Governança, segurança defensiva e resiliência):
+- **Padrão RFC 7807 (Problem Details for HTTP APIs):** Modela envelopes de erro compatíveis com padrões abertos globais para consumo por terceiros.
+- **Prevenção de Information Disclosure (CWE-209 / OWASP Top 10):** Garante que nenhuma mensagem de erro interna, versão de software, IP de banco ou stacktrace seja vazado em respostas públicas.
+- **Auditoria de Segurança & Headers Defensivos:** Configura cabeçalhos de proteção como `X-Frame-Options: DENY` (anti-Clickjacking), `Content-Security-Policy` e `X-Content-Type-Options: nosniff`.
+- **Estratégia de CORS Restrita:** Em produção, bloqueia origens curinga (`*`) e restringe aos domínios DNS exatos do frontend institucional.
+
+---
+
+### 💻 FASE 4: O CÓDIGO COMENTADO LINHA A LINHA
+
+#### 🛡️ 1. [`SecurityConfig.java`](file:///c:/Users/Rlima/OneDrive/Documentos/Projeto%20Aprovacao%20Concurso/operacao-aprovacao/backend/src/main/java/com/operacaoaprovacao/api/config/SecurityConfig.java)
+```java
+package com.operacaoaprovacao.api.config;
+
+import com.operacaoaprovacao.api.modules.auth.application.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity // Permite anotações como @PreAuthorize("hasRole('ADMIN')") em métodos
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final CustomUserDetailsService userDetailsService;
+
+    // Lista explícita de endpoints que NÃO precisam de token JWT
+    private static final String[] PUBLIC_MATCHERS = {
+            "/api/v1/auth/**",
+            "/api/v1/health/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/h2-console/**"
+    };
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // 1. Configura as permissões de CORS para permitir conexões do frontend/mobile
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                
+                // 2. Desabilita CSRF porque nossa autenticação é Stateless via JWT (sem cookies)
+                .csrf(AbstractHttpConfigurer::disable)
+                
+                // 3. Define que o Spring Security NUNCA criará sessão HTTP em memória do servidor
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
+                // 4. Regras de autorização por URL
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PUBLIC_MATCHERS).permitAll() // Rotas públicas livres
+                        .anyRequest().authenticated()                 // Todo o restante exige JWT
+                )
+                
+                // 5. Configura o provedor que sabe consultar usuário e checar hash de senha
+                .authenticationProvider(authenticationProvider())
+                
+                // 6. Encaixa nosso filtro JWT ANTES do filtro padrão de usuário/senha
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                
+                // 7. Permite exibição de frames (necessário para o console H2 em ambiente dev)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(); // Motor de hashing seguro com Salt
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+}
+```
+
+#### 🩺 2. [`GlobalExceptionHandler.java`](file:///c:/Users/Rlima/OneDrive/Documentos/Projeto%20Aprovacao%20Concurso/operacao-aprovacao/backend/src/main/java/com/operacaoaprovacao/api/core/exception/GlobalExceptionHandler.java)
+```java
+package com.operacaoaprovacao.api.core.exception;
+
+import com.operacaoaprovacao.api.core.dto.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice // Intercepta exceções disparadas por qualquer @RestController
+public class GlobalExceptionHandler {
+
+    // 1. Trata violações de regras de negócio (ex: e-mail duplicado) -> HTTP 400
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    // 2. Trata falha de autenticação (e-mail inexistente ou senha errada) -> HTTP 401
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("E-mail ou senha invalidos."));
+    }
+
+    // 3. Trata falhas de Bean Validation (@NotBlank, @Email, @Size) -> HTTP 400 detalhado
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Map<String, String>>builder()
+                        .success(false)
+                        .message("Erro de validacao nos campos informados.")
+                        .data(errors)
+                        .build());
+    }
+
+    // 4. Captura qualquer falha imprevista (Bug, NullPointerException, banco fora) -> HTTP 500
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+        // Blindagem contra vazamento de stacktrace para o usuário
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Ocorreu um erro interno no servidor. Tente novamente mais tarde."));
+    }
+}
+```
+
+---
+
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA E FIXAÇÃO
+
+> 🎤 **Pergunta do Tech Lead / Entrevistador:**  
+> *"No Spring Security, por que configuramos explicitamente a política `SessionCreationPolicy.STATELESS` e desabilitamos o CSRF? E por que utilizamos um `@RestControllerAdvice` para capturar exceções em vez de colocar blocos `try-catch` nos métodos dos Controllers?"*
+> 
+> 💡 **Resposta Técnica Modelo (Nível Sênior):**  
+> *"Adotamos `SessionCreationPolicy.STATELESS` porque nossa arquitetura utiliza autenticação baseada em tokens JWT transmitidos no cabeçalho `Authorization: Bearer <token>`. Isso significa que o servidor não precisa alocar memória para sessões HTTP (`HttpSession`), permitindo que a API escale horizontalmente de forma simples sem necessidade de sessões compartilhadas (como Redis Session).*
+> 
+> *Com a ausência de cookies de sessão armazenados no navegador, a vulnerabilidade a ataques de CSRF (Cross-Site Request Forgery) é eliminada, permitindo desabilitar a proteção CSRF e poupar overhead de processamento.*
+> 
+> *Já o uso do `@RestControllerAdvice` centraliza a governança de tratamento de erros através do princípio de separação de responsabilidades (SoC). Ele elimina código duplicado de `try-catch` em dezenas de controllers, padroniza as respostas de erro em JSON uniforme com os códigos de status HTTP semânticos correspondentes (`400`, `401`, `500`) e impede o vazamento de stacktraces e detalhes sensíveis de infraestrutura para os clientes da API."*
+
+

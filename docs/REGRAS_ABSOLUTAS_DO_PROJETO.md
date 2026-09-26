@@ -82,3 +82,18 @@
    - **Execução Real pelo Desenvolvedor:** O Mentor DEVE fornecer o passo a passo com os comandos exatos de terminal (`mvn clean test`, etc.) para que o próprio Desenvolvedor (Rudson) execute na sua máquina e aprenda a interpretar cada linha dos logs de build, Flyway e JUnit.
    - **Simulação de Entrevista Técnica:** O documento de Code Review DEVE conter as perguntas típicas de entrevistas técnicas sobre a respectiva sprint e as respostas modelo sênior, capacitando o desenvolvedor para defender o código em sabatinas técnicas e processos seletivos.
    - **Validação Pré-Git:** Nenhuma sprint é encerrada nem enviada ao GitHub sem a validação desse checklist prático de treinamento pelo Desenvolvedor.
+
+---
+
+## 🎯 CLÁUSULA 9: PROTOCOLO PEDAGÓGICO DE EVOLUÇÃO DE CARREIRA (JÚNIOR ➔ PLENO ➔ SÊNIOR) & CONSOLIDAÇÃO DOS 5 PILARES FUNDAMENTAIS
+1. **Objetivo:** O perfil do "Dev Júnior que só faz CRUD de tutorial" está obsoleto no mercado. Toda explicação, passo e sprint deste projeto DEVE formar o Desenvolvedor (Rudson Americo) com mentalidade corporativa sênior, capacidade de defesa técnica em entrevistas e código profissional testável.
+2. **Os 5 Pilares Fundamentais Obrigatórios em Cada Etapa:**
+   - **Pilar 1: Base Sólida de Java Moderno (Java 17/21 LTS):** Imutabilidade e Records vs Classes/POJOs/Lombok, POO corporativa, Collections & Streams, e Tratamento Semântico de Exceções (Checked vs Unchecked).
+   - **Pilar 2: Ecossistema Spring sem "Mágica":** Inversão de Controle (IoC) e Injeção de Dependências (DI) via construtor com campos `final`, ciclo de vida de Beans, Bean Validation (`@Valid`, `@NotBlank`, etc.) e tratamento centralizado com `@RestControllerAdvice`.
+   - **Pilar 3: Banco de Dados & Versionamento (SQL Real):** Integridade referencial, migrations imutáveis com Flyway, chaves primárias e índices B-Tree explicados.
+   - **Pilar 4: Testes Automatizados Corporativos (A Fronteira Júnior ➔ Pleno):** JUnit 5 e Mockito puro (`@Mock`, `@InjectMocks`, `when().thenReturn()`, `verify()`), testando regras de negócio em milissegundos sem subir o contexto pesado do Spring.
+   - **Pilar 5: Ferramentas, Git & Rotina Corporativa:** Ciclo de vida Maven, status HTTP semânticos (200, 201, 400, 401, 403, 404, 409) e boas práticas de commits semânticos.
+3. **A Régua de Maturidade Obrigatória em Cada Passo:**
+   - 🟢 **Nível Júnior:** Domínio da sintaxe, fluxo de dados e explicação sem medo do "o que faz".
+   - 🟡 **Nível Pleno:** Autonomia, testes unitários com Mockito, tratamento de exceções semântico e tradeoffs de performance.
+   - 🔴 **Nível Sênior / Tech Lead:** Visão sistêmica, arquitetura, segurança OWASP, resiliência e custos de nuvem.
