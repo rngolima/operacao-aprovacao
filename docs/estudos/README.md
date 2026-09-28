@@ -33,6 +33,8 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 ### 📁 Sprint 2: Core Domain (Certames, Disciplinas & Motor de Questões Cebraspe)
 - 🧠 **Manual Teórico & Fundamentos:**
   - 📄 [Manual de Engenharia da Sprint 2: Core Domain (Passos 1 ao 5)](sprint-2-core-domain/manual-teorico/manual-de-engenharia-sprint-2.md)
+- 📑 **Code Review & Procedimento de Testes:**
+  - 🧪 [Code Review Oficial & Testes — Sprint 2](sprint-2-core-domain/code-review/code-review-e-procedimento-de-testes.md)
 
 ---
 
@@ -45,3 +47,4 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 Relatórios formais emitidos ao término de cada módulo/sprint, contendo auditoria técnica nos 4 pilares (Compilação, Segurança OWASP, Clean Architecture e Banco/Flyway), checklist prático executável e roteiro de defesa técnica para entrevistas:
 - 📑 [Sprint 0: Foundation — Code Review & Procedimento de Testes](sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
 - 📑 [Sprint 1: Security & Identity — Code Review & Procedimento de Testes](sprint-1-security-jwt/code-review/code-review-e-procedimento-de-testes.md)
+- 📑 [Sprint 2: Core Domain — Code Review & Procedimento de Testes](sprint-2-core-domain/code-review/code-review-e-procedimento-de-testes.md)
