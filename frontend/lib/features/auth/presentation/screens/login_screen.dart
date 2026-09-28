@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/widgets/co_branding_header.dart';
+import '../../../../core/widgets/cravou_brand_header.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'register_screen.dart';
 
-/// Tela de Autenticacao Oficial da Operacao Aprovacao.
-/// Implementa a identidade tatica aprovada com a Coruja Oficial e Co-Branding PC-PE.
+/// Tela de Autenticacao Oficial do Aplicativo "CRAVOU".
+/// Implementa a identidade master com a Coruja Oficial e marca viral para lojas Google/Apple.
 class LoginScreen extends StatefulWidget {
   final AuthController? controller;
 
@@ -83,13 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Co-Branding Master: Coruja Aprovada ✕ PC-PE
-                    const CoBrandingHeader(
-                      logoSize: 76.0,
-                      title: 'OPERAÇÃO APROVAÇÃO',
-                      subtitle: 'Plataforma Tática de Simulação • Edital PC-PE',
-                    ),
-                    SizedBox(height: AppSpacing.xxl),
+                    // Header Oficial CRAVOU com a Coruja Aprovada
+                    const CravouBrandHeader(logoSize: 84.0),
+                    SizedBox(height: AppSpacing.xl),
 
                     // Exibicao de Erro da API, se houver
                     if (controller?.errorMessage != null) ...[
@@ -128,13 +124,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Campo: E-mail Operacional
+                          // Campo: E-mail ou Matricula
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             style: AppTypography.bodyMedium,
                             decoration: InputDecoration(
-                              labelText: 'E-mail Operacional',
+                              labelText: 'E-mail ou Matrícula',
                               labelStyle: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -249,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     )
                                   : Text(
-                                      '[ ACESSAR COCKPIT ]',
+                                      '[ ENTRAR NO CRAVOU ]',
                                       style: AppTypography.button.copyWith(
                                         color: AppColors.brandWhite,
                                         fontWeight: FontWeight.w800,
@@ -289,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          'Não possui cadastro? ',
+                          'Ainda não é aluno? ',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -303,7 +299,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           },
                           child: Text(
-                            'Criar Conta Operacional',
+                            'Criar Conta Grátis',
                             style: AppTypography.bodySmall.copyWith(
                               color: AppColors.brandOrange,
                               fontWeight: FontWeight.w700,

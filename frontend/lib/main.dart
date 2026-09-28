@@ -34,7 +34,7 @@ class OperacaoAprovacaoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Operação Aprovação - PC-PE',
+      title: 'Cravou - Treinador Tático de Concursos',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,

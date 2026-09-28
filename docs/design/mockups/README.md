@@ -59,15 +59,19 @@
     - Arquivo: [`login_coruja_peito_branco.jpg`](login_coruja_peito_branco.jpg)
     - Contém: Peito em branco puro com óculos no laranja quente original.
 
-13. 🏆 **Tela de Login Oficial — Coruja DEFINITIVA (Pingente Branco + Ponta do Peito Laranja):**
+13. 🏆 **Tela de Login Inicial (Conceito Co-Branding PC-PE):**
     - Arquivo: [`login_coruja_detalhes_finais.jpg`](login_coruja_detalhes_finais.jpg)
-    - Contém: **Perfeição Cirúrgica de Identidade:**
-      - O pingente/borla do chapéu em **Branco Puro**;
-      - A pontinha inferior do peito em **Laranja Quente Original**;
-      - O peito central e o interior dos olhos em **Branco Puro**;
-      - A armação dos "óculos" no **Laranja Quente Original**;
-      - O capelo e as asas no **Azul Cobalto Vibrante**;
-      - Co-branding dinâmico com o distintivo da PC-PE.
+    - Contém: Identidade com co-branding direto na tela de login.
+
+14. 🚀⚡ **Tela de Login Oficial do App "CRAVOU" (Branding Comercial & Viral para Lojas Google/Apple):**
+    - Arquivo: [`login_cravou_app.jpg`](login_cravou_app.jpg)
+    - Contém: **Identidade Master de Alto Impacto:**
+      - A **Coruja Oficial** centralizada como hero da tela;
+      - O nome de impacto comercial e viral: **CRAVOU** (com detalhe estilizado em laranja);
+      - Subtítulo: *Treinador Tático de Concursos • Simulados & Questões de Alta Performance*;
+      - Botão primário elétrico: **`[ ENTRAR NO CRAVOU ]`**;
+      - Sem logos de concursos na tela inicial (o co-branding dinâmico entra nas telas internas de acordo com o concurso escolhido pelo aluno).
+
 
 
 

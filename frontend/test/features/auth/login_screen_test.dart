@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:operacao_aprovacao_app/core/widgets/co_branding_header.dart';
-import 'package:operacao_aprovacao_app/core/widgets/pcpe_badge.dart';
+import 'package:operacao_aprovacao_app/core/widgets/cravou_brand_header.dart';
 import 'package:operacao_aprovacao_app/core/widgets/tactical_owl_logo.dart';
 import 'package:operacao_aprovacao_app/features/auth/presentation/screens/login_screen.dart';
 
@@ -12,34 +11,32 @@ void main() {
     );
   }
 
-  group('LoginScreen & Identidade Visual Aprovada - Widget Tests', () {
-    testWidgets('Renderiza elementos da Marca Oficial: Coruja Tatica, Brasao PC-PE e Titulo', (tester) async {
+  group('LoginScreen & Identidade CRAVOU - Widget Tests', () {
+    testWidgets('Renderiza elementos da Marca Oficial: Coruja Heroica, CRAVOU e Titulo', (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Valida o header de co-branding
-      expect(find.byType(CoBrandingHeader), findsOneWidget);
+      // Valida o header da marca CRAVOU
+      expect(find.byType(CravouBrandHeader), findsOneWidget);
       expect(find.byType(TacticalOwlLogo), findsOneWidget);
-      expect(find.byType(PcpeBadge), findsOneWidget);
-      expect(find.text('✕'), findsOneWidget);
 
-      // Valida os titulos institucionais
-      expect(find.text('OPERAÇÃO APROVAÇÃO'), findsOneWidget);
-      expect(find.text('Plataforma Tática de Simulação • Edital PC-PE'), findsOneWidget);
+      // Valida o subtitulo e a pill institucional
+      expect(find.text('Treinador Tático de Concursos'), findsOneWidget);
+      expect(find.text('Simulados & Questões de Alta Performance'), findsOneWidget);
 
-      // Valida os campos de entrada e botao
-      expect(find.text('E-mail Operacional'), findsOneWidget);
+      // Valida os campos de entrada e botao com nova identidade
+      expect(find.text('E-mail ou Matrícula'), findsOneWidget);
       expect(find.text('Senha de Acesso'), findsOneWidget);
-      expect(find.text('[ ACESSAR COCKPIT ]'), findsOneWidget);
-      expect(find.text('Criar Conta Operacional'), findsOneWidget);
+      expect(find.text('[ ENTRAR NO CRAVOU ]'), findsOneWidget);
+      expect(find.text('Criar Conta Grátis'), findsOneWidget);
     });
 
     testWidgets('Dispara mensagens de validacao quando campos estao em branco', (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Clica em [ ACESSAR COCKPIT ] com campos vazios
-      final submitButton = find.text('[ ACESSAR COCKPIT ]');
+      // Clica em [ ENTRAR NO CRAVOU ] com campos vazios
+      final submitButton = find.text('[ ENTRAR NO CRAVOU ]');
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
