@@ -27,7 +27,7 @@ void main() {
       // Valida os campos de entrada e botao com nova identidade
       expect(find.text('E-mail ou Matrícula'), findsOneWidget);
       expect(find.text('Senha de Acesso'), findsOneWidget);
-      expect(find.text('[ ENTRAR NO CRAVOU ]'), findsOneWidget);
+      expect(find.text('ENTRAR'), findsOneWidget);
       expect(find.text('Criar Conta Grátis'), findsOneWidget);
     });
 
@@ -35,8 +35,8 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Clica em [ ENTRAR NO CRAVOU ] com campos vazios
-      final submitButton = find.text('[ ENTRAR NO CRAVOU ]');
+      // Clica em ENTRAR com campos vazios
+      final submitButton = find.text('ENTRAR');
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
 

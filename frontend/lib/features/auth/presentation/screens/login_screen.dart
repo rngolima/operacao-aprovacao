@@ -245,11 +245,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     )
                                   : Text(
-                                      '[ ENTRAR NO CRAVOU ]',
+                                      'ENTRAR',
                                       style: AppTypography.button.copyWith(
                                         color: AppColors.brandWhite,
                                         fontWeight: FontWeight.w800,
-                                        letterSpacing: 1.2,
+                                        letterSpacing: 1.5,
                                       ),
                                     ),
                             ),

@@ -13,6 +13,6 @@ void main() {
     expect(find.byType(TacticalOwlLogo), findsOneWidget);
 
     // Valida a presenca do botao tatico de acesso ao cockpit do Cravou
-    expect(find.text('[ ENTRAR NO CRAVOU ]'), findsOneWidget);
+    expect(find.text('ENTRAR'), findsOneWidget);
   });
 }
