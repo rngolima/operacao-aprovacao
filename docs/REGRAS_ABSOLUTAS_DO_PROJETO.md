@@ -97,3 +97,23 @@
    - 🟢 **Nível Júnior:** Domínio da sintaxe, fluxo de dados e explicação sem medo do "o que faz".
    - 🟡 **Nível Pleno:** Autonomia, testes unitários com Mockito, tratamento de exceções semântico e tradeoffs de performance.
    - 🔴 **Nível Sênior / Tech Lead:** Visão sistêmica, arquitetura, segurança OWASP, resiliência e custos de nuvem.
+
+---
+
+## 🔍 CLÁUSULA 10: AUDITORIA GERAL & TRANSPARÊNCIA ABSOLUTA PÓS-FECHAMENTO DE SPRINT (ZERO PENDÊNCIAS)
+1. **Gatilho de Execução Obrigatório:** Imediatamente após a conclusão, commit e push de todos os passos de uma sprint, e OBRIGATORIAMENTE ANTES de iniciar qualquer trabalho ou explicação da sprint seguinte.
+2. **Os 5 Eixos da Auditoria Geral & Transparência Absoluta:**
+   - **Eixo 1 — Sincronização do Git & Limpeza da Árvore de Trabalho:**
+     - Executar `git status` e demonstrar explicitamente `working tree clean` (0 arquivos modificados, untracked ou esquecidos localmente).
+     - Comprovar que a branch `main` local está idêntica a `origin/main` no GitHub (`Your branch is up to date with 'origin/main'`).
+   - **Eixo 2 — Auditoria Visual do `README.md` Principal:**
+     - Atualizar a tabela **Roadmap de Entregas & Status dos Módulos**: migrar o selo da sprint concluída para `100% CONCLUÍDO` e o da próxima sprint para `EM ANDAMENTO`.
+     - Validar que a seção **Central de Estudos & Mentoria Técnica** contém links diretos tanto para o **Manual Teórico** quanto para o **Relatório de Code Review & Procedimento de Testes** da sprint.
+   - **Eixo 3 — Auditoria da Central de Estudos (`docs/estudos/README.md`):**
+     - Sincronizar o índice geral de estudos, garantindo que o módulo figure como concluído e com links funcionais para seu Manual de Engenharia e seu Relatório de Code Review.
+   - **Eixo 4 — Governança de GitHub Issues & Quadro Kanban:**
+     - Confirmar o fechamento formal da Issue da sprint concluída (ex: `closes #3`).
+     - Garantir que a Issue da sprint seguinte esteja aberta, com escopo, requisitos de aceite e passos (Passos 1 a 5) claramente detalhados.
+   - **Eixo 5 — Relatório Formal de Transparência Apresentado ao Desenvolvedor:**
+     - O Mentor DEVE apresentar na conversa o **"Raio-X de Auditoria Geral & Transparência Absoluta"**, listando hashes de commits, número exato de testes passando (`mvn test`), integridade de schemas Flyway e estado das issues.
+3. **Imutabilidade e Bloqueio de Segurança:** É expressamente proibido ao Mentor avançar para o Passo 1 de uma nova sprint sem que o Desenvolvedor (Rudson Americo) tenha visualizado e validado o relatório desta Cláusula 10.
