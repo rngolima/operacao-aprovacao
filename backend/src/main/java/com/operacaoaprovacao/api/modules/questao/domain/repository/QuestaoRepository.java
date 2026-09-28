@@ -25,6 +25,8 @@ public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
     Page<Questao> findByTipo(TipoQuestao tipo, Pageable pageable);
 
+    List<Questao> findByConcursoId(Long concursoId);
+
     @Query("SELECT q FROM Questao q WHERE " +
            "(:disciplinaId IS NULL OR q.disciplina.id = :disciplinaId) AND " +
            "(:assuntoId IS NULL OR q.assunto.id = :assuntoId) AND " +

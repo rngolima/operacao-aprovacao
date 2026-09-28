@@ -39,7 +39,10 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 ---
 
 ### 📁 Sprint 3: Engine do Treinador (Simulados Ponderados & Nota Líquida Cebraspe)
-- ⚡ **Em Andamento (Passos 1 ao 5)**
+- 🧠 **Manual Teórico & Fundamentos:**
+  - 📄 [Manual de Engenharia da Sprint 3: Engine do Treinador (Passos 1 ao 5)](sprint-3-engine-treinador/manual-teorico/manual-de-engenharia-sprint-3.md)
+- 📑 **Code Review & Procedimento de Testes:**
+  - 🧪 [Code Review Oficial & Testes — Sprint 3](sprint-3-engine-treinador/code-review/code-review-e-procedimento-de-testes.md)
 
 ---
 
@@ -48,3 +51,4 @@ Relatórios formais emitidos ao término de cada módulo/sprint, contendo audito
 - 📑 [Sprint 0: Foundation — Code Review & Procedimento de Testes](sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
 - 📑 [Sprint 1: Security & Identity — Code Review & Procedimento de Testes](sprint-1-security-jwt/code-review/code-review-e-procedimento-de-testes.md)
 - 📑 [Sprint 2: Core Domain — Code Review & Procedimento de Testes](sprint-2-core-domain/code-review/code-review-e-procedimento-de-testes.md)
+- 📑 [Sprint 3: Engine do Treinador — Code Review & Procedimento de Testes](sprint-3-engine-treinador/code-review/code-review-e-procedimento-de-testes.md)

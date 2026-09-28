@@ -5,6 +5,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Flyway](https://img.shields.io/badge/Flyway-Migrations-CC0200?style=for-the-badge&logo=flyway&logoColor=white)](https://flywaydb.org/)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
+[![Testes Automatizados](https://img.shields.io/badge/Testes-77%20Passando%20(100%25)-brightgreen?style=for-the-badge&logo=junit5&logoColor=white)](backend)
 [![Arcabouço ECC](https://img.shields.io/badge/Governance-Anthropic%20ECC-7B2CBF?style=for-the-badge)](docs/estudos/01-governanca-e-arcabouco-ecc.md)
 
 ---
@@ -153,6 +154,8 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 - 🧠 [Manual Teórico de Engenharia — Sprint 1](docs/estudos/sprint-1-security-jwt/manual-teorico/manual-de-engenharia-sprint-1.md)
 - 🏛️ [Manual Teórico de Engenharia — Sprint 2: Core Domain](docs/estudos/sprint-2-core-domain/manual-teorico/manual-de-engenharia-sprint-2.md)
 - 📑 [Code Review Oficial & Testes — Sprint 2](docs/estudos/sprint-2-core-domain/code-review/code-review-e-procedimento-de-testes.md)
+- 🧠 [Manual Teórico de Engenharia — Sprint 3: Engine do Treinador](docs/estudos/sprint-3-engine-treinador/manual-teorico/manual-de-engenharia-sprint-3.md)
+- 📑 [Code Review Oficial & Testes — Sprint 3](docs/estudos/sprint-3-engine-treinador/code-review/code-review-e-procedimento-de-testes.md)
 
 ---
 
@@ -163,7 +166,7 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 | **Sprint 0: Foundation** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Setup Java 21, Spring Boot 3.3, Clean Architecture, Flyway V1, OpenAPI, H2/PostgreSQL e testes MockMvc. |
 | **Sprint 1: Security & Identity (Módulo 1)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Autenticação JWT Stateless (HMAC-SHA256), hashing BCrypt com salt, RBAC (`ROLE_STUDENT`/`ROLE_ADMIN`), filtros de segurança e testes de integração. |
 | **Sprint 2: Core Domain (Módulos 2 e 3)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Gestão de bancas/editais PC-PE, árvore de disciplinas (JOIN FETCH), motor de questões Cebraspe (Certo/Errado e Múltipla Escolha), paginação com `Pageable`, endpoints REST documentados com OpenAPI/Swagger e 45 testes automatizados. |
-| **Sprint 3: Engine do Treinador (Módulo 4)** | ![Em Andamento](https://img.shields.io/badge/Status-EM%20ANDAMENTO-blue?style=for-the-badge) | Motor de geração de simulados ponderados, cálculo de nota líquida Cebraspe ($Nota = C - E$), telemetria e diagnóstico de proficiência. |
+| **Sprint 3: Engine do Treinador (Módulo 4)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Motor de geração de simulados oficiais (PC-PE 60 itens / 4h30min), telemetria atômica em segundos, motor matemático Cebraspe ($Nota = C - E$, abstenções e bonificação de anuladas), auto-save em tempo real, proteção IDOR e 77 testes automatizados passando com 100% de sucesso. |
 | **Sprint 4: Testes Corporativos & QA** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Testcontainers, testes de carga, esteira CI/CD no GitHub Actions e cobertura massiva. |
 | **Sprint 5: Frontend Flutter** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Aplicativo mobile e web integrado consumindo os endpoints da API Backend. |
 
