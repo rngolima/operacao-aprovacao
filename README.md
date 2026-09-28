@@ -151,6 +151,8 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 - 🧠 [Manual Teórico de Engenharia — Sprint 0](docs/estudos/sprint-0-fundamentos/manual-teorico/manual-de-engenharia-sprint-0.md)
 - 🔐 [Sprint 1: Security & Identity (JWT & RBAC)](docs/estudos/sprint-1-security-jwt/sprint-1-security-jwt.md)
 - 🧠 [Manual Teórico de Engenharia — Sprint 1](docs/estudos/sprint-1-security-jwt/manual-teorico/manual-de-engenharia-sprint-1.md)
+- 📑 [Code Review Oficial & Testes — Sprint 1](docs/estudos/sprint-1-security-jwt/code-review/code-review-e-procedimento-de-testes.md)
+- 🏛️ [Manual Teórico de Engenharia — Sprint 2: Core Domain](docs/estudos/sprint-2-core-domain/manual-teorico/manual-de-engenharia-sprint-2.md)
 
 ---
 
@@ -159,9 +161,9 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 | Módulo / Sprint | Status de Engenharia | O Que Entrega Para o Avaliador / Recrutador |
 | :--- | :---: | :--- |
 | **Sprint 0: Foundation** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Setup Java 21, Spring Boot 3.3, Clean Architecture, Flyway V1, OpenAPI, H2/PostgreSQL e testes MockMvc. |
-| **Sprint 1: Security & Identity (Módulo 1)** | ![Em Validação](https://img.shields.io/badge/Status-EM%20VALIDA%C3%87%C3%83O%20(70%25)-green?style=for-the-badge) | Autenticação JWT Stateless (HMAC-SHA256), hashing BCrypt com salt, RBAC (`ROLE_STUDENT`/`ROLE_ADMIN`) e testes MockMvc. |
-| **Sprint 2: Core Domain (Módulos 2 e 3)** | ![A Seguir](https://img.shields.io/badge/Status-A%20SEGUIR-orange?style=for-the-badge) | Gestão de bancas/editais da PC-PE e ingestão do banco de questões Cebraspe (Certo/Errado e Múltipla Escolha). |
-| **Sprint 3: Engine do Treinador (Módulo 4)** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Motor de geração de simulados ponderados, cálculo de nota líquida Cebraspe e diagnóstico de proficiência. |
+| **Sprint 1: Security & Identity (Módulo 1)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Autenticação JWT Stateless (HMAC-SHA256), hashing BCrypt com salt, RBAC (`ROLE_STUDENT`/`ROLE_ADMIN`), filtros de segurança e testes de integração. |
+| **Sprint 2: Core Domain (Módulos 2 e 3)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Gestão de bancas/editais PC-PE, árvore de disciplinas (JOIN FETCH), motor de questões Cebraspe (Certo/Errado e Múltipla Escolha), paginação com `Pageable`, endpoints REST documentados com OpenAPI/Swagger e 45 testes automatizados. |
+| **Sprint 3: Engine do Treinador (Módulo 4)** | ![Em Andamento](https://img.shields.io/badge/Status-EM%20ANDAMENTO-blue?style=for-the-badge) | Motor de geração de simulados ponderados, cálculo de nota líquida Cebraspe ($Nota = C - E$), telemetria e diagnóstico de proficiência. |
 | **Sprint 4: Testes Corporativos & QA** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Testcontainers, testes de carga, esteira CI/CD no GitHub Actions e cobertura massiva. |
 | **Sprint 5: Frontend Flutter** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Aplicativo mobile e web integrado consumindo os endpoints da API Backend. |
 
