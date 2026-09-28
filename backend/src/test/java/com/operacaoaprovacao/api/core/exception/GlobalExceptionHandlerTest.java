@@ -25,6 +25,22 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Deve tratar ResourceNotFoundException retornando HTTP 404 Not Found")
+    void shouldHandleResourceNotFoundException() {
+        // Arrange
+        ResourceNotFoundException exception = new ResourceNotFoundException("Questao nao encontrada.");
+
+        // Act
+        ResponseEntity<ApiResponse<Void>> response = exceptionHandler.handleResourceNotFoundException(exception);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().isSuccess()).isFalse();
+        assertThat(response.getBody().getMessage()).isEqualTo("Questao nao encontrada.");
+    }
+
+    @Test
     @DisplayName("Deve tratar BusinessException retornando HTTP 400 Bad Request com mensagem personalizada")
     void shouldHandleBusinessException() {
         // Arrange
