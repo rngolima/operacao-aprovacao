@@ -156,6 +156,8 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 - 📑 [Code Review Oficial & Testes — Sprint 2](docs/estudos/sprint-2-core-domain/code-review/code-review-e-procedimento-de-testes.md)
 - 🧠 [Manual Teórico de Engenharia — Sprint 3: Engine do Treinador](docs/estudos/sprint-3-engine-treinador/manual-teorico/manual-de-engenharia-sprint-3.md)
 - 📑 [Code Review Oficial & Testes — Sprint 3](docs/estudos/sprint-3-engine-treinador/code-review/code-review-e-procedimento-de-testes.md)
+- 🧠 [Manual Teórico de Engenharia — Sprint 4: Testes Corporativos, CI/CD & QA](docs/estudos/sprint-4-testes-qa/manual-teorico/manual-de-engenharia-sprint-4.md)
+- 📑 [Code Review Oficial & Testes — Sprint 4](docs/estudos/sprint-4-testes-qa/code-review/code-review-e-procedimento-de-testes.md)
 
 ---
 
@@ -167,7 +169,7 @@ Toda a evolução do projeto, decisões de arquitetura e preparação técnica p
 | **Sprint 1: Security & Identity (Módulo 1)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Autenticação JWT Stateless (HMAC-SHA256), hashing BCrypt com salt, RBAC (`ROLE_STUDENT`/`ROLE_ADMIN`), filtros de segurança e testes de integração. |
 | **Sprint 2: Core Domain (Módulos 2 e 3)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Gestão de bancas/editais PC-PE, árvore de disciplinas (JOIN FETCH), motor de questões Cebraspe (Certo/Errado e Múltipla Escolha), paginação com `Pageable`, endpoints REST documentados com OpenAPI/Swagger e 45 testes automatizados. |
 | **Sprint 3: Engine do Treinador (Módulo 4)** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Motor de geração de simulados oficiais (PC-PE 60 itens / 4h30min), telemetria atômica em segundos, motor matemático Cebraspe ($Nota = C - E$, abstenções e bonificação de anuladas), auto-save em tempo real, proteção IDOR e 77 testes automatizados passando com 100% de sucesso. |
-| **Sprint 4: Testes Corporativos & QA** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Testcontainers, testes de carga, esteira CI/CD no GitHub Actions e cobertura massiva. |
+| **Sprint 4: Testes Corporativos, CI/CD & QA** | ![Concluído](https://img.shields.io/badge/Status-100%25%20CONCLU%C3%8DDO-brightgreen?style=for-the-badge) | Testcontainers (PostgreSQL 16 real em Docker), JaCoCo Code Coverage com relatórios executivos em HTML/XML, esteira automatizada no GitHub Actions (`ci.yml`), benchmarks de concorrência massiva (>1.650 simulados/s) e 81 testes corporativos. |
 | **Sprint 5: Frontend Flutter** | ![Planejado](https://img.shields.io/badge/Status-PLANEJADO-lightgrey?style=for-the-badge) | Aplicativo mobile e web integrado consumindo os endpoints da API Backend. |
 
 ---

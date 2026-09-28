@@ -1,0 +1,62 @@
+name: CI/CD Pipeline - Operação Aprovação Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build, Test & QA Gatekeeper (Java 21 LTS + Testcontainers)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: 📥 Checkout do Código Fonte
+        uses: actions/checkout@v4
+
+      - name: ☕ Configuração do JDK 21 (Eclipse Temurin) com Cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: 🐳 Validação do Docker Daemon para Testcontainers
+        run: |
+          echo "Verificando se o Docker está ativo para o Testcontainers..."
+          docker --version
+          docker info
+
+      - name: 🔨 Compilação e Execução dos Testes Corporativos (Surefire + Testcontainers)
+        run: |
+          mvn clean verify -B -e
+
+      - name: 📊 Upload do Relatório de Cobertura JaCoCo (HTML & XML)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-coverage-report
+          path: backend/target/site/jacoco/
+          retention-days: 14
+
+      - name: 📑 Upload dos Relatórios de Testes Surefire
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: surefire-test-reports
+          path: backend/target/surefire-reports/
+          retention-days: 14

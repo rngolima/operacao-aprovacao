@@ -46,9 +46,18 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 
 ---
 
+### 📁 Sprint 4: Testes Corporativos, CI/CD & QA (Testcontainers & JaCoCo)
+- 🧠 **Manual Teórico & Fundamentos:**
+  - 📄 [Manual de Engenharia da Sprint 4: QA & CI/CD (Passos 1 ao 5)](sprint-4-testes-qa/manual-teorico/manual-de-engenharia-sprint-4.md)
+- 📑 **Code Review & Procedimento de Testes:**
+  - 🧪 [Code Review Oficial & Testes — Sprint 4](sprint-4-testes-qa/code-review/code-review-e-procedimento-de-testes.md)
+
+---
+
 ## 🧐 Relatórios Oficiais de Code Review & Procedimentos de Teste (Auditoria ECC)
 Relatórios formais emitidos ao término de cada módulo/sprint, contendo auditoria técnica nos 4 pilares (Compilação, Segurança OWASP, Clean Architecture e Banco/Flyway), checklist prático executável e roteiro de defesa técnica para entrevistas:
 - 📑 [Sprint 0: Foundation — Code Review & Procedimento de Testes](sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
 - 📑 [Sprint 1: Security & Identity — Code Review & Procedimento de Testes](sprint-1-security-jwt/code-review/code-review-e-procedimento-de-testes.md)
 - 📑 [Sprint 2: Core Domain — Code Review & Procedimento de Testes](sprint-2-core-domain/code-review/code-review-e-procedimento-de-testes.md)
 - 📑 [Sprint 3: Engine do Treinador — Code Review & Procedimento de Testes](sprint-3-engine-treinador/code-review/code-review-e-procedimento-de-testes.md)
+- 📑 [Sprint 4: Testes Corporativos, CI/CD & QA — Code Review & Procedimento de Testes](sprint-4-testes-qa/code-review/code-review-e-procedimento-de-testes.md)
