@@ -54,6 +54,13 @@ Bem-vindo à trilha de formação em Engenharia de Software e preparação para 
 
 ---
 
+### 📁 Sprint 5: Frontend Flutter (Mobile & Web)
+- 🧠 **Manual Teórico & Fundamentos:**
+  - 📄 [Manual de Engenharia da Sprint 5: Frontend Flutter (Passos 1 ao 5)](sprint-5-frontend-flutter/manual-teorico/manual-de-engenharia-sprint-5.md)
+- ⚡ **Em Andamento Ativo (Passo 1 Concluído)**
+
+---
+
 ## 🧐 Relatórios Oficiais de Code Review & Procedimentos de Teste (Auditoria ECC)
 Relatórios formais emitidos ao término de cada módulo/sprint, contendo auditoria técnica nos 4 pilares (Compilação, Segurança OWASP, Clean Architecture e Banco/Flyway), checklist prático executável e roteiro de defesa técnica para entrevistas:
 - 📑 [Sprint 0: Foundation — Code Review & Procedimento de Testes](sprint-0-fundamentos/code-review/code-review-e-procedimento-de-testes.md)
