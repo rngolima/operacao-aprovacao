@@ -3,9 +3,13 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/network/api_client.dart';
 import '../../../../core/widgets/cravou_brand_header.dart';
 import '../../../../core/widgets/tactical_card.dart';
-import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
+import '../../../questoes/data/datasources/questoes_remote_data_source.dart';
+import '../../../questoes/data/repositories/questoes_repository_impl.dart';
+import '../../../questoes/presentation/controllers/questoes_controller.dart';
+import '../../../questoes/presentation/screens/catalogo_questoes_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'register_screen.dart';
 
@@ -13,10 +17,12 @@ import 'register_screen.dart';
 /// Implementa a identidade master com a Coruja Oficial e marca viral para lojas Google/Apple.
 class LoginScreen extends StatefulWidget {
   final AuthController? controller;
+  final QuestoesController? questoesController;
 
   const LoginScreen({
     super.key,
     this.controller,
+    this.questoesController,
   });
 
   @override
@@ -36,6 +42,15 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  QuestoesController _getEffectiveQuestoesController() {
+    return widget.questoesController ??
+        QuestoesController(
+          QuestoesRepositoryImpl(
+            remoteDataSource: QuestoesRemoteDataSource(apiClient: ApiClient()),
+          ),
+        );
+  }
+
   void _handleSubmit() async {
     HapticFeedback.lightImpact();
     if (!_formKey.currentState!.validate()) return;
@@ -48,7 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (success && mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => const SimuladoCockpitScreen(),
+            builder: (_) => CatalogoQuestoesScreen(
+              controller: _getEffectiveQuestoesController(),
+            ),
           ),
         );
       }
@@ -56,7 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // Modo de demonstracao direta caso controller nao esteja injetado
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => const SimuladoCockpitScreen(),
+          builder: (_) => CatalogoQuestoesScreen(
+            controller: _getEffectiveQuestoesController(),
+          ),
         ),
       );
     }

@@ -296,3 +296,98 @@ lib/features/auth/
 
 *Para lidar com a expiração do token, o interceptor implementa o gancho `onError`: ao capturar um status HTTP 401 Unauthorized do Spring Security, ele intercepta a resposta antes que chegue à tela, aciona a limpeza das credenciais no Secure Storage e notifica a camada de autenticação para redirecionar o usuário à tela de login com uma mensagem clara de sessão expirada, garantindo a integridade do estado e uma transição de UI graciosa sem travamentos."*
 
+---
+---
+
+# 📚 CAPÍTULO 3 — PASSO 3: BANCO DE QUESTÕES, FILTROS DINÂMICOS & MODO TREINO (CRAVOU)
+
+### 🗺️ Visão Panorâmica do Passo 3
+No Passo 3 da Sprint 5, construímos o núcleo prático da preparação para concursos: o **Catálogo de Questões e Modo Treino Avulso** do aplicativo **CRAVOU**. Integramos a árvore programática da Polícia Civil de Pernambuco (PC-PE) baseada no padrão Cebraspe (itens Certo/Errado), com filtros dinâmicos de matérias, busca textual instantânea, telemetria de aproveitamento em tempo real e fundamentação didática autoral que explica cirurgicamente cada regra e pegadinha da banca.
+
+---
+
+### ⚡ PILAR 1: ENGENHARIA DE ESTADO E VIRTUALIZAÇÃO DE LISTAS (`ListView.separated`)
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+1. **O que é Virtualização de Listas no Flutter?**
+   - Se carregarmos 1.000 questões usando uma `Column` dentro de um `SingleChildScrollView`, o Flutter tentará renderizar todos os 1.000 cards na memória de uma só vez. Resultado: o celular trava por falta de memória RAM (**Out Of Memory - OOM**).
+   - O `ListView.separated` / `ListView.builder` utiliza a técnica de **Virtualização**: apenas os cards que estão visíveis na tela (geralmente de 3 a 5 itens) são construídos e mantidos na memória GPU. Conforme o candidato rola a tela, os itens que saem por cima são destruídos ou reciclados, mantendo o consumo de memória estável e constante a 60/120 FPS.
+2. **Gerenciamento de Resposta Avulsa:**
+   - No Modo Treino, o aluno pode responder questões isoladas sem a pressão do cronômetro global de 4h30min. O `QuestoesController` armazena em dicionários (`Map<int, String>` e `Map<int, bool>`) o estado de cada questão resolvida, impedindo dupla submissão e mantendo o histórico de acertos/erros atualizado na tela.
+
+##### 🟡 Elevando para o NÍVEL PLENO:
+1. **Prevenção de Timeout em Testes de Widget com Animações:**
+   - Em testes de UI com `WidgetTester`, a chamada `pumpAndSettle()` aguarda todas as animações terminarem. Se um widget exibir um `CircularProgressIndicator` de loop infinito sem que o estado assíncrono seja concluído antes do desenho, o framework lança `pumpAndSettle timed out`.
+   - Adotamos a prática sênior de inicializar o estado reativo (`await controller.inicializar()`) e avançar frames discretos com `await tester.pump()` e `pump(Duration)`, garantindo testes determinísticos e à prova de regressões.
+
+---
+
+### 🎯 PILAR 2: ERGONOMIA CEBRASPE, FEEDBACK TÁTIL & CO-BRANDING
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+1. **Haptic Feedback nos Botões Operacionais:**
+   - Quando o candidato toca em `[ CERTO ]` ou `[ ERRADO ]`, acionamos `HapticFeedback.lightImpact()`. O motor tátil do aparelho (Taptic Engine no iPhone / motor linear no Android) produz uma vibração sutil e sólida, simulando o clique de um dispositivo de precisão física.
+2. **Gabarito Didático "CRAVOU!":**
+   - Ao registrar a resposta, o card se expande suavemente exibindo a fundamentação:
+     - **Verde Esmeralda (`#059669`)**: "CRAVOU! VOCÊ ACERTOU!" com reforço do acerto;
+     - **Rubi Tático (`#DC2626`)**: "ERRADA! ATENÇÃO AO DETALHE:" alertando para a pegadinha da banca examinadora.
+
+##### 🟡 Elevando para o NÍVEL PLENO:
+1. **Co-Branding Dinâmico nas Telas Internas:**
+   - Na tela de login externa, o app exibe apenas a marca mestra **CRAVOU**.
+   - No topo do Catálogo de Questões e do Simulado, o AppBar exibe o co-branding dinâmico:
+     ```text
+     [ Coruja Cravou ] CRAVOU   ✕   [ Distintivo Oficial PC-PE ]
+     ```
+   - Isso reforça para o aluno qual certame ele está treinando no momento, permitindo que a plataforma suporte múltiplos concursos (PM-PE, PRF, PF) no mesmo ecossistema.
+
+---
+
+### ⚖️ PILAR 3: GOVERNANÇA DE CONTEÚDO E CONFORMIDADE COM DIREITOS AUTORAIS
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+1. **Diferença Legal entre Questões de Concurso e Apostilas de Terceiros:**
+   - **Provas de Concursos Públicos (Cebraspe/PC-PE)**: São documentos administrativos oficiais do Estado, regidos pelo princípio da publicidade (Art. 37 da CF/88 e Lei 9.610/98, Art. 8º, IV - atos oficiais não são objeto de proteção como direitos autorais). Podem ser reproduzidos livremente em simuladores e plataformas educacionais.
+   - **Apostilas e Livros de Cursinhos Privados**: São obras intelectuais protegidas. **NÃO podem ser copiadas na íntegra**.
+2. **A Solução Adotada no Projeto CRAVOU:**
+   - Armazenamos as apostilas apenas na pasta local de engenharia `materiais/` (ignorada no `.gitignore` com `*.pdf`), impedindo qualquer vazamento no GitHub.
+   - Analisamos a metodologia gramatical (ex: regras de crase no plural, regência do pronome relativo "que/cujo") e elaboramos **comentários pedagógicos autorais e sintéticos**, trazendo originalidade, proteção jurídica e alto valor agregado ao produto.
+
+---
+
+### 📊 RÉGUA DE MATURIDADE: PASSO 3 (BANCO DE QUESTÕES & TREINO)
+
+| Dimensão | 🔴 Nível Estagiário / Júnior Iniciante | 🟡 Nível Pleno Corporativo | 🟢 Nível Sênior / Tech Lead (O que Implementamos) |
+| :--- | :--- | :--- | :--- |
+| **Renderização de Lista** | Usa `Column` com scroll simples, travando o celular ao abrir centenas de questões. | Usa `ListView.builder` simples sem tratamento de separadores ou estados de vazio. | Emprega `ListView.separated` virtualizado com cache de estado, badges táteis e feedback auditivo/tátil (Haptic). |
+| **Gabarito e Feedback** | Apenas muda a cor do botão para verde ou vermelho sem explicar o motivo. | Coloca um texto longo colado de qualquer site sem formatação. | Desenvolve a fundamentação didática autoral "Cravou", dissecando a regra e a pegadinha da banca com design tático. |
+| **Filtros de Disciplinas** | Usa dropdown feio que recarrega a tela inteira a cada seleção. | Lista horizontal sem indicação clara de qual chip está ativo. | Cria `DisciplinaFilterBar` horizontal animada com tokens de cor (Laranja Original `#F97316`), contagem de questões e busca textual síncrona. |
+| **Direitos Autorais** | Sobe PDFs inteiros de cursinhos para o GitHub, gerando risco de DMCA e processo. | Não documenta a origem dos dados e deixa arquivos expostos. | Bloqueia PDFs no `.gitignore`, cataloga governança no `materiais/README.md` e usa apenas questões públicas com comentários autorais. |
+
+---
+
+### 🧪 Placar de Validação do Passo 3
+- **Flutter Analyzer:** `Analyzing frontend... No issues found! (ran in 31.1s)`
+- **Testes Automatizados:** `All tests passed! (00:12 +20)`
+  - `api_exception_test.dart`: 4 testes unitários passando.
+  - `auth_models_test.dart`: 4 testes unitários passando.
+  - `login_screen_test.dart`: 2 testes de widget passando.
+  - `widget_test.dart`: 1 teste de integração passando.
+  - `questoes_models_test.dart`: 3 testes unitários de serialização de questões/filtros passando.
+  - `questoes_controller_test.dart`: 4 testes unitários de regras de negócio de treino passando.
+  - `catalogo_questoes_screen_test.dart`: 2 testes de widget cobrindo Co-Branding e gabarito comentado passando.
+- **Resultado Geral:** **100% SUCCESS**
+
+---
+
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA (PASSO 3)
+
+> 🎤 **Pergunta do Tech Lead / Entrevistador:**  
+> *"Como você arquitetou a renderização de um banco de milhares de questões no Flutter para garantir performance estável a 120 FPS sem estouro de memória (OOM), e como isolou o estado de resolução das questões do ciclo de vida dos widgets?"*
+
+### 💡 Resposta Modelo Sênior:
+*"Para assegurar fluidez máxima e prevenir o esgotamento de memória (OOM), utilizei o `ListView.separated` que implementa a virtualização de viewport: os widgets são criados e destruídos sob demanda apenas para os elementos visíveis na janela de visualização do dispositivo, reciclando render objects na GPU.*
+
+*Para o gerenciamento de estado, adotei a arquitetura Feature-First com um `QuestoesController` desacoplado da UI via `ChangeNotifier`. O estado de respostas marcadas e gabaritos revelados é armazenado em mapas indexados pelo ID da questão (`Map<int, String>`), e não em variáveis locais dentro dos itens da lista. Dessa forma, quando um card é reciclado ao rolar a tela, o estado do aluno permanece integro na camada de apresentação, permitindo re-renderizações pontuais sem rebuilds desnecessários na árvore de componentes."*
+
+

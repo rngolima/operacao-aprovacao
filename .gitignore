@@ -5,3 +5,10 @@ target/
 .vscode/
 *.log
 .env
+
+# Materiais e apostilas de terceiros (Protecao contra Direitos Autorais no GitHub)
+referencias/*.pdf
+referencias/**/*.pdf
+materiais/*.pdf
+materiais/**/*.pdf
+*.pdf
