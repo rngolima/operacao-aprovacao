@@ -45,4 +45,9 @@ abstract class AppColors {
   static const Color brandNavy = Color(0xFF1E3A8A); // Azul Marinho Profundo (Asas e Contorno Corporal)
   static const Color brandWhite = Color(0xFFFFFFFF); // Branco Puro (Olhos, Plumagem Central e Pingente do Capelo)
   static const Color pcpeGold = Color(0xFFD4AF37); // Dourado do Distintivo PC-PE
+
+  // --- Aliases de Conveniência Tática ---
+  static const Color border = surfaceBorder;
+  static const Color accentOrange = brandOrange;
+  static const Color secondary = primaryLight;
 }

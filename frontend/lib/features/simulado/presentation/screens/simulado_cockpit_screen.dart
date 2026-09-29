@@ -1,144 +1,225 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/cebraspe_button.dart';
-import '../../../../core/widgets/question_navigator_grid.dart';
+import '../../../../core/widgets/cravou_brand_header.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/widgets/timer_badge.dart';
+import '../../data/repositories/simulado_repository_impl.dart';
+import '../controllers/simulado_controller.dart';
+import '../widgets/grade_navegacao_modal.dart';
+import 'simulado_resultado_dialog.dart';
 
-/// Modelo de Questao Simulado no Cockpit
-class QuestaoMock {
-  final int numero;
-  final String disciplina;
-  final String assunto;
-  final String enunciado;
-  String? respostaMarcada; // "C", "E" ou null (em branco)
-
-  QuestaoMock({
-    required this.numero,
-    required this.disciplina,
-    required this.assunto,
-    required this.enunciado,
-    this.respostaMarcada,
-  });
-}
-
-/// Tela Cockpit do Simulado Cebraspe da Operacao Aprovacao.
-/// Implementa a experiencia tatica de alta fidelidade visual.
+/// Tela Cockpit do Simulado Oficial Cebraspe (PC-PE) da plataforma CRAVOU.
+/// Proporciona a experiencia tatica de alta fidelidade das condicoes reais de prova.
 class SimuladoCockpitScreen extends StatefulWidget {
-  const SimuladoCockpitScreen({super.key});
+  final SimuladoController? controller;
+
+  const SimuladoCockpitScreen({
+    super.key,
+    this.controller,
+  });
 
   @override
   State<SimuladoCockpitScreen> createState() => _SimuladoCockpitScreenState();
 }
 
 class _SimuladoCockpitScreenState extends State<SimuladoCockpitScreen> {
-  int _currentIndex = 0;
-  int _segundosRestantes = 13335; // 03h 42m 15s
-  Timer? _timer;
-
-  late final List<QuestaoMock> _questoes;
+  late final SimuladoController _controller;
+  late final bool _internalController;
 
   @override
   void initState() {
     super.initState();
-    _iniciarQuestoes();
-    _iniciarCronometro();
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _internalController = false;
+    } else {
+      _controller = SimuladoController(repository: SimuladoRepositoryImpl());
+      _internalController = true;
+      _controller.inicializar();
+    }
+    _controller.addListener(_onControllerUpdate);
   }
 
-  void _iniciarQuestoes() {
-    _questoes = List.generate(60, (index) {
-      final num = index + 1;
-      return QuestaoMock(
-        numero: num,
-        disciplina: num <= 20
-            ? 'LÍNGUA PORTUGUESA'
-            : (num <= 35 ? 'DIREITO PROCESSUAL PENAL' : 'DIREITO PENAL & LEGISLAÇÃO'),
-        assunto: num <= 20
-            ? 'COMPREENSÃO E INTERPRETAÇÃO DE TEXTOS'
-            : (num <= 35 ? 'INQUÉRITO POLICIAL' : 'CRIMES CONTRA A ADMINISTRAÇÃO PÚBLICA'),
-        enunciado: 'Considerando as disposições do Código de Processo Penal e a jurisprudência sumulada dos Tribunais Superiores quanto ao inquérito policial, julgue o item $num a seguir:\n\n'
-            'O inquérito policial, por ser procedimento administrativo de natureza meramente informativa, não é indispensável para a propositura da ação penal, podendo esta ser intentada pelo Ministério Público com base em outros elementos de convicção hábeis que demonstrem a justa causa e os indícios de autoria.',
-        respostaMarcada: index < 42 ? (index % 2 == 0 ? 'C' : 'E') : null,
-      );
-    });
-  }
-
-  void _iniciarCronometro() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_segundosRestantes > 0) {
-        setState(() {
-          _segundosRestantes--;
-        });
-      } else {
-        timer.cancel();
-      }
-    });
+  void _onControllerUpdate() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _controller.removeListener(_onControllerUpdate);
+    if (_internalController) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
-  String _formatarTempo(int segundosTotais) {
-    final horas = (segundosTotais ~/ 3600).toString().padLeft(2, '0');
-    final minutos = ((segundosTotais % 3600) ~/ 60).toString().padLeft(2, '0');
-    final segundos = (segundosTotais % 60).toString().padLeft(2, '0');
-    return '$horas:$minutos:$segundos';
-  }
-
-  Set<int> get _answeredIndices {
-    final set = <int>{};
-    for (int i = 0; i < _questoes.length; i++) {
-      if (_questoes[i].respostaMarcada != null) {
-        set.add(i);
-      }
-    }
-    return set;
-  }
-
   void _marcarResposta(String? opcao) {
-    setState(() {
-      _questoes[_currentIndex].respostaMarcada = opcao;
-    });
+    HapticFeedback.lightImpact();
+    _controller.marcarResposta(opcao);
+  }
+
+  void _confirmarFinalizacao() {
+    final respondidas = _controller.totalRespondidas;
+    final emBranco = _controller.totalEmBranco;
+    final revisao = _controller.totalMarcadasRevisao;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppSpacing.borderRadiusMd,
+          side: const BorderSide(color: AppColors.border),
+        ),
+        title: Text(
+          'FINALIZAR SIMULADO OFICIAL?',
+          style: AppTypography.headlineMedium.copyWith(fontSize: 16),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Atenção: Na banca Cebraspe, cada questão errada anula uma certa (1E = -1C).',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.warning),
+            ),
+            const SizedBox(height: 12),
+            _resumoLinha('Itens Respondidos:', '$respondidas de 60', AppColors.success),
+            _resumoLinha('Itens em Branco (Abstenção):', '$emBranco itens', AppColors.textSecondary),
+            if (revisao > 0)
+              _resumoLinha('Itens Marcados p/ Revisão:', '$revisao itens', AppColors.accentOrange),
+            const SizedBox(height: 12),
+            Text(
+              'Deseja entregar sua folha de respostas e gerar o relatório oficial?',
+              style: AppTypography.bodyMedium,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'CONTINUAR PROVA',
+              style: AppTypography.buttonLabel.copyWith(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.surface,
+            ),
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              final resultado = await _controller.finalizarSimulado();
+              if (resultado != null && mounted) {
+                SimuladoResultadoDialog.exibir(
+                  context,
+                  resultado: resultado,
+                  onConcluir: () {
+                    Navigator.of(context).pop(); // fecha modal
+                    Navigator.of(context).pop(); // volta a tela anterior
+                  },
+                );
+              }
+            },
+            child: Text('ENTREGAR PROVA', style: AppTypography.buttonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _resumoLinha(String label, String valor, Color cor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+          Text(valor, style: AppTypography.bodySmall.copyWith(color: cor, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final questaoAtual = _questoes[_currentIndex];
-    final totalRespondidas = _answeredIndices.length;
-    final percentual = (totalRespondidas / _questoes.length);
+    if (_controller.isLoading) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(color: AppColors.primary),
+              const SizedBox(height: 16),
+              Text('Carregando Caderno Oficial Cebraspe...', style: AppTypography.bodyMedium),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_controller.errorMessage != null && _controller.simulado == null) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+                const SizedBox(height: 16),
+                Text(_controller.errorMessage!, textAlign: TextAlign.center, style: AppTypography.bodyMedium),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => _controller.inicializar(),
+                  child: const Text('TENTAR NOVAMENTE'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final questaoAtual = _controller.itemAtual;
+    final respostaAtual = _controller.respostaAtual;
+    final total = _controller.totalQuestoes;
+    final respondidas = _controller.totalRespondidas;
+    final percentual = _controller.percentualConcluido;
+    final isCritico = _controller.isTempoCritico;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            if (_controller.totalRespondidas > 0) {
+              _confirmarFinalizacao();
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'SIMULADO OFICIAL',
-              style: AppTypography.tagLabel.copyWith(fontSize: 10, color: AppColors.textSecondary),
-            ),
-            Text(
-              'PC-PE - AGENTE',
-              style: AppTypography.headlineMedium.copyWith(fontSize: 16),
-            ),
-          ],
+        title: CravouBrandHeader.coBranded(
+          concursoSigla: 'PC-PE',
+          subtitulo: 'SIMULADO OFICIAL CEBRASPE',
+          logoSize: 28,
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: TimerBadge(
-                formattedTime: _formatarTempo(_segundosRestantes),
+                formattedTime: _controller.tempoFormatado,
+                isUrgent: isCritico,
               ),
             ),
           ),
@@ -146,9 +227,10 @@ class _SimuladoCockpitScreenState extends State<SimuladoCockpitScreen> {
       ),
       body: Column(
         children: [
-          // Barra de Telemetria e Progresso
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          // Barra de Telemetria e Progresso Tático
+          Container(
+            color: AppColors.surface,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -156,12 +238,45 @@ class _SimuladoCockpitScreenState extends State<SimuladoCockpitScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '$totalRespondidas/60 respondidas (${(percentual * 100).toInt()}%)',
-                      style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                      '$respondidas/$total respondidas (${(percentual * 100).toInt()}%)',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    Text(
-                      'Cebraspe (C - E)',
-                      style: AppTypography.bodySmall.copyWith(color: AppColors.warning),
+                    Row(
+                      children: [
+                        if (_controller.totalMarcadasRevisao > 0) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.accentOrange.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.flag, size: 12, color: AppColors.accentOrange),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${_controller.totalMarcadasRevisao} rev.',
+                                  style: AppTypography.tagLabel.copyWith(
+                                    fontSize: 10,
+                                    color: AppColors.accentOrange,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Text(
+                          'Cebraspe (C - E)',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -181,84 +296,214 @@ class _SimuladoCockpitScreenState extends State<SimuladoCockpitScreen> {
 
           const SizedBox(height: AppSpacing.sm),
 
-          // Area Rolavel da Questao
+          // Área Rolável da Questão
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TacticalCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Tag da Disciplina
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryDark.withValues(alpha: 0.4),
-                        borderRadius: AppSpacing.borderRadiusSm,
-                        border: Border.all(color: AppColors.primaryDark),
+            child: questaoAtual == null
+                ? const SizedBox.shrink()
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: TacticalCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Topo da Questão: Número e Disciplina
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryDark.withValues(alpha: 0.35),
+                                  borderRadius: AppSpacing.borderRadiusSm,
+                                  border: Border.all(color: AppColors.primaryDark),
+                                ),
+                                child: Text(
+                                  'ITEM ${questaoAtual.numeroQuestao} DE $total',
+                                  style: AppTypography.tagLabel.copyWith(
+                                    fontSize: 11,
+                                    color: AppColors.accentOrange,
+                                  ),
+                                ),
+                              ),
+                              if (respostaAtual?.marcadaParaRevisao == true)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.accentOrange.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(color: AppColors.accentOrange),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.flag, size: 12, color: AppColors.accentOrange),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'REVISÃO',
+                                        style: AppTypography.tagLabel.copyWith(
+                                          fontSize: 10,
+                                          color: AppColors.accentOrange,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+
+                          const SizedBox(height: AppSpacing.md),
+
+                          // Disciplina e Assunto
+                          Text(
+                            '${questaoAtual.disciplinaNome} • ${questaoAtual.assuntoNome}',
+                            style: AppTypography.tagLabel.copyWith(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+
+                          const SizedBox(height: AppSpacing.md),
+
+                          // Texto Base se existir
+                          if (questaoAtual.textoBase != null && questaoAtual.textoBase!.isNotEmpty) ...[
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceElevated,
+                                borderRadius: AppSpacing.borderRadiusSm,
+                                border: Border.all(color: AppColors.border),
+                              ),
+                              child: Text(
+                                questaoAtual.textoBase!,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                          ],
+
+                          // Enunciado
+                          Text(
+                            questaoAtual.enunciado,
+                            style: AppTypography.bodyLarge.copyWith(height: 1.5),
+                          ),
+
+                          const SizedBox(height: AppSpacing.xl),
+
+                          // Botoes Taticos de Marcacao Cebraspe
+                          Row(
+                            children: [
+                              CebraspeButton(
+                                type: CebraspeOptionType.certo,
+                                isSelected: respostaAtual?.respostaMarcada == 'C',
+                                onTap: () => _marcarResposta('C'),
+                              ),
+                              const SizedBox(width: AppSpacing.md),
+                              CebraspeButton(
+                                type: CebraspeOptionType.errado,
+                                isSelected: respostaAtual?.respostaMarcada == 'E',
+                                onTap: () => _marcarResposta('E'),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: AppSpacing.md),
+
+                          // Opcao de Deixar em Branco / Abstenção
+                          CebraspeButton(
+                            type: CebraspeOptionType.emBranco,
+                            isSelected: respostaAtual?.respostaMarcada == null ||
+                                respostaAtual!.respostaMarcada!.isEmpty,
+                            onTap: () => _marcarResposta(null),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        '${questaoAtual.disciplina} • ${questaoAtual.assunto}',
-                        style: AppTypography.tagLabel.copyWith(fontSize: 11),
-                      ),
                     ),
+                  ),
+          ),
 
-                    const SizedBox(height: AppSpacing.lg),
-
-                    // Enunciado
-                    Text(
-                      questaoAtual.enunciado,
-                      style: AppTypography.bodyLarge,
-                    ),
-
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // Botoes Taticos de Marcacao Cebraspe
-                    Row(
-                      children: [
-                        CebraspeButton(
-                          type: CebraspeOptionType.certo,
-                          isSelected: questaoAtual.respostaMarcada == 'C',
-                          onTap: () => _marcarResposta('C'),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        CebraspeButton(
-                          type: CebraspeOptionType.errado,
-                          isSelected: questaoAtual.respostaMarcada == 'E',
-                          onTap: () => _marcarResposta('E'),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Opcao de Deixar em Branco
-                    CebraspeButton(
-                      type: CebraspeOptionType.emBranco,
-                      isSelected: questaoAtual.respostaMarcada == null,
-                      onTap: () => _marcarResposta(null),
-                    ),
-                  ],
-                ),
+          // Barra Tática Inferior de Navegação
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                top: BorderSide(color: AppColors.border),
               ),
             ),
+            child: Row(
+              children: [
+                // Botão Anterior
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                  color: _controller.currentIndex > 0 ? AppColors.textPrimary : AppColors.border,
+                  onPressed: _controller.currentIndex > 0 ? _controller.questaoAnterior : null,
+                  tooltip: 'Questão Anterior',
+                ),
+
+                const SizedBox(width: 8),
+
+                // Botão de Revisão
+                IconButton(
+                  icon: Icon(
+                    respostaAtual?.marcadaParaRevisao == true ? Icons.flag : Icons.flag_outlined,
+                    color: respostaAtual?.marcadaParaRevisao == true
+                        ? AppColors.accentOrange
+                        : AppColors.textSecondary,
+                  ),
+                  onPressed: _controller.alternarRevisao,
+                  tooltip: 'Marcar para Revisão',
+                ),
+
+                const SizedBox(width: 8),
+
+                // Botão Central de Grade (1 a 60)
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.primary),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppSpacing.borderRadiusMd,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    icon: const Icon(Icons.grid_view_rounded, size: 18, color: AppColors.primary),
+                    label: Text(
+                      'GRADE (1-$total)',
+                      style: AppTypography.buttonLabel.copyWith(
+                        color: AppColors.primary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    onPressed: () => GradeNavegacaoModal.exibir(context, _controller),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // Botão Próximo ou Finalizar
+                if (_controller.currentIndex < total - 1)
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios, size: 20),
+                    color: AppColors.textPrimary,
+                    onPressed: _controller.proximaQuestao,
+                    tooltip: 'Próxima Questão',
+                  )
+                else
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.surface,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    ),
+                    onPressed: _confirmarFinalizacao,
+                    child: Text('ENTREGAR', style: AppTypography.buttonLabel.copyWith(fontSize: 11)),
+                  ),
+              ],
+            ),
           ),
-
-          const SizedBox(height: AppSpacing.sm),
-
-          // Grade de Navegacao Inferior (1 a 60)
-          QuestionNavigatorGrid(
-            totalQuestions: _questoes.length,
-            currentIndex: _currentIndex,
-            answeredIndices: _answeredIndices,
-            onSelectQuestion: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-          ),
-
-          const SizedBox(height: 16),
         ],
       ),
     );

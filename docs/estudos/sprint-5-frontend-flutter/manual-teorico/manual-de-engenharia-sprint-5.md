@@ -390,4 +390,154 @@ No Passo 3 da Sprint 5, construímos o núcleo prático da preparação para con
 
 *Para o gerenciamento de estado, adotei a arquitetura Feature-First com um `QuestoesController` desacoplado da UI via `ChangeNotifier`. O estado de respostas marcadas e gabaritos revelados é armazenado em mapas indexados pelo ID da questão (`Map<int, String>`), e não em variáveis locais dentro dos itens da lista. Dessa forma, quando um card é reciclado ao rolar a tela, o estado do aluno permanece integro na camada de apresentação, permitindo re-renderizações pontuais sem rebuilds desnecessários na árvore de componentes."*
 
+---
+
+# 📖 CAPÍTULO 4: COCKPIT DO SIMULADO OFICIAL PC-PE (60 ITENS / 4h30min)
+
+---
+
+### 🌐 FASE 1: CONEXÃO COM O MUNDO REAL (O CERTAME POLICIAL)
+
+Em um certame de alta exigência como o da **Polícia Civil de Pernambuco (PC-PE / Cebraspe)**, o maior inimigo do concurseiro não é apenas o conteúdo das disciplinas, mas a **gestão impiedosa do tempo** e a **estratégia de abstenção**.
+O candidato dispõe de exatamente **4 horas e 30 minutos (16.200 segundos)** para julgar 60 itens complexos e redigir a prova discursiva.
+Se responder uma questão em dúvida e errar, a banca pune com anulação de um item correto ($Nota = C - E$).
+Por isso, o aplicativo **CRAVOU** foi concebido não como um simples "leitor de perguntas", mas como um **Cockpit Tático de Alta Fidelidade**, reproduzindo as exatas condições psicológicas e operacionais da prova:
+1. **Cronômetro Regressivo Tabular de 4h30min**: os dígitos não "tremem" na tela graças à tipografia monoespaçada `JetBrains Mono`;
+2. **Auto-Save Atômico Silencioso**: cada toque do candidato é salvo no backend Spring Boot em segundo plano via HTTP `PUT /api/v1/tentativas/{id}/respostas` sem nunca congelar ou engasgar a interface;
+3. **Navegação Ágil via Grade Tática 1 a 60**: visualização panorâmica de itens respondidos, em branco e marcados para revisão tática;
+4. **Relatório Executivo Cebraspe**: auditoria final calculando a pontuação líquida oficial ($Nota = C - E$), percentual de aproveitamento e corte de aprovação (60%).
+
+---
+
+### 🏛️ FASE 2: ARQUITETURA & PADRÕES DE SOFTWARE
+
+```text
+frontend/lib/features/simulado/
+├── data/
+│   ├── datasources/
+│   │   └── simulado_remote_data_source.dart   # Integração Dio REST + Fallback de 60 itens PC-PE
+│   ├── models/
+│   │   ├── item_resposta_simulado.dart        # Marcação, flag de revisão e telemetria de segundos
+│   │   ├── resultado_simulado_model.dart      # Balanço C - E e estatísticas por disciplina
+│   │   └── simulado_model.dart                # Caderno oficial com 60 itens Cebraspe
+│   └── repositories/
+│       └── simulado_repository_impl.dart      # Implementação concreta do contrato
+├── domain/
+│   └── repositories/
+│       └── simulado_repository.dart           # Contrato puro desacoplado da camada de UI
+└── presentation/
+    ├── controllers/
+    │   └── simulado_controller.dart           # Gerência de estado com Timer e Auto-save atômico
+    ├── screens/
+    │   ├── simulado_cockpit_screen.dart       # Cockpit tático master com Co-Branding CRAVOU ✕ PC-PE
+    │   └── simulado_resultado_dialog.dart     # Relatório executivo da nota líquida Cebraspe
+    └── widgets/
+        └── grade_navegacao_modal.dart         # Matriz interativa de 60 itens com legendas de estado
+```
+
+---
+
+### 🎯 FASE 3: OS 4 PILARES DE ENGENHARIA DE SOFTWARE
+
+#### ⏱️ PILAR 1: CRONÔMETRO TABULAR & PREVENÇÃO DE MEMORY LEAKS
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+- **O Risco do `Timer` Ativo**: No Flutter/Dart, um `Timer.periodic` roda em loop contínuo no Event Loop. Se o usuário sair da tela ou o widget for desmontado sem que o timer seja cancelado (`timer.cancel()`), o timer continuará rodando em segundo plano indefinidamente, segurando referências do controller na memória e causando **Memory Leak**.
+- **Solução no CRAVOU**: No `SimuladoController`, implementamos o descarte no método `dispose()`:
+  ```dart
+  @override
+  void dispose() {
+    _cronometroTimer?.cancel();
+    super.dispose();
+  }
+  ```
+- **Tipografia Monoespaçada Tabular (`JetBrains Mono`)**: Em fontes proporcionais (como Roboto ou Arial), o número `1` é mais estreito que o `8`. Se um cronômetro usar fontes normais, a largura do texto mudará a cada segundo, fazendo o badge "dançar" na tela. Com `JetBrains Mono`, todos os caracteres ocupam rigorosamente a mesma largura, garantindo estabilidade visual absoluta.
+
+##### 🟡 Elevando para o NÍVEL PLENO:
+- **Alerta de Tempo Crítico (< 30 min)**: O controller expõe o getter reativo `isTempoCritico => _segundosRestantes <= 1800`. Ao atingir esse limiar, o `TimerBadge` altera sua cor de alerta para vermelho escuro/âmbar com pulso visual, sinalizando ao candidato a necessidade imediata de preenchimento da folha de respostas.
+
+---
+
+#### 💾 PILAR 2: AUTO-SAVE ATÔMICO SILENCIOSO (FIRE-AND-FORGET)
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+- **O Problema do `await` no Clique do Usuário**: Se a cada toque em `[ CERTO ]` colocássemos `await api.salvarResposta()`, caso a rede oscilasse ou a latência 4G subisse para 2 segundos, o botão ficaria travado e a interface congelaria (jank de UI).
+- **A Abordagem Fire-and-Forget com Captura Segura de Erro**:
+  ```dart
+  // Salva no estado reativo local imediatamente (0ms de latência percebida)
+  _respostas[_currentIndex] = ItemRespostaSimulado(...);
+  notifyListeners();
+
+  // Dispara auto-save em segundo plano sem travar a UI
+  if (_tentativaId != null) {
+    repository.registrarResposta(
+      tentativaId: _tentativaId!,
+      questaoId: item.questaoId,
+      respostaMarcada: opcao,
+      tempoGastoSegundos: _segundosPorItem[_currentIndex] ?? 0,
+    ).catchError((_) {}); // Silencioso: falhas temporárias não interrompem a concentração da prova
+  }
+  ```
+
+---
+
+#### ⚖️ PILAR 3: MOTOR CEBRASPE DE AVALIAÇÃO ($Nota = C - E$)
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+- **A Regra de Ouro do Cebraspe**:
+  $$\text{Nota Líquida} = \text{Acertos} - \text{Erros}$$
+- **A Importância da Abstenção**: Questões deixadas em branco (ou marcadas como abstenção) pontuam $0$ (não somam nem subtraem). O app CRAVOU oferece o botão de primeira classe `[ Deixar em Branco / Abstenção ]`, treinando a disciplina tática indispensável para a aprovação.
+
+##### 🟡 Elevando para o NÍVEL PLENO:
+- **Cálculo Consolidado e Desempenho por Disciplina**: O `ResultadoSimuladoModel` agrupa os acertos e erros por matéria (Português, Informática, RLM, Constitucional, Administrativo, Penal, Proc. Penal e Legislação Especial), calculando o saldo líquido individual de cada uma para orientar os estudos posteriores do concurseiro.
+
+---
+
+#### 🎨 PILAR 4: CO-BRANDING DINÂMICO & GRADE TÁTICA (1 A 60)
+
+##### 🟢 Destrinchando a fundo para o NÍVEL JÚNIOR:
+- **Grade de Navegação Modal (`GradeNavegacaoModal`)**:
+  - Exibe os 60 botões da prova com mapeamento de cores semântico:
+    - **Azul Cobalto (`#2563EB`)**: Questão atualmente aberta no cockpit;
+    - **Verde Esmeralda (`#059669`)**: Questão respondida;
+    - **Laranja Quente (`#F97316`)**: Questão marcada para revisão tática com indicador circular;
+    - **Cinza Superfície (`#1E293B`)**: Questão em branco.
+- **Co-Branding Dinâmico Oficial**:
+  - `[ Coruja Cravou ] CRAVOU  ✕  [ Distintivo PC-PE ]` no AppBar do Cockpit, afirmando a identidade de excelência da plataforma.
+
+---
+
+### 📊 RÉGUA DE MATURIDADE: PASSO 4 (COCKPIT DO SIMULADO)
+
+| Dimensão | 🔴 Nível Estagiário / Júnior Iniciante | 🟡 Nível Pleno Corporativo | 🟢 Nível Sênior / Tech Lead (O que Implementamos) |
+| :--- | :--- | :--- | :--- |
+| **Cronômetro da Prova** | Usa `Text` com fonte comum que treme na tela; esquece de cancelar o timer e vaza memória ao fechar o app. | Cria um timer com `cancel()` no dispose, mas sem tipografia tabular ou alerta de tempo crítico. | Utiliza `Timer.periodic` controlado no controller, formatação tabular monoespaçada `JetBrains Mono` e auto-finalização ao zerar o tempo. |
+| **Auto-Save de Respostas** | Só salva ao clicar em "Entregar Prova"; se a bateria do celular acabar no item 59, o aluno perde todas as respostas. | Salva com `await` no botão, travando a tela em conexões 3G/4G instáveis. | Implementa auto-save atômico e assíncrono (fire-and-forget) com telemetria individual de segundos gastos por item. |
+| **Navegação na Prova** | Apenas botões "Próxima" e "Anterior", forçando 59 cliques para ir do item 1 ao 60. | Lista suspensa simples sem visualização de status das questões. | Desenvolve a `GradeNavegacaoModal` com matriz 1-60, saltos imediatos, chips de legenda e sinalizador de revisão tática. |
+| **Cálculo de Nota** | Soma acertos e divide pelo total (formato vestibular tradicional, inadequado para concurso policial). | Subtrai erros de acertos sem detalhamento por disciplina nem critério de corte. | Modela o `ResultadoSimuladoModel` Cebraspe completo ($C - E$, abstenções, tempo total e detalhamento analítico por matéria). |
+
+---
+
+### 🧪 Placar de Validação do Passo 4
+- **Flutter Analyzer:** `Analyzing frontend... No issues found! (ran in 9.0s)`
+- **Testes Automatizados:** `All tests passed! (00:23 +29)`
+  - `simulado_models_test.dart`: 3 testes unitários (serialização, telemetria e fórmula Cebraspe $C - E$).
+  - `simulado_controller_test.dart`: 5 testes unitários (ciclo de vida, navegação 1-60, auto-save e entrega).
+  - `simulado_cockpit_test.dart`: 1 teste de widget cobrindo Co-Branding, botões Cebraspe e Grade de Navegação.
+  - Testes legados de autenticação, catálogo de questões e design system: 20 testes passando sem regressão.
+- **Resultado Geral:** **100% SUCCESS (29 de 29 testes passando)**
+
+---
+
+### 🎯 FASE 5: SIMULAÇÃO DE ENTREVISTA TÉCNICA (SENIOR FLUTTER ENGINEER)
+
+> 🎤 **Pergunta do Staff Engineer / Entrevistador:**  
+> *"Em um aplicativo de simulado oficial onde o candidato responde a uma prova de 4h30min com 60 itens e concorrência de rede em tempo real, quais estratégias você adota para garantir que falhas de rede no auto-save não degradem a experiência de digitação e resposta, e como impede memory leaks causados por temporizadores regressivos?"*
+
+### 💡 Resposta Modelo Sênior:
+*"Para isolar a experiência do candidato de oscilações de rede, adoto uma estratégia de sincronização otimista com desacoplamento assíncrono: ao tocar em uma alternativa, o estado local do controller (`ChangeNotifier`) é atualizado instantaneamente em memória (0ms de latência percebida) e a UI é notificada. Paralelamente, disparamos a persistência remota via HTTP (`PUT /api/v1/tentativas/{id}/respostas`) em segundo plano de forma desacoplada, configurando timeouts rígidos (ex: 4s) e capturando erros sem disparar diálogos de bloqueio que desconcentrem o candidato durante o teste.*
+
+*No que tange aos temporizadores, temporizadores periódicos criados via `Timer.periodic` registram callbacks na fila do Event Loop do Dart. Se a referência do controller ou do widget não for limpa no momento em que a rota for retirada da pilha de navegação, a closure manterá o controller vivo na memória (vazamento de memória). Garantimos a liberação através do contrato rigoroso do ciclo de vida: o `SimuladoController` cancela explicitamente a instância de `Timer` em seu método `dispose()`, e o `SimuladoCockpitScreen` remove os listeners associados no desmonte do widget, mantendo o consumo de RAM estritamente sob controle mesmo após dezenas de sessões de prova."*
+
+
 

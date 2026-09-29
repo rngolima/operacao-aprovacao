@@ -12,8 +12,9 @@ class TimerBadge extends StatelessWidget {
   const TimerBadge({
     super.key,
     required this.formattedTime,
-    this.isCritical = false,
-  });
+    bool isCritical = false,
+    bool? isUrgent,
+  }) : isCritical = isUrgent ?? isCritical;
 
   @override
   Widget build(BuildContext context) {

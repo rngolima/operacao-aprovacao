@@ -87,4 +87,12 @@ abstract class AppTypography {
   static TextStyle get heading3 => titleMedium;
   static TextStyle get caption => bodySmall;
   static TextStyle get button => buttonText;
+  static TextStyle get buttonLabel => buttonText;
+  static TextStyle get tabularDigits => questionNumber;
+  static TextStyle get displayLarge => GoogleFonts.inter(
+        fontSize: 40,
+        fontWeight: FontWeight.w800,
+        color: AppColors.textPrimary,
+        letterSpacing: -1.0,
+      );
 }
