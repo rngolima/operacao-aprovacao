@@ -51,7 +51,8 @@ class OperacaoAprovacaoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cravou - Treinador Tático de Concursos',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
+      theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       home: LoginScreen(
         controller: authController,

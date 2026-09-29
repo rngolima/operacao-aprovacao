@@ -5,17 +5,20 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/pcpe_badge.dart';
 import '../../../../core/widgets/tactical_owl_logo.dart';
 import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
+import '../../../../core/network/api_client.dart';
+import '../../data/datasources/questoes_remote_data_source.dart';
+import '../../data/repositories/questoes_repository_impl.dart';
 import '../controllers/questoes_controller.dart';
 import '../widgets/disciplina_filter_bar.dart';
 import '../widgets/questao_card_widget.dart';
 
 /// Tela do Catalogo de Questoes Cebraspe e Modo Treino Avulso do CRAVOU.
 class CatalogoQuestoesScreen extends StatefulWidget {
-  final QuestoesController controller;
+  final QuestoesController? controller;
 
   const CatalogoQuestoesScreen({
     super.key,
-    required this.controller,
+    this.controller,
   });
 
   @override
@@ -23,20 +26,37 @@ class CatalogoQuestoesScreen extends StatefulWidget {
 }
 
 class _CatalogoQuestoesScreenState extends State<CatalogoQuestoesScreen> {
+  late final QuestoesController _controller;
+  late final bool _internalController;
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    if (widget.controller.questoes.isEmpty && !widget.controller.isLoading) {
-      widget.controller.inicializar();
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _internalController = false;
+    } else {
+      _controller = QuestoesController(
+        QuestoesRepositoryImpl(
+          remoteDataSource: QuestoesRemoteDataSource(apiClient: ApiClient()),
+        ),
+      );
+      _internalController = true;
     }
-    widget.controller.addListener(_onControllerUpdate);
+
+    if (_controller.questoes.isEmpty && !_controller.isLoading) {
+      _controller.inicializar();
+    }
+    _controller.addListener(_onControllerUpdate);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_onControllerUpdate);
+    _controller.removeListener(_onControllerUpdate);
+    if (_internalController) {
+      _controller.dispose();
+    }
     _searchController.dispose();
     super.dispose();
   }
@@ -47,7 +67,7 @@ class _CatalogoQuestoesScreenState extends State<CatalogoQuestoesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = widget.controller;
+    final controller = _controller;
     final totalRespondidas = controller.totalAcertos + controller.totalErros;
     final aproveitamento = totalRespondidas > 0
         ? ((controller.totalAcertos / totalRespondidas) * 100).toStringAsFixed(0)

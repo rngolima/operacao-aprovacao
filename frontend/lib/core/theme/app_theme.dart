@@ -4,40 +4,43 @@ import 'app_colors.dart';
 import 'app_spacing.dart';
 import 'app_typography.dart';
 
-/// Configuracao do Tema Oficial Dark Operacional da Operacao Aprovacao.
+/// Configuração do Tema Oficial do CRAVOU (Estilo Clean Editorial / QConcursos).
 abstract class AppTheme {
-  static ThemeData get darkTheme {
+  /// Tema Claro Primário: Fundo suave, cards brancos e alta ergonomia de leitura
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.primary,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
-        secondary: AppColors.primaryLight,
+        secondary: AppColors.brandOrange,
         surface: AppColors.surface,
         error: AppColors.error,
         onPrimary: Colors.white,
         onSurface: AppColors.textPrimary,
       ),
 
-      // AppBar Tatica e Sobria
+      // AppBar Editorial Limpa
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         centerTitle: false,
-        scrolledUnderElevation: 0,
+        scrolledUnderElevation: 0.5,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          systemNavigationBarColor: AppColors.background,
-          systemNavigationBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: AppColors.surface,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
-        titleTextStyle: AppTypography.headlineMedium,
+        titleTextStyle: AppTypography.headlineMedium.copyWith(
+          color: AppColors.textPrimary,
+        ),
       ),
 
-      // Cards Taticos de Profundidade
+      // Cards Brancos com Sombra Suave
       cardTheme: const CardThemeData(
         color: AppColors.surface,
         elevation: 0,
@@ -48,6 +51,25 @@ abstract class AppTheme {
         ),
       ),
 
+      // Inputs de Formulários
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceElevated,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderSide: const BorderSide(color: AppColors.surfaceBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderSide: const BorderSide(color: AppColors.surfaceBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderSide: const BorderSide(color: AppColors.brandCobalt, width: 1.5),
+        ),
+        labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+      ),
+
       // Divisores Sutis
       dividerTheme: const DividerThemeData(
         color: AppColors.surfaceBorder,
@@ -56,4 +78,7 @@ abstract class AppTheme {
       ),
     );
   }
+
+  /// Alias de conveniência
+  static ThemeData get darkTheme => lightTheme;
 }

@@ -5,11 +5,12 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/widgets/tactical_owl_logo.dart';
-import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
+import '../../../dashboard/presentation/screens/dashboard_screen.dart';
 import '../controllers/auth_controller.dart';
 
-/// Tela de Cadastro Operacional de Novos Candidatos.
-/// Permite selecao de cargo alvo (Agente vs Escrivao PC-PE) e registro de conta.
+/// Tela de Alistamento Operacional de Novos Candidatos.
+/// Permite selecao escalonada: primeiro o CONCURSO ALVO (PC-PE, PM-PE, PP-PE)
+/// e em seguida o CARGO ALVO especifico do certame selecionado.
 class RegisterScreen extends StatefulWidget {
   final AuthController? controller;
 
@@ -27,6 +28,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  
+  // Mapa de Concursos Alvo e seus respectivos Cargos Oficiais
+  static const Map<String, List<String>> _cargosPorConcurso = {
+    'PC-PE': ['Agente de Polícia', 'Escrivão de Polícia', 'Delegado de Polícia'],
+    'PM-PE': ['Soldado da PM', 'Oficial da PM'],
+    'PP-PE': ['Policial Penal'],
+  };
+
+  String _selectedConcurso = 'PC-PE';
   String _selectedCargo = 'Agente de Polícia';
   bool _obscurePassword = true;
 
@@ -38,6 +48,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  void _onConcursoChanged(String concurso) {
+    setState(() {
+      _selectedConcurso = concurso;
+      // Define automaticamente o primeiro cargo do concurso selecionado
+      _selectedCargo = _cargosPorConcurso[concurso]!.first;
+    });
+  }
+
   void _handleSubmit() async {
     HapticFeedback.lightImpact();
     if (!_formKey.currentState!.validate()) return;
@@ -47,12 +65,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         name: _nameController.text,
         email: _emailController.text,
         password: _passwordController.text,
-        targetCargo: _selectedCargo,
+        targetCargo: '$_selectedCargo - $_selectedConcurso',
       );
       if (success && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (_) => const SimuladoCockpitScreen(),
+            builder: (_) => DashboardScreen(
+              userName: _nameController.text.trim().isNotEmpty ? _nameController.text.trim() : 'Candidato CRAVOU',
+              concursoAlvo: '$_selectedConcurso ($_selectedCargo)',
+            ),
           ),
           (route) => false,
         );
@@ -60,7 +81,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const SimuladoCockpitScreen(),
+          builder: (_) => DashboardScreen(
+            userName: _nameController.text.trim().isNotEmpty ? _nameController.text.trim() : 'Candidato CRAVOU',
+            concursoAlvo: '$_selectedConcurso ($_selectedCargo)',
+          ),
         ),
         (route) => false,
       );
@@ -70,6 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
+    final cargosDisponiveis = _cargosPorConcurso[_selectedConcurso] ?? [];
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -80,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Cadastro Operacional', style: AppTypography.heading3),
+        title: Text('Alistamento de Candidato', style: AppTypography.heading3),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -98,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Icone da Marca Centralizado
-                    Center(
+                    const Center(
                       child: TacticalOwlLogo(size: 64.0),
                     ),
                     SizedBox(height: AppSpacing.md),
@@ -113,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: AppSpacing.xs),
                     Text(
-                      'Preencha seus dados para liberar acesso aos simulados oficiais PC-PE.',
+                      'Cadastre suas credenciais para liberar simulados e treinos táticos.',
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -194,37 +219,87 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           SizedBox(height: AppSpacing.lg),
 
-                          // Seletor de Cargo Alvo (PC-PE)
+                          // 1º PASSO DE SELEÇÃO: CONCURSO ALVO (3 GRANDES DE PE)
                           Text(
-                            'CARGO ALVO:',
+                            'CONCURSO ALVO (PERNAMBUCO):',
                             style: AppTypography.caption.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textSecondary,
+                              color: AppColors.brandOrange,
+                              letterSpacing: 0.8,
                             ),
                           ),
                           SizedBox(height: AppSpacing.xs),
                           Row(
                             children: [
                               Expanded(
-                                child: _CargoChoiceChip(
-                                  label: 'Agente PC-PE',
-                                  isSelected: _selectedCargo == 'Agente de Polícia',
-                                  onSelected: () => setState(() => _selectedCargo = 'Agente de Polícia'),
+                                child: _ConcursoChoiceChip(
+                                  sigla: 'PC-PE',
+                                  nome: 'Polícia Civil',
+                                  isSelected: _selectedConcurso == 'PC-PE',
+                                  onSelected: () => _onConcursoChanged('PC-PE'),
                                 ),
                               ),
-                              SizedBox(width: AppSpacing.sm),
+                              SizedBox(width: AppSpacing.xs),
                               Expanded(
-                                child: _CargoChoiceChip(
-                                  label: 'Escrivão PC-PE',
-                                  isSelected: _selectedCargo == 'Escrivão de Polícia',
-                                  onSelected: () => setState(() => _selectedCargo = 'Escrivão de Polícia'),
+                                child: _ConcursoChoiceChip(
+                                  sigla: 'PM-PE',
+                                  nome: 'Polícia Militar',
+                                  isSelected: _selectedConcurso == 'PM-PE',
+                                  onSelected: () => _onConcursoChanged('PM-PE'),
+                                ),
+                              ),
+                              SizedBox(width: AppSpacing.xs),
+                              Expanded(
+                                child: _ConcursoChoiceChip(
+                                  sigla: 'PP-PE',
+                                  nome: 'Polícia Penal',
+                                  isSelected: _selectedConcurso == 'PP-PE',
+                                  onSelected: () => _onConcursoChanged('PP-PE'),
                                 ),
                               ),
                             ],
                           ),
+                          SizedBox(height: AppSpacing.md),
+
+                          // 2º PASSO DE SELEÇÃO: CARGO ALVO DINÂMICO
+                          Text(
+                            'CARGO ALVO NA $_selectedConcurso:',
+                            style: AppTypography.caption.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.xs),
+                          Wrap(
+                            spacing: AppSpacing.sm,
+                            runSpacing: AppSpacing.xs,
+                            children: cargosDisponiveis.map((cargo) {
+                              final isSelected = _selectedCargo == cargo;
+                              return ChoiceChip(
+                                label: Text(
+                                  cargo,
+                                  style: AppTypography.bodySmall.copyWith(
+                                    color: isSelected ? AppColors.brandOrange : AppColors.textSecondary,
+                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                  ),
+                                ),
+                                selected: isSelected,
+                                onSelected: (_) => setState(() => _selectedCargo = cargo),
+                                backgroundColor: AppColors.background,
+                                selectedColor: AppColors.brandOrange.withValues(alpha: 0.15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                                  side: BorderSide(
+                                    color: isSelected ? AppColors.brandOrange : AppColors.surfaceBorder,
+                                    width: isSelected ? 1.8 : 1.0,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
                           SizedBox(height: AppSpacing.xl),
 
-                          // Botao [ CRIAR CREDENCIAL ]
+                          // Botao Primario de Acao Limpo: CONCLUIR ALISTAMENTO
                           SizedBox(
                             height: 52,
                             child: ElevatedButton(
@@ -235,6 +310,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                                 ),
+                                elevation: 0,
                               ),
                               child: controller?.isLoading == true
                                   ? const SizedBox(
@@ -246,7 +322,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     )
                                   : Text(
-                                      '[ CRIAR CREDENCIAL ]',
+                                      'CONCLUIR ALISTAMENTO',
                                       style: AppTypography.button.copyWith(
                                         color: AppColors.brandWhite,
                                         fontWeight: FontWeight.w800,
@@ -269,13 +345,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class _CargoChoiceChip extends StatelessWidget {
-  final String label;
+/// Chip de Seleção de Concurso Alvo (PC-PE, PM-PE, PP-PE)
+class _ConcursoChoiceChip extends StatelessWidget {
+  final String sigla;
+  final String nome;
   final bool isSelected;
   final VoidCallback onSelected;
 
-  const _CargoChoiceChip({
-    required this.label,
+  const _ConcursoChoiceChip({
+    required this.sigla,
+    required this.nome,
     required this.isSelected,
     required this.onSelected,
   });
@@ -283,26 +362,43 @@ class _CargoChoiceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onSelected,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onSelected();
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.brandOrange.withValues(alpha: 0.15) : AppColors.background,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(
             color: isSelected ? AppColors.brandOrange : AppColors.surfaceBorder,
-            width: isSelected ? 1.8 : 1.0,
+            width: isSelected ? 2.0 : 1.0,
           ),
         ),
-        child: Center(
-          child: Text(
-            label,
-            style: AppTypography.bodySmall.copyWith(
-              color: isSelected ? AppColors.brandOrange : AppColors.textSecondary,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              sigla,
+              style: AppTypography.bodyMedium.copyWith(
+                color: isSelected ? AppColors.brandOrange : AppColors.textPrimary,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
+            const SizedBox(height: 2),
+            Text(
+              nome,
+              style: AppTypography.caption.copyWith(
+                fontSize: 10,
+                color: isSelected ? AppColors.brandOrange : AppColors.textSecondary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );

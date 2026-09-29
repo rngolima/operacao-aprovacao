@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../data/models/questao_model.dart';
@@ -30,79 +29,90 @@ class QuestaoCardWidget extends StatelessWidget {
         (respostaSelecionada!.toUpperCase() == questao.gabaritoOficial.toUpperCase());
 
     return TacticalCard(
-      padding: EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header com Tags: Disciplina, Assunto, Orgao e Banca
+          // Barra de Metadados Superior no estilo QConcursos
           Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.xs,
+            spacing: 8,
+            runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              // Badge de Numero da Questao
+              // Badge de Identificação da Questão
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xxs,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
-                  border: Border.all(color: AppColors.surfaceBorderSubtle),
+                  color: AppColors.brandNavy,
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'ITEM #$index',
-                  style: AppTypography.questionNumber.copyWith(
-                    color: AppColors.brandOrange,
-                    fontWeight: FontWeight.w700,
+                  'Q${questao.id > 0 ? questao.id : index}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 11,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
 
               // Tag da Disciplina
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xxs,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.brandCobalt.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
-                  border: Border.all(color: AppColors.brandCobalt.withValues(alpha: 0.4)),
+                  color: AppColors.brandCobalt.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: AppColors.brandCobalt.withValues(alpha: 0.25)),
                 ),
                 child: Text(
                   questao.disciplina,
-                  style: AppTypography.tagLabel.copyWith(
-                    color: AppColors.primaryLight,
+                  style: const TextStyle(
+                    color: AppColors.brandCobalt,
+                    fontWeight: FontWeight.w700,
                     fontSize: 11,
                   ),
                 ),
               ),
 
-              // Tag do Assunto
+              // Assunto
               Text(
-                '• ${questao.assunto}',
+                '•  ${questao.assunto}',
                 style: AppTypography.bodySmall.copyWith(
                   color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
                   fontSize: 12,
                 ),
               ),
             ],
           ),
-          SizedBox(height: AppSpacing.md),
 
-          // Enunciado Cebraspe de Leitura Prolongada
+          const SizedBox(height: 6),
+
+          // Linha de Metadados do Concurso (Ano, Banca, Órgão, Cargo)
+          Text(
+            'Ano: ${questao.ano}  |  Banca: ${questao.banca}  |  Órgão: ${questao.orgao}  |  Cargo: ${questao.cargo}',
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 11,
+            ),
+          ),
+
+          const Divider(height: 24, thickness: 1, color: AppColors.surfaceBorder),
+
+          // Enunciado Cebraspe de Alta Legibilidade
           Text(
             questao.enunciado,
             style: AppTypography.bodyLarge.copyWith(
               color: AppColors.textPrimary,
-              height: 1.6,
+              height: 1.65,
+              fontSize: 15,
             ),
           ),
-          SizedBox(height: AppSpacing.lg),
 
-          // Botoes Taticos [ CERTO ] e [ ERRADO ]
+          const SizedBox(height: 20),
+
+          // Botões de Opção [ CERTO ] e [ ERRADO ]
           Row(
             children: [
               Expanded(
@@ -117,7 +127,7 @@ class QuestaoCardWidget extends StatelessWidget {
                   },
                 ),
               ),
-              SizedBox(width: AppSpacing.md),
+              const SizedBox(width: 14),
               Expanded(
                 child: _OptionButton(
                   label: '[ ERRADO ]',
@@ -133,19 +143,21 @@ class QuestaoCardWidget extends StatelessWidget {
             ],
           ),
 
-          // Gabarito Comentado e Didatico (Revelado apos o clique)
+          // Gabarito Comentado e Resolução Didática (Revelado após responder)
           if (foiRespondida) ...[
-            SizedBox(height: AppSpacing.md),
+            const SizedBox(height: 16),
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              padding: EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: acertou
-                    ? AppColors.successBackground.withValues(alpha: 0.3)
-                    : AppColors.errorBackground.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    ? const Color(0xFFF0FDF4)
+                    : const Color(0xFFFEF2F2),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: acertou ? AppColors.successBorder : AppColors.errorBorder,
+                  color: acertou
+                      ? const Color(0xFF86EFAC)
+                      : const Color(0xFFFCA5A5),
                 ),
               ),
               child: Column(
@@ -155,26 +167,64 @@ class QuestaoCardWidget extends StatelessWidget {
                     children: [
                       Icon(
                         acertou ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                        color: acertou ? AppColors.successBorder : AppColors.errorBorder,
+                        color: acertou
+                            ? const Color(0xFF16A34A)
+                            : const Color(0xFFDC2626),
                         size: 20,
                       ),
-                      SizedBox(width: AppSpacing.sm),
+                      const SizedBox(width: 8),
                       Text(
-                        acertou ? 'CRAVOU! VOCÊ ACERTOU!' : 'ERRADA! ATENÇÃO AO DETALHE:',
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: acertou ? AppColors.successBorder : AppColors.errorBorder,
+                        acertou ? 'CRAVOU! RESPOSTA CERTA' : 'RESPOSTA INCORRETA',
+                        style: TextStyle(
+                          color: acertou
+                              ? const Color(0xFF16A34A)
+                              : const Color(0xFFDC2626),
                           fontWeight: FontWeight.w800,
+                          fontSize: 13,
                           letterSpacing: 0.5,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: acertou
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFFFCA5A5),
+                          ),
+                        ),
+                        child: Text(
+                          'Gabarito: ${questao.gabaritoOficial}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: acertou
+                                ? const Color(0xFF16A34A)
+                                : const Color(0xFFDC2626),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Resolução Didática:',
+                    style: AppTypography.titleMedium.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Text(
                     questao.comentarioDidatico,
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.textPrimary,
                       height: 1.5,
+                      fontSize: 13,
                     ),
                   ),
                 ],
@@ -204,44 +254,56 @@ class _OptionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = AppColors.surfaceElevated;
-    Color borderColor = AppColors.surfaceBorder;
+    Color backgroundColor = const Color(0xFFF8FAFC);
+    Color borderColor = const Color(0xFFCBD5E1);
     Color textColor = AppColors.textPrimary;
+    Widget? icon;
 
     if (gabaritoRevelado) {
       if (isCorrect) {
-        backgroundColor = AppColors.successBackground.withValues(alpha: 0.4);
-        borderColor = AppColors.successBorder;
-        textColor = AppColors.successBorder;
+        backgroundColor = const Color(0xFFECFDF5);
+        borderColor = const Color(0xFF10B981);
+        textColor = const Color(0xFF065F46);
+        icon = const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 18);
       } else if (isSelected && !isCorrect) {
-        backgroundColor = AppColors.errorBackground.withValues(alpha: 0.4);
-        borderColor = AppColors.errorBorder;
-        textColor = AppColors.errorBorder;
+        backgroundColor = const Color(0xFFFEF2F2);
+        borderColor = const Color(0xFFEF4444);
+        textColor = const Color(0xFF991B1B);
+        icon = const Icon(Icons.cancel_rounded, color: Color(0xFFEF4444), size: 18);
       }
     } else if (isSelected) {
-      backgroundColor = AppColors.brandCobalt.withValues(alpha: 0.25);
+      backgroundColor = AppColors.brandCobalt.withValues(alpha: 0.1);
       borderColor = AppColors.brandCobalt;
-      textColor = AppColors.brandWhite;
+      textColor = AppColors.brandCobalt;
     }
 
     return GestureDetector(
       onTap: gabaritoRevelado ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: borderColor, width: 1.5),
         ),
-        child: Center(
-          child: Text(
-            label,
-            style: AppTypography.buttonText.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w700,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              icon,
+              const SizedBox(width: 8),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+                letterSpacing: 1.0,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

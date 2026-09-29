@@ -3,13 +3,10 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/network/api_client.dart';
 import '../../../../core/widgets/cravou_brand_header.dart';
 import '../../../../core/widgets/tactical_card.dart';
-import '../../../questoes/data/datasources/questoes_remote_data_source.dart';
-import '../../../questoes/data/repositories/questoes_repository_impl.dart';
+import '../../../dashboard/presentation/screens/dashboard_screen.dart';
 import '../../../questoes/presentation/controllers/questoes_controller.dart';
-import '../../../questoes/presentation/screens/catalogo_questoes_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'register_screen.dart';
 
@@ -42,18 +39,14 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  QuestoesController _getEffectiveQuestoesController() {
-    return widget.questoesController ??
-        QuestoesController(
-          QuestoesRepositoryImpl(
-            remoteDataSource: QuestoesRemoteDataSource(apiClient: ApiClient()),
-          ),
-        );
-  }
-
   void _handleSubmit() async {
     HapticFeedback.lightImpact();
     if (!_formKey.currentState!.validate()) return;
+
+    final emailPrefix = _emailController.text.split('@').first;
+    final formattedName = emailPrefix.isNotEmpty
+        ? emailPrefix[0].toUpperCase() + emailPrefix.substring(1)
+        : 'Rudson Lima';
 
     if (widget.controller != null) {
       final success = await widget.controller!.login(
@@ -63,8 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (success && mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => CatalogoQuestoesScreen(
-              controller: _getEffectiveQuestoesController(),
+            builder: (_) => DashboardScreen(
+              userName: formattedName,
+              concursoAlvo: 'PC-PE (Agente)',
             ),
           ),
         );
@@ -73,8 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // Modo de demonstracao direta caso controller nao esteja injetado
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => CatalogoQuestoesScreen(
-            controller: _getEffectiveQuestoesController(),
+          builder: (_) => DashboardScreen(
+            userName: formattedName,
+            concursoAlvo: 'PC-PE (Agente)',
           ),
         ),
       );

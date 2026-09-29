@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 
-/// Card Tatico com borda sutil de 1px e acabamento profissional.
+/// Card Editorial Clean com borda sutil de 1px e sombra suave profissional (Estilo QConcursos).
 class TacticalCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -28,6 +28,13 @@ class TacticalCard extends StatelessWidget {
           color: borderColor ?? AppColors.surfaceBorder,
           width: 1.0,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: child,
     );
