@@ -6,6 +6,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/cravou_brand_header.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../dashboard/presentation/screens/dashboard_screen.dart';
+import '../../../admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../../questoes/presentation/controllers/questoes_controller.dart';
 import '../controllers/auth_controller.dart';
 import 'register_screen.dart';
@@ -307,6 +308,37 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.brandNavy,
                               side: const BorderSide(color: AppColors.surfaceBorder, width: 1.2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Botão Direto para o Painel do Administrador (QG CRAVOU)
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              HapticFeedback.heavyImpact();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const AdminDashboardScreen(adminNome: 'Rudson Lima'),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.admin_panel_settings_rounded, size: 18, color: AppColors.brandOrange),
+                            label: const Text(
+                              'PAINEL DO ADMINISTRADOR (QG)',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.brandNavy,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFFF7ED),
+                              side: const BorderSide(color: Color(0xFFFB923C), width: 1.3),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                               ),
