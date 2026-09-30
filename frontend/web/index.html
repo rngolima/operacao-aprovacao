@@ -55,7 +55,7 @@
           // Limpa caracteres especiais, emojis e marcações markdown para fala natural e humana
           var cleanText = text
             .replace(/[\*\_#`>]/g, '')
-            .replace(/[🦉🦅👉💡🎯🔍⚖️⚡✨✓✗💬📢🔊⏸️]/g, '')
+            .replace(/[🦉🦅👉💡🎯🔍⚖️⚡✨✓✗💬📢🔊⏸️🎙️]/g, '')
             .replace(/https?:\/\/\S+/g, '')
             .replace(/\s+/g, ' ')
             .trim();
@@ -101,6 +101,50 @@
       },
       isSpeaking: function() {
         return ('speechSynthesis' in window) && window.speechSynthesis.speaking;
+      }
+    };
+
+    // Player de Áudio Ultra-Realista ElevenLabs (MP3)
+    window.elevenLabsPlayer = {
+      _currentAudio: null,
+      playBase64: function(base64Mp3) {
+        try {
+          this.stop();
+          if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+          }
+          var audioUri = 'data:audio/mpeg;base64,' + base64Mp3;
+          var audio = new Audio(audioUri);
+          this._currentAudio = audio;
+          audio.onplay = function() {
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(true);
+          };
+          audio.onended = function() {
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(false);
+          };
+          audio.onerror = function(e) {
+            console.error('Erro ao tocar audio ElevenLabs:', e);
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(false);
+          };
+          audio.play();
+          return true;
+        } catch(err) {
+          console.error('Falha no ElevenLabs player:', err);
+          return false;
+        }
+      },
+      stop: function() {
+        if (this._currentAudio) {
+          try {
+            this._currentAudio.pause();
+            this._currentAudio.currentTime = 0;
+          } catch(e) {}
+          this._currentAudio = null;
+          if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(false);
+        }
+      },
+      isPlaying: function() {
+        return this._currentAudio != null && !this._currentAudio.paused;
       }
     };
   </script>

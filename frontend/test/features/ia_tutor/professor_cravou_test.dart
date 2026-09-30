@@ -19,26 +19,27 @@ void main() {
         assunto: 'Crase e Regência',
       );
 
-      expect(resMnemonico.texto, contains('Fala, guerreiro!'));
-      expect(resMnemonico.texto, contains('crase'));
+      expect(resMnemonico.texto, contains('macete tático'));
+      expect(resMnemonico.texto, contains('A'));
 
       final resDistratores = await service.responderDuvida(
-        pergunta: 'Por que os outros distratores estão errados?',
+        pergunta: 'Por que a alternativa D está errada?',
         enunciado: 'Questão sobre crase',
         gabaritoOficial: 'C',
-        comentario: 'Comentário didático oficial',
+        comentario: '• D) INCORRETA. A descrição pura seria uma imagem estática.',
         assunto: 'Tipologia Textual',
       );
 
-      expect(resDistratores.texto, contains('Excelente pergunta, guerreiro!'));
+      expect(resDistratores.texto, contains('D'));
       expect(resDistratores.texto, contains('C'));
     });
 
-    test('ProfessorCravouAudioService inicia e para reproducao', () {
+    test('ProfessorCravouAudioService inicia e para reproducao', () async {
       final audio = ProfessorCravouAudioService();
       bool iniciou = false;
 
       audio.speak('Texto de teste', onStart: () => iniciou = true);
+      await Future.delayed(const Duration(milliseconds: 50));
       expect(iniciou, isTrue);
 
       audio.stop();

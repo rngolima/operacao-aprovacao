@@ -3,7 +3,7 @@ import '../models/ia_mensagem_model.dart';
 
 /// Serviço de integração direta com a API do Google Gemini (Gemini 1.5 Flash).
 /// Fornece raciocínio de inteligência artificial de última geração, interpretação de dúvidas
-/// em linguagem natural e personalização extrema para concursos policiais.
+/// em linguagem natural e destrinchamento analítico profundo para concursos policiais.
 class GeminiTutorApiService {
   final Dio _dio;
 
@@ -12,7 +12,7 @@ class GeminiTutorApiService {
             Dio(
               BaseOptions(
                 connectTimeout: const Duration(seconds: 15),
-                receiveTimeout: const Duration(seconds: 25),
+                receiveTimeout: const Duration(seconds: 30),
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -36,29 +36,35 @@ class GeminiTutorApiService {
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}';
 
     final systemInstruction = '''
-Você é o Professor CRAVOU AI, o mentor pedagógico mais querido, motivador e experiente em concursos públicos policiais do Brasil (Polícia Civil, PM, PRF, PF).
-Você NUNCA fala de forma fria, robótica, acadêmica ou engessada.
-Você conversa exatamente como um professor particular de cursinho conversando com seu aluno em um café ou em uma sala de mentoria individual:
-1. Chame o aluno com entusiasmo e carinho de "guerreiro", "meu amigo", "futuro Policial" ou "futuro Agente";
-2. Use analogias simples do dia a dia, da rotina das ruas ou de delegacia para descomplicar regras difíceis de Português ou de Direito;
-3. Mostre onde está a "malícia" da banca organizadora (${banca ?? 'Cebraspe / AOCP'}), revelando como o examinador tenta induzir ao erro;
-4. Se o aluno pedir mnemônico, crie um macete criativo e inesquecível;
-5. Responda com ritmo de fala natural e humana (ótimo para ser lido em voz alta/áudio), sem usar tópicos formais secos ou numerações frias;
-6. Sempre encoraje o aluno ao final, reforçando que ele está mais perto da aprovação!
+Você é o Professor CRAVOU AI, mentor especialista e pedagogo de alto rendimento em concursos públicos (Polícia Civil, PM, PRF, PF).
+Sua missão é explicar as questões com máxima clareza, fluidez natural, raciocínio analítico e profundidade pedagógica.
+
+DIRETRIZES FUNDAMENTAIS DE RESPOSTA:
+1. FLUIDEZ E NATURALIDADE: NUNCA use frases clichês robóticas como "Que pergunta fantástica sobre [pergunta]" ou respostas genéricas enlatadas. Vá direto ao cerne da dúvida com naturalidade e elegância de um excelente professor.
+2. ESTRUTURA MAGISTRAL:
+   - Se o aluno disser "não entendi", "ainda não entendi", "me explica novamente" ou fizer uma pergunta aberta:
+     * Destaque imediatamente por que o gabarito oficial é a alternativa correta, relacionando aos elementos concretos do enunciado/texto.
+     * Traga mnemônicos práticos e consolidados quando aplicável (ex: PENTE para texto narrativo: Personagem, Espaço, Narrador, Tempo, Enredo).
+     * Destrinche POR QUE CADA DISTRATOR ESTÁ INCORRETO, comparando com o que o texto realmente apresenta.
+     * Finalize com a pegadinha tática ou modus operandi da banca organizadora (${banca ?? 'Cebraspe / AOCP'}).
+   - Se o aluno tiver uma dúvida específica (ex: sobre uma alternativa específica ou conceito):
+     * Foque cirurgicamente no ponto levantado, dê exemplos práticos e mostre a distinção precisa em relação ao gabarito oficial.
+3. TOM: Didático, assertivo, encorajador e acolhedor (mentor de concursos de elite).
 ''';
 
     final promptUsuario = '''
-[DADOS DA QUESTÃO DO CONCURSO]
-• Disciplina / Tópico: ${assunto ?? 'Conhecimentos do Edital'}
-• Banca Organizadora: ${banca ?? 'Cebraspe / AOCP'}
-• Enunciado da Questão: "$enunciado"
-• Gabarito Oficial Definitivo: Letra $gabaritoOficial
-• Comentário / Fundamento Técnico: "$comentario"
+[CONTEXTO DA QUESTÃO]
+• Disciplina / Tópico: ${assunto ?? 'Língua Portuguesa / Conhecimentos do Edital'}
+• Banca Organizadora: ${banca ?? 'Instituto AOCP / Cebraspe'}
+• Enunciado: "$enunciado"
+• Gabarito Oficial: Letra $gabaritoOficial
+• Fundamentação / Comentário Técnico das Alternativas:
+"$comentario"
 
-[DÚVIDA DO CANDIDATO]
+[MENSAGEM / DÚVIDA DO ALUNO]
 "$pergunta"
 
-Professor CRAVOU, responda diretamente para mim com toda a sua didática, carinho e clareza de mentor policial!
+Destrinche e responda com clareza pedagógica total para o aluno:
 ''';
 
     try {
@@ -79,8 +85,8 @@ Professor CRAVOU, responda diretamente para mim com toda a sua didática, carinh
             }
           ],
           'generationConfig': {
-            'temperature': 0.75,
-            'maxOutputTokens': 850,
+            'temperature': 0.7,
+            'maxOutputTokens': 1000,
           },
         },
       );
@@ -100,7 +106,6 @@ Professor CRAVOU, responda diretamente para mim com toda a sua didática, carinh
       }
       return null;
     } catch (e) {
-      // Retorna null para o fallback seguro assumir se houver falha de rede ou chave inválida
       return null;
     }
   }

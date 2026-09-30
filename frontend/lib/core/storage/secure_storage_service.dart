@@ -11,6 +11,8 @@ class SecureStorageService {
   static const String _keyUserRole = 'op_user_role';
   static const String _keyTargetConcurso = 'op_target_concurso';
   static const String _keyGeminiApiKey = 'op_gemini_api_key';
+  static const String _keyElevenLabsApiKey = 'op_elevenlabs_api_key';
+  static const String _keyElevenLabsVoiceId = 'op_elevenlabs_voice_id';
 
   SecureStorageService({FlutterSecureStorage? storage})
       : _storage = storage ??
@@ -79,6 +81,27 @@ class SecureStorageService {
   /// Recupera a chave de API do Google Gemini. Retorna null se nao configurada.
   Future<String?> getGeminiApiKey() async {
     return await _storage.read(key: _keyGeminiApiKey);
+  }
+
+  /// Salva a chave de API da ElevenLabs para síntese de voz ultra-realista.
+  Future<void> saveElevenLabsApiKey(String apiKey) async {
+    await _storage.write(key: _keyElevenLabsApiKey, value: apiKey.trim());
+  }
+
+  /// Recupera a chave de API da ElevenLabs. Retorna null se não configurada.
+  Future<String?> getElevenLabsApiKey() async {
+    return await _storage.read(key: _keyElevenLabsApiKey);
+  }
+
+  /// Salva o ID da voz preferida na ElevenLabs (ex: George, Adam, Rachel).
+  Future<void> saveElevenLabsVoiceId(String voiceId) async {
+    await _storage.write(key: _keyElevenLabsVoiceId, value: voiceId.trim());
+  }
+
+  /// Recupera o ID da voz da ElevenLabs (padrão: George - voz de mentor).
+  Future<String> getElevenLabsVoiceId() async {
+    final voice = await _storage.read(key: _keyElevenLabsVoiceId);
+    return (voice != null && voice.trim().isNotEmpty) ? voice.trim() : 'JBFqnCBsd6RMkjVDRZzb';
   }
 
   /// Limpa toda a sessao de forma segura.

@@ -16,6 +16,16 @@ class ProfessorCravouAudioPlatform implements ProfessorCravouAudioInterface {
   }
 
   @override
+  void playMp3Base64(String base64Mp3, {VoidCallback? onStart, VoidCallback? onDone}) {
+    _speaking = true;
+    onStart?.call();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _speaking = false;
+      onDone?.call();
+    });
+  }
+
+  @override
   void stop() {
     _speaking = false;
   }

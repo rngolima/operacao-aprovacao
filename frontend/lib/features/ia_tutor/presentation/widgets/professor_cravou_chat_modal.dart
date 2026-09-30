@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../models/ia_mensagem_model.dart';
 import '../../services/audio/professor_cravou_audio_service.dart';
+import '../../services/elevenlabs_service.dart';
 import '../../services/professor_cravou_service.dart';
 import 'professor_cravou_avatar_widget.dart';
 
@@ -56,33 +58,43 @@ class ProfessorCravouChatModal extends StatefulWidget {
 class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
   final ProfessorCravouService _service = ProfessorCravouService();
   final ProfessorCravouAudioService _audioService = ProfessorCravouAudioService();
+  final SecureStorageService _storage = SecureStorageService();
+  final ElevenLabsService _elevenLabsService = ElevenLabsService();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<IAMensagemModel> _mensagens = [];
   bool _isLoading = false;
   String? _tocandoMensagemId;
   bool _temGeminiAtivo = false;
+  bool _temElevenLabsAtivo = false;
 
   @override
   void initState() {
     super.initState();
     _adicionarMensagemBoasVindas();
-    _verificarChaveGemini();
+    _verificarChaves();
   }
 
-  Future<void> _verificarChaveGemini() async {
-    final ativa = await _service.temChaveGeminiConfigurada();
+  Future<void> _verificarChaves() async {
+    final geminiAtiva = await _service.temChaveGeminiConfigurada();
+    bool elevenAtiva = false;
+    try {
+      final key = await _storage.getElevenLabsApiKey();
+      elevenAtiva = key != null && key.trim().isNotEmpty;
+    } catch (_) {}
+
     if (mounted) {
       setState(() {
-        _temGeminiAtivo = ativa;
+        _temGeminiAtivo = geminiAtiva;
+        _temElevenLabsAtivo = elevenAtiva;
       });
     }
   }
 
   void _adicionarMensagemBoasVindas() {
     final saudacao = widget.acertou
-        ? 'Fala, futuro Policial! 🦅 Você cravou a alternativa **${widget.gabaritoOficial}** com precisão cirúrgica!\n\nSe preferir, pode até tocar no botão de áudio abaixo de qualquer mensagem minha para **me ouvir explicar em voz alta**, como numa mentoria presencial! Quer que eu te passe um mnemônico rápido ou analise alguma pegadinha?'
-        : 'Cabeça erguida, meu amigo! 🦅 Errar no treino é a melhor coisa para você chegar afiado e cravar no dia da prova da PC-PE. O gabarito é a letra **${widget.gabaritoOficial}**.\n\nToque no botão de áudio abaixo para me ouvir destrinchar ou me pergunte qualquer dúvida que tiver!';
+        ? 'Fala, futuro Policial! 🦅 Você cravou a alternativa **${widget.gabaritoOficial}** com precisão cirúrgica!\n\nToque no botão de áudio abaixo de qualquer mensagem para me ouvir destrinchar em voz alta ou pergunte qualquer dúvida que o Professor te responde na hora!'
+        : 'Cabeça erguida, guerreiro! 🦅 Errar no treino é a melhor coisa para chegar blindado e cravar a aprovação. O gabarito oficial é a letra **${widget.gabaritoOficial}**.\n\nToque no botão de áudio abaixo para me ouvir destrinchar ou me pergunte o que você não entendeu que nós vamos esgotar essa questão juntos!';
 
     _mensagens.add(
       IAMensagemModel(
@@ -315,11 +327,45 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                             Text(_temGeminiAtivo ? '🟢' : '⚡', style: const TextStyle(fontSize: 8)),
                             const SizedBox(width: 3),
                             Text(
-                              _temGeminiAtivo ? 'GEMINI 1.5 FLASH' : 'CONECTAR GEMINI',
+                              _temGeminiAtivo ? 'GEMINI 1.5 FLASH' : 'GEMINI AI',
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w900,
                                 color: _temGeminiAtivo ? const Color(0xFF15803D) : AppColors.brandOrange,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: _abrirConfiguracaoElevenLabs,
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: _temElevenLabsAtivo
+                              ? const Color(0xFFEFF6FF)
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: _temElevenLabsAtivo
+                                ? AppColors.brandCobalt
+                                : Colors.grey.shade300,
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_temElevenLabsAtivo ? '🎙️' : '🔊', style: const TextStyle(fontSize: 8)),
+                            const SizedBox(width: 3),
+                            Text(
+                              _temElevenLabsAtivo ? 'ELEVENLABS VOZ' : 'VOZ IA',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                color: _temElevenLabsAtivo ? AppColors.brandNavy : AppColors.textSecondary,
                               ),
                             ),
                           ],
@@ -333,8 +379,8 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                   _temGeminiAtivo
                       ? '🟢 IA Conectada • Raciocínio Gemini 1.5 em Tempo Real'
                       : (widget.assunto != null
-                          ? 'Mentor em ${widget.assunto} • Explicação em Áudio'
-                          : 'Mentor Pedagógico 24h • Explicação em Áudio'),
+                          ? 'Mentor em ${widget.assunto} • Análise Completa de Questões'
+                          : 'Mentor Pedagógico 24h • Análise Completa de Questões'),
                   style: TextStyle(
                     fontSize: 11,
                     color: _temGeminiAtivo ? const Color(0xFF15803D) : AppColors.textSecondary,
@@ -343,6 +389,15 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.record_voice_over_rounded,
+              color: _temElevenLabsAtivo ? AppColors.brandCobalt : AppColors.textSecondary,
+              size: 20,
+            ),
+            tooltip: 'Configurar Voz Ultra-Realista ElevenLabs',
+            onPressed: _abrirConfiguracaoElevenLabs,
           ),
           IconButton(
             icon: Icon(
@@ -361,6 +416,161 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  void _abrirConfiguracaoElevenLabs() async {
+    String chaveAtual = '';
+    String vozAtual = 'JBFqnCBsd6RMkjVDRZzb';
+    try {
+      chaveAtual = await _storage.getElevenLabsApiKey() ?? '';
+      vozAtual = await _storage.getElevenLabsVoiceId();
+    } catch (_) {}
+
+    final controller = TextEditingController(text: chaveAtual);
+    String vozSelecionada = vozAtual;
+    bool testandoVoz = false;
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: const [
+                Icon(Icons.record_voice_over_rounded, color: AppColors.brandCobalt, size: 24),
+                SizedBox(width: 8),
+                Text(
+                  'Voz Ultra-Realista ElevenLabs',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Integre com a tecnologia da ElevenLabs (https://elevenlabs.io) para ter explicações faladas por voz humana ultra-realista de estúdio, com entonação de mentor policial!',
+                    style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.4),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Escolha a Voz do Professor:',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.brandNavy),
+                  ),
+                  const SizedBox(height: 6),
+                  DropdownButtonFormField<String>(
+                    value: ElevenLabsService.vozesRecomendadas.containsKey(vozSelecionada)
+                        ? vozSelecionada
+                        : 'JBFqnCBsd6RMkjVDRZzb',
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    items: ElevenLabsService.vozesRecomendadas.entries.map((e) {
+                      return DropdownMenuItem<String>(
+                        value: e.key,
+                        child: Text(e.value, style: const TextStyle(fontSize: 12)),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setModalState(() {
+                          vozSelecionada = val;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: controller,
+                    decoration: const InputDecoration(
+                      labelText: 'Chave de API ElevenLabs (xi-api-key)',
+                      hintText: 'Cole sua chave...',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.key_rounded, size: 18),
+                    ),
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '💡 Crie sua conta em https://elevenlabs.io para gerar sua API Key gratuita ou use as vozes nativas.',
+                    style: TextStyle(fontSize: 11, color: AppColors.brandCobalt, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: testandoVoz
+                        ? null
+                        : () async {
+                            final key = controller.text.trim();
+                            if (key.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Insira a chave da ElevenLabs para testar o áudio.')),
+                              );
+                              return;
+                            }
+                            setModalState(() {
+                              testandoVoz = true;
+                            });
+                            final mp3 = await _elevenLabsService.sintetizarVozBase64(
+                              apiKey: key,
+                              texto: 'Fala guerreiro! Aqui é o Professor CRAVOU com a voz ultra-realista da ElevenLabs. Vamos juntos até a posse!',
+                              voiceId: vozSelecionada,
+                            );
+                            if (mp3 != null && mp3.isNotEmpty) {
+                              _audioService.playMp3Base64(mp3);
+                            }
+                            setModalState(() {
+                              testandoVoz = false;
+                            });
+                          },
+                    icon: testandoVoz
+                        ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.volume_up_rounded, size: 18),
+                    label: Text(testandoVoz ? 'Sintetizando...' : 'Ouvir Teste de Voz'),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await _storage.saveElevenLabsApiKey(controller.text);
+                  await _storage.saveElevenLabsVoiceId(vozSelecionada);
+                  await _verificarChaves();
+                  if (ctx.mounted) Navigator.of(ctx).pop();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          controller.text.trim().isEmpty
+                              ? 'ElevenLabs desativada. Usando voz nativa.'
+                              : '🎙️ Voz ElevenLabs ativada com sucesso!',
+                        ),
+                        backgroundColor: const Color(0xFF16A34A),
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandCobalt,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Salvar e Ativar'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -419,7 +629,7 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
           ElevatedButton(
             onPressed: () async {
               await _service.salvarChaveGemini(controller.text);
-              await _verificarChaveGemini();
+              await _verificarChaves();
               if (ctx.mounted) Navigator.of(ctx).pop();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(

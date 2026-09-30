@@ -74,8 +74,32 @@ class ProfessorCravouAudioPlatform implements ProfessorCravouAudioInterface {
   }
 
   @override
+  void playMp3Base64(String base64Mp3, {VoidCallback? onStart, VoidCallback? onDone}) {
+    _onStart = onStart;
+    _onDone = onDone;
+    try {
+      final elevenPlayer = js.context['elevenLabsPlayer'];
+      if (elevenPlayer != null) {
+        _speaking = true;
+        _onStart?.call();
+        elevenPlayer.callMethod('playBase64', [base64Mp3]);
+      }
+    } catch (_) {
+      _speaking = false;
+      _onDone?.call();
+    }
+  }
+
+  @override
   void stop() {
     _speaking = false;
+    try {
+      final elevenPlayer = js.context['elevenLabsPlayer'];
+      if (elevenPlayer != null) {
+        elevenPlayer.callMethod('stop');
+      }
+    } catch (_) {}
+
     try {
       final voiceObj = js.context['professorCravouVoice'];
       if (voiceObj != null) {
@@ -89,6 +113,13 @@ class ProfessorCravouAudioPlatform implements ProfessorCravouAudioInterface {
 
   @override
   bool get isSpeaking {
+    try {
+      final elevenPlayer = js.context['elevenLabsPlayer'];
+      if (elevenPlayer != null && elevenPlayer.callMethod('isPlaying') == true) {
+        return true;
+      }
+    } catch (_) {}
+
     try {
       final voiceObj = js.context['professorCravouVoice'];
       if (voiceObj != null) {
