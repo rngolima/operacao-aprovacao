@@ -212,9 +212,9 @@ class _CatalogoQuestoesScreenState extends State<CatalogoQuestoesScreen> {
                         ),
                       )
                     : ListView.separated(
-                        padding: EdgeInsets.all(AppSpacing.lg),
+                        padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 80),
                         itemCount: controller.questoes.length,
-                        separatorBuilder: (context, index) => SizedBox(height: AppSpacing.lg),
+                        separatorBuilder: (context, index) => const SizedBox(height: 16),
                         itemBuilder: (context, index) {
                           final questao = controller.questoes[index];
                           return QuestaoCardWidget(
@@ -254,15 +254,20 @@ class _TelemetryBadge extends StatelessWidget {
           style: AppTypography.heading2.copyWith(
             color: color,
             fontWeight: FontWeight.w900,
+            fontSize: 20,
           ),
         ),
-        Text(
-          label,
-          style: AppTypography.caption.copyWith(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.8,
+        const SizedBox(height: 2),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            style: AppTypography.caption.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
       ],

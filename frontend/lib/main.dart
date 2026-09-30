@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'core/network/api_client.dart';
 import 'core/storage/secure_storage_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/app_scroll_behavior.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
@@ -51,6 +52,7 @@ class OperacaoAprovacaoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cravou - Treinador Tático de Concursos',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const AppScrollBehavior(),
       themeMode: ThemeMode.light,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

@@ -235,50 +235,109 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   const SizedBox(height: 16),
 
-                  // 4 Métricas em Grade Limpa (Estilo QConcursos)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _metricBox(
-                          titulo: 'RESOLVIDAS',
-                          valor: '42',
-                          subtitulo: '+14 que ontem',
-                          corValor: AppColors.textPrimary,
-                          corFundo: AppColors.surfaceElevated,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _metricBox(
-                          titulo: 'ACERTOS (+1)',
-                          valor: '36',
-                          subtitulo: '85.7% precisão',
-                          corValor: AppColors.success,
-                          corFundo: AppColors.successBackground,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _metricBox(
-                          titulo: 'ERROS (-1)',
-                          valor: '6',
-                          subtitulo: '-6 no Cebraspe',
-                          corValor: AppColors.error,
-                          corFundo: AppColors.errorBackground,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _metricBox(
-                          titulo: 'LÍQUIDA (C-E)',
-                          valor: '30.0',
-                          subtitulo: 'Corte: 36.0',
-                          corValor: AppColors.brandNavy,
-                          corFundo: AppColors.brandCobalt.withValues(alpha: 0.08),
-                          isMono: true,
-                        ),
-                      ),
-                    ],
+                  // 4 Métricas Adaptativas: 2x2 no Mobile (< 460px) e 1x4 no Desktop
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isMobile = constraints.maxWidth < 460;
+                      if (isMobile) {
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _metricBox(
+                                    titulo: 'RESOLVIDAS',
+                                    valor: '42',
+                                    subtitulo: '+14 que ontem',
+                                    corValor: AppColors.textPrimary,
+                                    corFundo: AppColors.surfaceElevated,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _metricBox(
+                                    titulo: 'ACERTOS (+1)',
+                                    valor: '36',
+                                    subtitulo: '85.7% precisão',
+                                    corValor: AppColors.success,
+                                    corFundo: AppColors.successBackground,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _metricBox(
+                                    titulo: 'ERROS (-1)',
+                                    valor: '6',
+                                    subtitulo: '-6 no Cebraspe',
+                                    corValor: AppColors.error,
+                                    corFundo: AppColors.errorBackground,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _metricBox(
+                                    titulo: 'LÍQUIDA (C-E)',
+                                    valor: '30.0',
+                                    subtitulo: 'Corte: 36.0',
+                                    corValor: AppColors.brandNavy,
+                                    corFundo: AppColors.brandCobalt.withValues(alpha: 0.08),
+                                    isMono: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _metricBox(
+                              titulo: 'RESOLVIDAS',
+                              valor: '42',
+                              subtitulo: '+14 que ontem',
+                              corValor: AppColors.textPrimary,
+                              corFundo: AppColors.surfaceElevated,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _metricBox(
+                              titulo: 'ACERTOS (+1)',
+                              valor: '36',
+                              subtitulo: '85.7% precisão',
+                              corValor: AppColors.success,
+                              corFundo: AppColors.successBackground,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _metricBox(
+                              titulo: 'ERROS (-1)',
+                              valor: '6',
+                              subtitulo: '-6 no Cebraspe',
+                              corValor: AppColors.error,
+                              corFundo: AppColors.errorBackground,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _metricBox(
+                              titulo: 'LÍQUIDA (C-E)',
+                              valor: '30.0',
+                              subtitulo: 'Corte: 36.0',
+                              corValor: AppColors.brandNavy,
+                              corFundo: AppColors.brandCobalt.withValues(alpha: 0.08),
+                              isMono: true,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 16),
@@ -327,8 +386,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 16),
 
             // SEÇÃO: CONCURSOS EM EMINÊNCIA (PERNAMBUCO)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
               children: [
                 Text(
                   'CONCURSOS ALVO (PERNAMBUCO)',
@@ -542,11 +604,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        nome,
-                        style: AppTypography.titleMedium.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Text(
+                          nome,
+                          style: AppTypography.titleMedium.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (ativo) ...[
@@ -572,6 +638,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(
                     detalhe,
                     style: AppTypography.bodySmall.copyWith(fontSize: 11),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

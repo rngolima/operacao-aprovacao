@@ -3,22 +3,31 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
+import '../../data/models/item_resposta_simulado.dart';
 import '../../data/models/resultado_simulado_model.dart';
+import '../../data/models/simulado_model.dart';
+import 'simulado_revisao_screen.dart';
 
 /// Modal/Tela que exibe o Relatório Executivo Cebraspe após submissão do Simulado.
 class SimuladoResultadoDialog extends StatelessWidget {
   final ResultadoSimuladoModel resultado;
+  final List<ItemSimuladoModel> itens;
+  final Map<int, ItemRespostaSimulado> respostas;
   final VoidCallback onConcluir;
 
   const SimuladoResultadoDialog({
     super.key,
     required this.resultado,
+    this.itens = const [],
+    this.respostas = const {},
     required this.onConcluir,
   });
 
   static Future<void> exibir(
     BuildContext context, {
     required ResultadoSimuladoModel resultado,
+    List<ItemSimuladoModel> itens = const [],
+    Map<int, ItemRespostaSimulado> respostas = const {},
     required VoidCallback onConcluir,
   }) {
     return showDialog(
@@ -26,6 +35,8 @@ class SimuladoResultadoDialog extends StatelessWidget {
       barrierDismissible: false,
       builder: (ctx) => SimuladoResultadoDialog(
         resultado: resultado,
+        itens: itens,
+        respostas: respostas,
         onConcluir: onConcluir,
       ),
     );
@@ -273,23 +284,61 @@ class SimuladoResultadoDialog extends StatelessWidget {
             // Ações Inferiores
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.surface,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppSpacing.borderRadiusMd,
+              child: Column(
+                children: [
+                  if (itens.isNotEmpty) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.brandCobalt,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: AppSpacing.borderRadiusMd,
+                          ),
+                          elevation: 0,
+                        ),
+                        icon: const Icon(Icons.fact_check_outlined, size: 20),
+                        label: const Text(
+                          'REVISAR GABARITO COMPLETO',
+                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 0.8),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // fecha modal
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SimuladoRevisaoScreen(
+                                resultado: resultado,
+                                itens: itens,
+                                respostas: respostas,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                        side: const BorderSide(color: AppColors.surfaceBorder),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppSpacing.borderRadiusMd,
+                        ),
+                      ),
+                      onPressed: onConcluir,
+                      child: const Text(
+                        'CONCLUIR & VOLTAR AO PAINEL',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
                     ),
                   ),
-                  onPressed: onConcluir,
-                  child: Text(
-                    'CONCLUIR & VOLTAR AO TREINADOR',
-                    style: AppTypography.buttonLabel,
-                  ),
-                ),
+                ],
               ),
             ),
           ],

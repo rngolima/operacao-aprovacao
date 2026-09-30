@@ -10,11 +10,11 @@
 
 | Passo | Módulo / Camada | Ícone | Status | Objetivo de Engenharia |
 | :--- | :--- | :---: | :---: | :--- |
-| **Passo 1** | **Setup Flutter & Design System Tático** | 🎨 | **Concluído** | Instalação do Flutter SDK 3.47, arquitetura Feature-First, Design Tokens (`AppColors`, `AppTypography`, `AppSpacing`, tema Dark Operacional) e componentes atômicos (`TacticalCard`, `CebraspeButton`, `TimerBadge`, `QuestionNavigatorGrid`). |
-| **Passo 2** | **Rede, Segurança & Autenticação** | 🔐 | Planejado | Cliente HTTP Dio com interceptor JWT, `flutter_secure_storage`, State Management e telas sóbrias de Login e Cadastro. |
-| **Passo 3** | **Banco de Questões & Filtros Dinâmicos** | 📝 | Planejado | Catálogo Cebraspe com árvore de disciplinas da PC-PE, paginação infinita e modo de treino rápido. |
-| **Passo 4** | **Cockpit do Simulado Cebraspe (A Joia da Coroa)** | ⏱️ | Planejado | Integração da tela do Cockpit com os endpoints reais da API backend (`POST /simulados/iniciar`, auto-save em tempo real e submissão final). |
-| **Passo 5** | **Dashboard, Code Review & Auditoria nos 5 Eixos** | 🏆 | Planejado | Gráficos de telemetria e taxa de acerto por disciplina, Code Review formal (Cláusula 8), Raio-X (Cláusula 10) e sincronização no GitHub. |
+| **Passo 1** | **Setup Flutter & Design System Tático** | 🎨 | **Concluído** | Instalação do Flutter SDK 3.47, arquitetura Feature-First, Design Tokens e componentes atômicos (`TacticalCard`, `CebraspeButton`, `TimerBadge`). |
+| **Passo 2** | **Rede, Segurança & Autenticação** | 🔐 | **Concluído** | Cliente HTTP Dio com interceptor JWT, `flutter_secure_storage`, State Management, fallback offline de demonstração e telas de Login e Alistamento Operacional de PE. |
+| **Passo 3** | **Banco de Questões & Filtros Dinâmicos** | 📝 | **Concluído** | Catálogo Cebraspe com 9 disciplinas oficiais da PC-PE/PM-PE, barra seletora com modal BottomSheet, modo de treino avulso e justificativas didáticas. |
+| **Passo 4** | **Cockpit do Simulado Cebraspe (A Joia da Coroa)** | ⏱️ | **Concluído** | Cockpit interativo com contagem regressiva de 4h30min, persistência de respostas, telemetria em tempo real e cálculo oficial do saldo líquido Cebraspe (C - E). |
+| **Passo 5** | **Dashboard, Revisão de Gabarito & Auditoria nos 5 Eixos** | 🏆 | **Concluído** | Redesign Clean Editorial QConcursos (Fundo Branco), tela Meu Painel, tela de Revisão Detalhada de Gabarito do Simulado, responsividade mobile total e 35 testes passando (100% GREEN). |
 
 ---
 

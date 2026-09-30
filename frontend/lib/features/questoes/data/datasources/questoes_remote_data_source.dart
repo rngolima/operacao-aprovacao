@@ -34,15 +34,19 @@ class QuestoesRemoteDataSource {
     return _getQuestoesOficiais(filtro);
   }
 
-  /// Retorna as disciplinas oficiais do edital PC-PE
+  /// Retorna as disciplinas oficiais do edital PC-PE, PM-PE e PP-PE
   Future<List<DisciplinaModel>> getDisciplinas() async {
     return const [
-      DisciplinaModel(id: 0, nome: 'Todas', icone: '🔥', totalQuestoes: 60),
+      DisciplinaModel(id: 0, nome: 'Todas', icone: '🔥', totalQuestoes: 80),
       DisciplinaModel(id: 1, nome: 'Língua Portuguesa', icone: '✍️', totalQuestoes: 20),
-      DisciplinaModel(id: 2, nome: 'Direito Penal', icone: '⚖️', totalQuestoes: 12),
-      DisciplinaModel(id: 3, nome: 'Direito Processual Penal', icone: '🚓', totalQuestoes: 12),
-      DisciplinaModel(id: 4, nome: 'Direito Administrativo', icone: '🏛️', totalQuestoes: 8),
-      DisciplinaModel(id: 5, nome: 'Raciocínio Lógico & Info', icone: '💻', totalQuestoes: 8),
+      DisciplinaModel(id: 2, nome: 'Direito Constitucional', icone: '📜', totalQuestoes: 10),
+      DisciplinaModel(id: 3, nome: 'Direito Administrativo', icone: '🏛️', totalQuestoes: 10),
+      DisciplinaModel(id: 4, nome: 'Direito Penal', icone: '⚖️', totalQuestoes: 12),
+      DisciplinaModel(id: 5, nome: 'Direito Processual Penal', icone: '🚓', totalQuestoes: 12),
+      DisciplinaModel(id: 6, nome: 'Legislação Especial', icone: '🛡️', totalQuestoes: 10),
+      DisciplinaModel(id: 7, nome: 'Noções de Informática', icone: '💻', totalQuestoes: 8),
+      DisciplinaModel(id: 8, nome: 'Raciocínio Lógico & Info', icone: '🧠', totalQuestoes: 8),
+      DisciplinaModel(id: 9, nome: 'História & Geografia de PE', icone: '🌴', totalQuestoes: 8),
     ];
   }
 
@@ -99,9 +103,35 @@ class QuestoesRemoteDataSource {
         comentarioDidatico: 'CRAVOU NO ERRO! O verbo "precisar" é transitivo indireto (rege preposição "de"). Diante de verbo transitivo indireto (VTI), intransitivo ou de ligação com preposição, a partícula "se" é Índice de Indeterminação do Sujeito (IIS), mantendo o verbo obrigatoriamente na 3ª pessoa do singular. Não é apassivador! Item ERRADO.',
       ),
 
-      // --- DIREITO PENAL (PC-PE / PCDF) ---
+      // --- DIREITO CONSTITUCIONAL (Seguranca Publica Art. 144 e Direitos Fundamentais) ---
       const QuestaoModel(
         id: 5,
+        banca: 'Cebraspe',
+        orgao: 'PC-PE',
+        cargo: 'Agente de Polícia',
+        ano: 2024,
+        disciplina: 'Direito Constitucional',
+        assunto: 'Segurança Pública (Art. 144 CF)',
+        enunciado: 'Às polícias civis, dirigidas por delegados de polícia de carreira, incumbem, ressalvada a competência da União, as funções de polícia judiciária e a apuração de infrações penais, exceto as militares.',
+        gabaritoOficial: 'CERTO',
+        comentarioDidatico: 'CRAVOU NO ACERTO! Literalidade do Art. 144, § 4º da Constituição Federal de 1988: "Às polícias civis, dirigidas por delegados de polícia de carreira, incumbem, ressalvada a competência da União, as funções de polícia judiciária e a apuração de infrações penais, exceto as militares." Item CERTO.',
+      ),
+      const QuestaoModel(
+        id: 6,
+        banca: 'Cebraspe',
+        orgao: 'PC-PE',
+        cargo: 'Agente de Polícia',
+        ano: 2024,
+        disciplina: 'Direito Constitucional',
+        assunto: 'Inviolabilidade de Domicílio',
+        enunciado: 'A casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante a noite, por determinação judicial.',
+        gabaritoOficial: 'ERRADO',
+        comentarioDidatico: 'CRAVOU NO ERRO! Pegadinha clássica do Cebraspe sobre o Art. 5º, XI da CF: a determinação judicial só permite ingresso no domicílio DURANTE O DIA ("ou, durante o dia, por determinação judicial"). À noite, a ordem judicial não autoriza a entrada sem consentimento do morador. Item ERRADO.',
+      ),
+
+      // --- DIREITO PENAL (PC-PE / PCDF) ---
+      const QuestaoModel(
+        id: 7,
         banca: 'Cebraspe',
         orgao: 'PC-PE',
         cargo: 'Agente de Polícia',
@@ -113,7 +143,7 @@ class QuestoesRemoteDataSource {
         comentarioDidatico: 'CRAVOU NO ACERTO! Art. 2º, parágrafo único do Código Penal e Art. 5º, XL da CF/88. Trata-se do princípio da retroatividade da lei penal mais benéfica (lex mitior / novatio legis in mellius), que alcança até mesmo a coisa julgada formal e material. Item CERTO.',
       ),
       const QuestaoModel(
-        id: 6,
+        id: 8,
         banca: 'Cebraspe',
         orgao: 'PC-PE',
         cargo: 'Agente de Polícia',
@@ -127,7 +157,7 @@ class QuestoesRemoteDataSource {
 
       // --- DIREITO PROCESSUAL PENAL (Inquerito & Flagrante) ---
       const QuestaoModel(
-        id: 7,
+        id: 9,
         banca: 'Cebraspe',
         orgao: 'PC-PE',
         cargo: 'Agente de Polícia',
@@ -139,7 +169,7 @@ class QuestoesRemoteDataSource {
         comentarioDidatico: 'CRAVOU NO ACERTO! Art. 17 do Código de Processo Penal: "A autoridade policial não poderá mandar arquivar autos de inquérito". O arquivamento é ato complexo reservado ao titular da ação penal e ao Poder Judiciário. Item CERTO.',
       ),
       const QuestaoModel(
-        id: 8,
+        id: 10,
         banca: 'Cebraspe',
         orgao: 'PC-PE',
         cargo: 'Agente de Polícia',
@@ -153,7 +183,7 @@ class QuestoesRemoteDataSource {
 
       // --- DIREITO ADMINISTRATIVO (Poder de Policia PC-PE) ---
       const QuestaoModel(
-        id: 9,
+        id: 11,
         banca: 'Cebraspe',
         orgao: 'PC-PE',
         cargo: 'Agente de Polícia',
@@ -165,9 +195,37 @@ class QuestoesRemoteDataSource {
         comentarioDidatico: 'CRAVOU NO ERRO! Atenção aos termos absolutos ("absolutamente todos") típicos do Cebraspe! A autoexecutoriedade NÃO está presente em todos os atos de polícia. Exemplo clássico da doutrina: a cobrança de multa administrativa exige ação de execução fiscal no Judiciário, não sendo autoexecutória. Item ERRADO.',
       ),
 
-      // --- RACIOCINIO LOGICO & INFORMATICA ---
+      // --- LEGISLACAO ESPECIAL (Drogas & Abuso de Autoridade) ---
       const QuestaoModel(
-        id: 10,
+        id: 12,
+        banca: 'Cebraspe',
+        orgao: 'PC-PE',
+        cargo: 'Agente de Polícia',
+        ano: 2024,
+        disciplina: 'Legislação Especial',
+        assunto: 'Lei de Abuso de Autoridade (Lei 13.869/19)',
+        enunciado: 'A divergência na interpretação de lei ou na avaliação de fatos e provas não configura, por si só, crime de abuso de autoridade.',
+        gabaritoOficial: 'CERTO',
+        comentarioDidatico: 'CRAVOU NO ACERTO! Art. 1º, § 2º da Lei 13.869/2019: "A divergência na interpretação de lei ou na avaliação de fatos e provas não configura abuso de autoridade" (vedação ao chamado crime de hermenêutica). Exige-se sempre o dolo específico de prejudicar outrem ou beneficiar a si mesmo ou a terceiro. Item CERTO.',
+      ),
+
+      // --- NOCOES DE INFORMATICA (Seguranca da Informacao) ---
+      const QuestaoModel(
+        id: 13,
+        banca: 'Cebraspe',
+        orgao: 'PC-PE',
+        cargo: 'Agente de Polícia',
+        ano: 2024,
+        disciplina: 'Noções de Informática',
+        assunto: 'Malwares & Segurança Cibernética',
+        enunciado: 'Ransomware é um tipo de código malicioso que torna inacessíveis os dados armazenados em um equipamento, geralmente usando criptografia, e exige pagamento de resgate para restabelecer o acesso ao usuário.',
+        gabaritoOficial: 'CERTO',
+        comentarioDidatico: 'CRAVOU NO ACERTO! Definição clássica da Cartilha de Segurança para Internet do CERT.br adotada integralmente pelo Cebraspe. O ransomware sequestra os dados do usuário por meio de criptografia assimétrica e exige resgate (frequentemente em criptomoedas). Item CERTO.',
+      ),
+
+      // --- RACIOCINIO LOGICO & INFO ---
+      const QuestaoModel(
+        id: 14,
         banca: 'Cebraspe',
         orgao: 'PC-PE',
         cargo: 'Agente de Polícia',
@@ -177,6 +235,20 @@ class QuestoesRemoteDataSource {
         enunciado: 'A proposição "Se o candidato treinar com dedicação no Cravou, então será aprovado na PC-PE" é logicamente equivalente a "Se o candidato não for aprovado na PC-PE, então não treinou com dedicação no Cravou".',
         gabaritoOficial: 'CERTO',
         comentarioDidatico: 'CRAVOU NO ACERTO! Trata-se da regra da Contrapositiva da condicional: (P -> Q) equivale a (~Q -> ~P). Nega-se ambas as proposições e inverte-se a ordem. Item CERTO.',
+      ),
+
+      // --- HISTORIA & GEOGRAFIA DE PERNAMBUCO ---
+      const QuestaoModel(
+        id: 15,
+        banca: 'Cebraspe',
+        orgao: 'PC-PE',
+        cargo: 'Agente de Polícia',
+        ano: 2024,
+        disciplina: 'História & Geografia de PE',
+        assunto: 'Revolução Pernambucana de 1817',
+        enunciado: 'A Revolução Pernambucana de 1817 proclamou uma república independente no Nordeste brasileiro e elaborou uma lei orgânica com garantias de liberdade de consciência, de imprensa e de culto.',
+        gabaritoOficial: 'CERTO',
+        comentarioDidatico: 'CRAVOU NO ACERTO! Conhecida como a Revolução dos Padres, o movimento de 1817 fundou uma república de fato em Pernambuco por mais de 70 dias, com governo provisório e lei orgânica avançada que garantia liberdades civis fundamentais. Item CERTO.',
       ),
     ];
 

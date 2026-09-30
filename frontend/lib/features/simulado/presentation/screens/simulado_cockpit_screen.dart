@@ -119,6 +119,8 @@ class _SimuladoCockpitScreenState extends State<SimuladoCockpitScreen> {
                 SimuladoResultadoDialog.exibir(
                   context,
                   resultado: resultado,
+                  itens: _controller.simulado?.itens ?? [],
+                  respostas: _controller.respostas,
                   onConcluir: () {
                     Navigator.of(context).pop(); // fecha modal
                     Navigator.of(context).pop(); // volta a tela anterior

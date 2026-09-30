@@ -29,7 +29,7 @@ class QuestaoCardWidget extends StatelessWidget {
         (respostaSelecionada!.toUpperCase() == questao.gabaritoOficial.toUpperCase());
 
     return TacticalCard(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -76,29 +76,35 @@ class QuestaoCardWidget extends StatelessWidget {
               ),
 
               // Assunto
-              Text(
-                '•  ${questao.assunto}',
-                style: AppTypography.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                child: Text(
+                  '•  ${questao.assunto}',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
 
-          // Linha de Metadados do Concurso (Ano, Banca, Órgão, Cargo)
-          Text(
-            'Ano: ${questao.ano}  |  Banca: ${questao.banca}  |  Órgão: ${questao.orgao}  |  Cargo: ${questao.cargo}',
-            style: AppTypography.caption.copyWith(
-              color: AppColors.textSecondary,
-              fontSize: 11,
-            ),
+          // Metadados do Concurso em Tags Responsivas (Nunca estouram a tela)
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              _metaChip('Ano: ${questao.ano}'),
+              _metaChip('Banca: ${questao.banca}'),
+              _metaChip('Órgão: ${questao.orgao}'),
+              _metaChip('Cargo: ${questao.cargo}'),
+            ],
           ),
 
-          const Divider(height: 24, thickness: 1, color: AppColors.surfaceBorder),
+          const Divider(height: 20, thickness: 1, color: AppColors.surfaceBorder),
 
           // Enunciado Cebraspe de Alta Legibilidade
           Text(
@@ -232,6 +238,25 @@ class QuestaoCardWidget extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _metaChip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: AppColors.surfaceBorder),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 10.5,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

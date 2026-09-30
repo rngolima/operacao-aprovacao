@@ -42,6 +42,7 @@ class SimuladoController extends ChangeNotifier {
   int get currentIndex => _currentIndex;
   int get segundosRestantes => _segundosRestantes;
   ResultadoSimuladoModel? get resultado => _resultado;
+  Map<int, ItemRespostaSimulado> get respostas => Map.unmodifiable(_respostas);
 
   /// Item atualmente exibido no cockpit
   ItemSimuladoModel? get itemAtual {
