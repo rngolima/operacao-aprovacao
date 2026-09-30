@@ -727,7 +727,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const SizedBox(height: 16),
 
-            // CARD DESTAQUE: META TÁTICA DE HOJE
+            // CARD DESTAQUE: META TÁTICA DE HOJE (FOCO DIÁRIO REFINADO)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -786,71 +786,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     'Seu cronograma inteligente para vencer o edital de ${plano.cargoAlvo}:',
                     style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 10),
-
-                  // Matéria 1
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceElevated,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.surfaceBorder),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle_outline, color: AppColors.brandCobalt, size: 18),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                plano.metaDeHoje.disciplina1,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                plano.metaDeHoje.topico1,
-                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-
-                  // Matéria 2
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceElevated,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.surfaceBorder),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle_outline, color: AppColors.brandCobalt, size: 18),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                plano.metaDeHoje.disciplina2,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                plano.metaDeHoje.topico2,
-                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(height: 12),
+
+                  // Disciplina do Dia 1 (Card Estruturado)
+                  _cardDisciplinaDoDia(
+                    disciplina: plano.metaDeHoje.disciplina1,
+                    topico: plano.metaDeHoje.topico1,
+                    tempoMinutos: 45,
+                    questoesMeta: plano.metaDeHoje.metaQuestoes ~/ 2,
+                    onTapGuia: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => GuiaEstudosScreen(
+                            disciplinasFoco: [plano.metaDeHoje.disciplina1],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Disciplina do Dia 2 (Card Estruturado)
+                  _cardDisciplinaDoDia(
+                    disciplina: plano.metaDeHoje.disciplina2,
+                    topico: plano.metaDeHoje.topico2,
+                    tempoMinutos: 45,
+                    questoesMeta: plano.metaDeHoje.metaQuestoes - (plano.metaDeHoje.metaQuestoes ~/ 2),
+                    onTapGuia: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => GuiaEstudosScreen(
+                            disciplinasFoco: [plano.metaDeHoje.disciplina2],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
 
                   // Botões de Ação da Meta
                   Row(
@@ -908,6 +880,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ],
                   ),
+
                 ],
               ),
             ),
@@ -1278,6 +1251,167 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  IconData _obterIconeDisciplina(String nome) {
+    final lower = nome.toLowerCase();
+    if (lower.contains('portug') || lower.contains('redação')) return Icons.menu_book_rounded;
+    if (lower.contains('história')) return Icons.history_edu_rounded;
+    if (lower.contains('lógico') || lower.contains('matem')) return Icons.calculate_rounded;
+    if (lower.contains('direito') || lower.contains('legisla') || lower.contains('humanos')) return Icons.gavel_rounded;
+    if (lower.contains('inform')) return Icons.computer_rounded;
+    return Icons.school_rounded;
+  }
+
+  Color _obterCorDisciplina(String nome) {
+    final lower = nome.toLowerCase();
+    if (lower.contains('portug')) return const Color(0xFF2563EB);
+    if (lower.contains('história')) return const Color(0xFF16A34A);
+    if (lower.contains('lógico') || lower.contains('matem')) return const Color(0xFF7C3AED);
+    if (lower.contains('direito') || lower.contains('legisla')) return const Color(0xFFD97706);
+    if (lower.contains('inform')) return const Color(0xFF0891B2);
+    return AppColors.brandCobalt;
+  }
+
+  Widget _cardDisciplinaDoDia({
+    required String disciplina,
+    required String topico,
+    required int tempoMinutos,
+    required int questoesMeta,
+    required VoidCallback onTapGuia,
+  }) {
+    final cor = _obterCorDisciplina(disciplina);
+    final icone = _obterIconeDisciplina(disciplina);
+
+    return InkWell(
+      onTap: onTapGuia,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: cor.withValues(alpha: 0.25), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: cor.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: cor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: cor.withValues(alpha: 0.2)),
+              ),
+              child: Icon(icone, color: cor, size: 20),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          disciplina,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: cor.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'FOCO DO DIA',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: cor,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    topico,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: AppColors.surfaceBorder),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('⏱️', style: TextStyle(fontSize: 9.5)),
+                            const SizedBox(width: 3),
+                            Text(
+                              '$tempoMinutos min teoria ativa',
+                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: AppColors.surfaceBorder),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('📝', style: TextStyle(fontSize: 9.5)),
+                            const SizedBox(width: 3),
+                            Text(
+                              '$questoesMeta questões treino',
+                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.textSecondary),
+          ],
+        ),
       ),
     );
   }

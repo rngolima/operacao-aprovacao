@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../data/models/questao_model.dart';
+import 'comentario_didatico_widget.dart';
 
 /// Card Tatico de Resolucao de Questao Cebraspe (Modo Treino do CRAVOU).
 class QuestaoCardWidget extends StatelessWidget {
@@ -210,138 +211,17 @@ class QuestaoCardWidget extends StatelessWidget {
             ),
           ],
 
-          // Gabarito Comentado e Resolução Didática (Revelado após responder)
+          // Gabarito Comentado e Resolução Didática Estruturada (Revelado após responder)
           if (foiRespondida) ...[
             const SizedBox(height: 16),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: acertou
-                    ? const Color(0xFFF0FDF4)
-                    : const Color(0xFFFEF2F2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: acertou
-                      ? const Color(0xFF86EFAC)
-                      : const Color(0xFFFCA5A5),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        acertou ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                        color: acertou
-                            ? const Color(0xFF16A34A)
-                            : const Color(0xFFDC2626),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        acertou ? 'CRAVOU! RESPOSTA CERTA' : 'RESPOSTA INCORRETA',
-                        style: TextStyle(
-                          color: acertou
-                              ? const Color(0xFF16A34A)
-                              : const Color(0xFFDC2626),
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(
-                            color: acertou
-                                ? const Color(0xFF86EFAC)
-                                : const Color(0xFFFCA5A5),
-                          ),
-                        ),
-                        child: Text(
-                          'Gabarito: ${questao.gabaritoOficial}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: acertou
-                                ? const Color(0xFF16A34A)
-                                : const Color(0xFFDC2626),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Resolução Didática:',
-                    style: AppTypography.titleMedium.copyWith(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    questao.comentarioDidatico,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textPrimary,
-                      height: 1.5,
-                      fontSize: 13,
-                    ),
-                  ),
-                  if (!acertou && onRevisarAssunto != null) ...[
-                    const SizedBox(height: 12),
-                    InkWell(
-                      onTap: onRevisarAssunto,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF2F2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFF87171), width: 1.2),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.menu_book_rounded, color: Color(0xFFDC2626), size: 18),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'PONTO DE VULNERABILIDADE DETECTADO',
-                                    style: TextStyle(
-                                      fontSize: 9.5,
-                                      fontWeight: FontWeight.w900,
-                                      color: Color(0xFFDC2626),
-                                      letterSpacing: 0.4,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Revisar "${questao.assunto}" no Resumo e Mapa Mental',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF991B1B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFDC2626), size: 14),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+            ComentarioDidaticoWidget(
+              comentario: questao.comentarioDidatico,
+              gabaritoOficial: questao.gabaritoOficial,
+              acertou: acertou,
+              respostaSelecionada: respostaSelecionada,
+              onRevisarAssunto: onRevisarAssunto,
+              assunto: questao.assunto,
+              tempoGastoSegundos: tempoGastoSegundos,
             ),
           ],
         ],

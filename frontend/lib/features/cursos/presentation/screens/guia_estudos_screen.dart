@@ -610,7 +610,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Card Principal do Curso da PM-PE (Edital Publicado AOCP)
+            // Card Unificado e Despoluído do Edital PM-PE com Inteligência de Dificuldades Integrada
             TacticalCard(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -619,12 +619,12 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(9),
                         decoration: BoxDecoration(
                           color: isPmpe ? const Color(0xFF15803D) : AppColors.brandNavy,
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.school, color: Colors.white, size: 22),
+                        child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -640,21 +640,21 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                               isPmpe
                                   ? 'Banca Instituto AOCP • 1.250 Vagas Soldado • 6 Disciplinas do Edital'
                                   : 'Banca Cebraspe • Material Autoral + Questões do Edital',
-                              style: AppTypography.caption.copyWith(fontSize: 12),
+                              style: AppTypography.caption.copyWith(fontSize: 11.5),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
 
                   // Barra de Progresso Geral do Curso
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text('Progresso Global do Edital', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                      Text('24% concluído (10/43 aulas)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
+                      Text('Progresso Global do Edital', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                      Text('24% concluído (10/43 aulas)', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -662,42 +662,31 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: 0.24,
-                      minHeight: 6,
+                      minHeight: 5,
                       backgroundColor: AppColors.surfaceElevated,
                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.brandCobalt),
                     ),
                   ),
-                ],
-              ),
-            ),
 
-            const SizedBox(height: 14),
+                  const SizedBox(height: 12),
+                  const Divider(height: 1, color: AppColors.surfaceBorder),
+                  const SizedBox(height: 10),
 
-            // CARD TÁTICO DE INTELIGÊNCIA: PRIORIZAÇÃO POR DIFICULDADE DO CANDIDATO
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF7ED),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFFFEDD5), width: 1.2),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                  // Seção Integrada e Compacta: Inteligência de Dificuldades CRAVOU
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: const [
-                          Text('🎯', style: TextStyle(fontSize: 16)),
+                          Text('🎯', style: TextStyle(fontSize: 14)),
                           SizedBox(width: 6),
                           Text(
                             'INTELIGÊNCIA DE DIFICULDADES CRAVOU',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 10.5,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFF9A3412),
-                              letterSpacing: 0.4,
+                              letterSpacing: 0.3,
                             ),
                           ),
                         ],
@@ -708,7 +697,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: const Color(0xFFFFF7ED),
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: const Color(0xFFFB923C)),
                           ),
@@ -724,15 +713,10 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    plano.materiasDificuldade.isNotEmpty
-                        ? 'Matérias em destaque no topo: ${plano.materiasDificuldade.join(', ')}.'
-                        : 'Nenhuma matéria marcada como dificuldade. Selecione para ordenar por prioridade.',
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF9A3412), height: 1.3),
-                  ),
                   const SizedBox(height: 8),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
                     children: [
                       ChoiceChip(
                         label: const Text('⭐ Priorizar Minhas Dificuldades', style: TextStyle(fontSize: 11)),
@@ -746,7 +730,6 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                           setState(() => _priorizarDificuldades = true);
                         },
                       ),
-                      const SizedBox(width: 8),
                       ChoiceChip(
                         label: const Text('Ordem do Edital', style: TextStyle(fontSize: 11)),
                         selected: !_priorizarDificuldades,
@@ -765,13 +748,13 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
               ),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
 
-            // Banner de Modo Foco (Meta de Hoje)
+            // Banner de Modo Foco (Meta de Hoje) - Versão Compacta e Elegante
             if (widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty)
               Container(
                 margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(8),
@@ -779,8 +762,8 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Text('📌', style: TextStyle(fontSize: 16)),
-                    const SizedBox(width: 10),
+                    const Text('📌', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -788,17 +771,17 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                           const Text(
                             'FILTRADO: DISCIPLINAS DA META DE HOJE',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 10.5,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFF1E3A8A),
-                              letterSpacing: 0.4,
+                              letterSpacing: 0.3,
                             ),
                           ),
                           Text(
                             _mostrarApenasFoco
                                 ? 'Exibindo apenas as matérias do seu planejamento de hoje.'
                                 : 'Exibindo todo o edital programático.',
-                            style: const TextStyle(fontSize: 10.5, color: Color(0xFF1D4ED8)),
+                            style: const TextStyle(fontSize: 10, color: Color(0xFF1D4ED8)),
                           ),
                         ],
                       ),
@@ -806,20 +789,20 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     TextButton(
                       onPressed: () => setState(() => _mostrarApenasFoco = !_mostrarApenasFoco),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: Text(
                         _mostrarApenasFoco ? 'VER TODAS' : 'SÓ DO DIA',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF1E3A8A)),
+                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900, color: Color(0xFF1E3A8A)),
                       ),
                     ),
                   ],
                 ),
               ),
 
-            // Título da Seção de Disciplinas
+            // Título da Seção de Disciplinas com Ações de Visualização Rápida
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -828,12 +811,44 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                   style: AppTypography.tagLabel.copyWith(
                     color: AppColors.textPrimary,
                     letterSpacing: 0.8,
-                    fontSize: 12.5,
+                    fontSize: 12,
                   ),
                 ),
-                Text(
-                  '${modulosExibicao.length} Disciplinas',
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          for (final m in modulosExibicao) {
+                            _moduloAberto[m.nome] = true;
+                          }
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('Expandir', style: TextStyle(fontSize: 11, color: AppColors.brandCobalt, fontWeight: FontWeight.w600)),
+                    ),
+                    const Text('•', style: TextStyle(color: AppColors.surfaceBorder, fontSize: 10)),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          for (final m in modulosExibicao) {
+                            _moduloAberto[m.nome] = false;
+                          }
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('Recolher', style: TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -841,10 +856,12 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
 
             if (isPmpe) ...[
               // Renderiza todos os módulos com ordenação inteligente e marcação de dificuldade
-              ...modulosExibicao.map((modulo) {
+              ...modulosExibicao.asMap().entries.map((entry) {
+                final index = entry.key;
+                final modulo = entry.value;
                 final ehDificuldade = plano.isMateriaDificuldade(modulo.nome);
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
+                  padding: const EdgeInsets.only(bottom: 10.0),
                   child: _moduloCard(
                     nome: modulo.nome,
                     icone: modulo.icone,
@@ -852,6 +869,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     totalQuestoes: modulo.totalQuestoes,
                     corBadge: modulo.corBadge,
                     isDificuldade: ehDificuldade,
+                    index: index,
                     aulas: modulo.aulas.map((aula) {
                       return _aulaItem(
                         numero: aula.numero,
@@ -940,9 +958,11 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     required int totalQuestoes,
     required Color corBadge,
     required bool isDificuldade,
+    int index = 0,
     required List<Widget> aulas,
   }) {
-    final isOpen = _moduloAberto[nome] ?? true;
+    final isOpen = _moduloAberto[nome] ??
+        ((widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty) || index == 0 || isDificuldade);
 
     return TacticalCard(
       padding: EdgeInsets.zero,
