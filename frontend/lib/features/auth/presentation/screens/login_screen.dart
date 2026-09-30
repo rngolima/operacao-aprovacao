@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Header Oficial CRAVOU com a Coruja Aprovada
-                    const CravouBrandHeader(logoSize: 84.0),
+                    const CravouBrandHeader(logoSize: 104.0),
                     SizedBox(height: AppSpacing.xl),
 
                     // Exibicao de Erro da API, se houver

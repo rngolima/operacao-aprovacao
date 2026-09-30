@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
+import '../../../../core/state/plano_estudo_state.dart';
 import '../../../questoes/data/models/questao_model.dart';
 import 'aula_detalhe_screen.dart';
 
 /// Tela do Guia de Estudos Oficial (Inspirada na arquitetura do QConcursos).
-/// Exibe a trilha por disciplinas do edital com aulas em PDF didático e questões práticas.
+/// Exibe a trilha por disciplinas do edital com aulas em síntese didática e questões práticas.
 class GuiaEstudosScreen extends StatefulWidget {
-  final String concursoNome;
+  final String? concursoNome;
 
   const GuiaEstudosScreen({
     super.key,
-    this.concursoNome = 'PC-PE — Agente de Polícia',
+    this.concursoNome,
   });
 
   @override
@@ -20,12 +21,7 @@ class GuiaEstudosScreen extends StatefulWidget {
 }
 
 class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
-  final Map<String, bool> _moduloAberto = {
-    'Língua Portuguesa': true,
-    'Noções de Direito Penal': false,
-    'Noções de Direito Processual Penal': false,
-    'Noções de Direito Constitucional': false,
-  };
+  final Map<String, bool> _moduloAberto = {};
 
   // Mock de Questões Didáticas Vinculadas para a Aula de Crase
   final List<QuestaoModel> _questoesCrase = const [
@@ -55,8 +51,42 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     ),
   ];
 
+  // Mock de Questões da PMPE (História de PE)
+  final List<QuestaoModel> _questoesHistoriaPe = const [
+    QuestaoModel(
+      id: 3,
+      banca: 'IAUPE',
+      orgao: 'PM-PE',
+      cargo: 'Soldado da Polícia Militar',
+      ano: 2024,
+      disciplina: 'História de Pernambuco',
+      assunto: 'Invasões Holandesas',
+      enunciado: 'Durante o domínio holandês em Pernambuco sob a administração de Maurício de Nassau (1637-1644), a política de tolerância religiosa e os investimentos urbanísticos na Cidade Maurícia marcaram o apogeu da presença neerlandesa no Nordeste açucareiro.',
+      gabaritoOficial: 'CERTO',
+      comentarioDidatico: 'CRAVOU NO ACERTO! O governo de Maurício de Nassau notabilizou-se pela liberdade de culto (concedida a católicos, calvinistas e judeus), embelezamento do Recife, saneamento e estímulo às artes e ciências, sendo considerado o período de ouro da ocupação holandesa.',
+    ),
+    QuestaoModel(
+      id: 4,
+      banca: 'IAUPE',
+      orgao: 'PM-PE',
+      cargo: 'Soldado da Polícia Militar',
+      ano: 2024,
+      disciplina: 'História de Pernambuco',
+      assunto: 'Revolução Pernambucana de 1817',
+      enunciado: 'A Revolução Pernambucana de 1817 instaurou uma república independente de caráter provisório em Pernambuco, motivada pela insatisfação com os altos impostos cobrados pela Coroa portuguesa sediada no Rio de Janeiro e pelas secas no Nordeste.',
+      gabaritoOficial: 'CERTO',
+      comentarioDidatico: 'CRAVOU NO ACERTO! O movimento de 1817 proclamou a República de Pernambuco, com liberdade de imprensa e culto, opondo-se ao absolutismo monárquico joanino e à pesada carga tributária que financiava a corte no Rio.',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final plano = PlanoEstudoState.instance;
+    final String concursoAtivo = widget.concursoNome ?? plano.concursoAlvo;
+    final bool isPmpe = concursoAtivo.toUpperCase().contains('MILITAR') ||
+        concursoAtivo.toUpperCase().contains('PMPE') ||
+        concursoAtivo.toUpperCase().contains('PM-PE');
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -67,11 +97,11 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
           children: [
             Text(
               'Guia de Estudos do Edital',
-              style: AppTypography.heading3.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+              style: AppTypography.heading3.copyWith(fontSize: 17, fontWeight: FontWeight.bold),
             ),
             Text(
-              widget.concursoNome,
-              style: AppTypography.caption.copyWith(fontSize: 11, color: AppColors.textSecondary),
+              isPmpe ? 'PM-PE — Soldado da Polícia Militar' : 'PC-PE — Agente de Polícia',
+              style: AppTypography.caption.copyWith(fontSize: 12, color: AppColors.brandOrange, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -92,24 +122,26 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.brandNavy,
+                          color: isPmpe ? const Color(0xFF15803D) : AppColors.brandNavy,
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Icon(Icons.school, color: Colors.white, size: 20),
+                        child: const Icon(Icons.school, color: Colors.white, size: 22),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Curso Reta Final PC-PE (Cebraspe)',
-                              style: AppTypography.titleMedium.copyWith(fontSize: 14, fontWeight: FontWeight.bold),
+                              isPmpe ? 'Curso Reta Final PM-PE (Edital Publicado)' : 'Curso Reta Final PC-PE (Cebraspe)',
+                              style: AppTypography.titleMedium.copyWith(fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Material autoral + Banco de Questões do Edital',
-                              style: AppTypography.caption.copyWith(fontSize: 11),
+                              isPmpe
+                                  ? 'Banca IAUPE/AOCP • 2.400 Vagas • Material Autoral + Questões'
+                                  : 'Banca Cebraspe • Material Autoral + Questões do Edital',
+                              style: AppTypography.caption.copyWith(fontSize: 12),
                             ),
                           ],
                         ),
@@ -122,15 +154,15 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text('Progresso do Guia', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                      Text('25% concluído', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
+                      Text('Progresso do Guia', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                      Text('18% concluído', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
                     ],
                   ),
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: 0.25,
+                      value: 0.18,
                       minHeight: 6,
                       backgroundColor: AppColors.surfaceElevated,
                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.brandCobalt),
@@ -144,134 +176,174 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
 
             // Título da Seção de Disciplinas
             Text(
-              'DISCIPLINAS DO EDITAL',
+              'DISCIPLINAS DO EDITAL OFICIAL',
               style: AppTypography.tagLabel.copyWith(
                 color: AppColors.textPrimary,
                 letterSpacing: 0.8,
+                fontSize: 13,
               ),
             ),
             const SizedBox(height: 8),
 
-            // MÓDULO 1: LÍNGUA PORTUGUESA
-            _moduloCard(
-              nome: 'Língua Portuguesa',
-              icone: '✍️',
-              totalAulas: 4,
-              totalQuestoes: 20,
-              corBadge: AppColors.brandCobalt,
-              aulas: [
-                _aulaItem(
-                  numero: '01',
-                  titulo: 'Compreensão, Coesão & Conectivos no Cebraspe',
-                  detalhes: '12 min • Síntese Didática • 10 questões',
-                  concluida: true,
-                  onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Compreensão e Coesão Textual'),
-                ),
-                _aulaItem(
-                  numero: '02',
-                  titulo: 'Acento Indicativo de Crase & Regências Perigosas',
-                  detalhes: '15 min • Síntese Didática • 15 questões',
-                  concluida: false,
-                  destaque: true,
-                  onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase & Regência sem Mistério', questoes: _questoesCrase),
-                ),
-                _aulaItem(
-                  numero: '03',
-                  titulo: 'Concordância Verbal & A Partícula SE (Apassivador vs IIS)',
-                  detalhes: '14 min • Síntese Didática • 12 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Língua Portuguesa', 'Aula 03: Concordância e a Partícula SE'),
-                ),
-                _aulaItem(
-                  numero: '04',
-                  titulo: 'Pontuação Tática: O Emprego da Vírgula e Pontos',
-                  detalhes: '10 min • Síntese Didática • 8 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Língua Portuguesa', 'Aula 04: Pontuação Tática no Cebraspe'),
-                ),
-              ],
-            ),
+            if (isPmpe) ...[
+              // MÓDULO 1 PM-PE: HISTÓRIA DE PERNAMBUCO
+              _moduloCard(
+                nome: 'História de Pernambuco',
+                icone: '⚔️',
+                totalAulas: 3,
+                totalQuestoes: 15,
+                corBadge: const Color(0xFF15803D),
+                aulas: [
+                  _aulaItem(
+                    numero: '01',
+                    titulo: 'Invasões Holandesas & Governo de Maurício de Nassau',
+                    detalhes: '14 min • Síntese Didática • 8 questões IAUPE',
+                    concluida: true,
+                    onTap: () => _abrirAula('História de Pernambuco', 'Aula 01: Invasões Holandesas em PE', questoes: _questoesHistoriaPe),
+                  ),
+                  _aulaItem(
+                    numero: '02',
+                    titulo: 'Insurreição Pernambucana & Batalha dos Guararapes (Origem do Exército)',
+                    detalhes: '12 min • Síntese Didática • 10 questões',
+                    concluida: false,
+                    destaque: true,
+                    onTap: () => _abrirAula('História de Pernambuco', 'Aula 02: Insurreição e Batalha dos Guararapes', questoes: _questoesHistoriaPe),
+                  ),
+                  _aulaItem(
+                    numero: '03',
+                    titulo: 'Revolução Pernambucana de 1817 & Confederação do Equador (1824)',
+                    detalhes: '15 min • Síntese Didática • 12 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('História de Pernambuco', 'Aula 03: Movimentos Revolucionários de PE', questoes: _questoesHistoriaPe),
+                  ),
+                ],
+              ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            // MÓDULO 2: DIREITO PENAL
-            _moduloCard(
-              nome: 'Noções de Direito Penal',
-              icone: '⚖️',
-              totalAulas: 2,
-              totalQuestoes: 12,
-              corBadge: const Color(0xFF15803D),
-              aulas: [
-                _aulaItem(
-                  numero: '01',
-                  titulo: 'Aplicação da Lei Penal & Retroatividade Benéfica',
-                  detalhes: '12 min • Síntese Didática • 8 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Direito Penal', 'Aula 01: Aplicação da Lei Penal'),
-                ),
-                _aulaItem(
-                  numero: '02',
-                  titulo: 'Crimes Contra a Vida & Homicídio Funcional (Lei 13.142)',
-                  detalhes: '15 min • Síntese Didática • 10 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Direito Penal', 'Aula 02: Crimes Contra a Vida'),
-                ),
-              ],
-            ),
+              // MÓDULO 2 PM-PE: GEOGRAFIA DE PERNAMBUCO
+              _moduloCard(
+                nome: 'Geografia de Pernambuco',
+                icone: '🗺️',
+                totalAulas: 2,
+                totalQuestoes: 12,
+                corBadge: const Color(0xFFD97706),
+                aulas: [
+                  _aulaItem(
+                    numero: '01',
+                    titulo: 'Quadro Físico: Relevo, Clima e Vegetação (Zona da Mata, Agreste e Sertão)',
+                    detalhes: '12 min • Síntese Didática • 10 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('Geografia de Pernambuco', 'Aula 01: Mesorregiões e Relevo de PE'),
+                  ),
+                  _aulaItem(
+                    numero: '02',
+                    titulo: 'Bacias Hidrográficas (Rio São Francisco e Transposição) & Economia',
+                    detalhes: '14 min • Síntese Didática • 10 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('Geografia de Pernambuco', 'Aula 02: Hidrografia e Polos Econômicos de PE'),
+                  ),
+                ],
+              ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            // MÓDULO 3: DIREITO PROCESSUAL PENAL
-            _moduloCard(
-              nome: 'Noções de Direito Processual Penal',
-              icone: '🚓',
-              totalAulas: 2,
-              totalQuestoes: 12,
-              corBadge: const Color(0xFFB45309),
-              aulas: [
-                _aulaItem(
-                  numero: '01',
-                  titulo: 'Inquérito Policial: Inquisitividade & Vedações (Art. 17 CPP)',
-                  detalhes: '14 min • Síntese Didática • 12 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Processo Penal', 'Aula 01: Inquérito Policial'),
-                ),
-                _aulaItem(
-                  numero: '02',
-                  titulo: 'Prisão em Flagrante: Próprio, Impróprio e Ficto',
-                  detalhes: '12 min • Síntese Didática • 10 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Processo Penal', 'Aula 02: Prisão em Flagrante'),
-                ),
-              ],
-            ),
+              // MÓDULO 3 PM-PE: LÍNGUA PORTUGUESA (IAUPE)
+              _moduloCard(
+                nome: 'Língua Portuguesa (Foco IAUPE)',
+                icone: '✍️',
+                totalAulas: 3,
+                totalQuestoes: 18,
+                corBadge: AppColors.brandCobalt,
+                aulas: [
+                  _aulaItem(
+                    numero: '01',
+                    titulo: 'Compreensão e Interpretação Textual na Banca IAUPE',
+                    detalhes: '10 min • Síntese Didática • 10 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Interpretação de Texto IAUPE'),
+                  ),
+                  _aulaItem(
+                    numero: '02',
+                    titulo: 'Acento Indicativo de Crase & Regência Verbal',
+                    detalhes: '15 min • Síntese Didática • 15 questões',
+                    concluida: false,
+                    destaque: true,
+                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase e Regência para PM-PE', questoes: _questoesCrase),
+                  ),
+                ],
+              ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            // MÓDULO 4: DIREITO CONSTITUCIONAL
-            _moduloCard(
-              nome: 'Noções de Direito Constitucional',
-              icone: '📜',
-              totalAulas: 2,
-              totalQuestoes: 10,
-              corBadge: AppColors.brandNavy,
-              aulas: [
-                _aulaItem(
-                  numero: '01',
-                  titulo: 'Segurança Pública: Art. 144 da CF & Papel da Polícia Civil',
-                  detalhes: '10 min • Síntese Didática • 10 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Direito Constitucional', 'Aula 01: Segurança Pública (Art. 144)'),
-                ),
-                _aulaItem(
-                  numero: '02',
-                  titulo: 'Direitos Fundamentais & Inviolabilidade de Domicílio',
-                  detalhes: '12 min • Síntese Didática • 10 questões',
-                  concluida: false,
-                  onTap: () => _abrirAula('Direito Constitucional', 'Aula 02: Inviolabilidade de Domicílio'),
-                ),
-              ],
-            ),
+              // MÓDULO 4 PM-PE: MATEMÁTICA E RLM
+              _moduloCard(
+                nome: 'Matemática e Raciocínio Lógico',
+                icone: '📐',
+                totalAulas: 2,
+                totalQuestoes: 10,
+                corBadge: const Color(0xFF6366F1),
+                aulas: [
+                  _aulaItem(
+                    numero: '01',
+                    titulo: 'Regra de Três, Porcentagem e Juros Simples',
+                    detalhes: '12 min • Fórmulas e Macetes • 10 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('Matemática', 'Aula 01: Porcentagem e Regra de Três'),
+                  ),
+                  _aulaItem(
+                    numero: '02',
+                    titulo: 'Lógica Proposicional: Tabela-Verdade e Negação de Conectivos',
+                    detalhes: '14 min • Macetes Práticos • 10 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('RLM', 'Aula 02: Lógica Proposicional'),
+                  ),
+                ],
+              ),
+            ] else ...[
+              // MÓDULOS PADRÃO PC-PE
+              _moduloCard(
+                nome: 'Língua Portuguesa',
+                icone: '✍️',
+                totalAulas: 4,
+                totalQuestoes: 20,
+                corBadge: AppColors.brandCobalt,
+                aulas: [
+                  _aulaItem(
+                    numero: '01',
+                    titulo: 'Compreensão, Coesão & Conectivos no Cebraspe',
+                    detalhes: '12 min • Síntese Didática • 10 questões',
+                    concluida: true,
+                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Compreensão e Coesão Textual'),
+                  ),
+                  _aulaItem(
+                    numero: '02',
+                    titulo: 'Acento Indicativo de Crase & Regências Perigosas',
+                    detalhes: '15 min • Síntese Didática • 15 questões',
+                    concluida: false,
+                    destaque: true,
+                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase & Regência sem Mistério', questoes: _questoesCrase),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _moduloCard(
+                nome: 'Noções de Direito Penal',
+                icone: '⚖️',
+                totalAulas: 2,
+                totalQuestoes: 12,
+                corBadge: const Color(0xFF15803D),
+                aulas: [
+                  _aulaItem(
+                    numero: '01',
+                    titulo: 'Aplicação da Lei Penal & Retroatividade Benéfica',
+                    detalhes: '12 min • Síntese Didática • 8 questões',
+                    concluida: false,
+                    onTap: () => _abrirAula('Direito Penal', 'Aula 01: Aplicação da Lei Penal'),
+                  ),
+                ],
+              ),
+            ],
 
             const SizedBox(height: 30),
           ],
@@ -300,7 +372,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     required Color corBadge,
     required List<Widget> aulas,
   }) {
-    final isOpen = _moduloAberto[nome] ?? false;
+    final isOpen = _moduloAberto[nome] ?? true;
 
     return TacticalCard(
       padding: EdgeInsets.zero,
@@ -324,14 +396,14 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '$totalAulas aulas teóricas • $totalQuestoes questões',
-                          style: AppTypography.caption.copyWith(fontSize: 11, color: AppColors.textSecondary),
+                          '$totalAulas aulas • $totalQuestoes questões oficiais',
+                          style: AppTypography.caption.copyWith(fontSize: 11),
                         ),
                       ],
                     ),
                   ),
                   Icon(
-                    isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
                     color: AppColors.textSecondary,
                   ),
                 ],
@@ -340,9 +412,12 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
           ),
           if (isOpen) ...[
             const Divider(height: 1, color: AppColors.surfaceBorder),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              child: Column(children: aulas),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: aulas.length,
+              separatorBuilder: (_, _) => const Divider(height: 1, color: AppColors.surfaceBorder),
+              itemBuilder: (context, i) => aulas[i],
             ),
           ],
         ],
@@ -354,38 +429,41 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     required String numero,
     required String titulo,
     required String detalhes,
-    bool concluida = false,
+    required bool concluida,
     bool destaque = false,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-          color: destaque ? AppColors.brandCobalt.withValues(alpha: 0.06) : AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: destaque ? AppColors.brandCobalt.withValues(alpha: 0.3) : AppColors.surfaceBorder),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
             Container(
-              width: 26,
-              height: 26,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                color: concluida ? AppColors.success : AppColors.surface,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: concluida ? AppColors.success : AppColors.surfaceBorder),
+                color: concluida
+                    ? AppColors.success.withValues(alpha: 0.15)
+                    : destaque
+                        ? AppColors.brandOrange.withValues(alpha: 0.15)
+                        : AppColors.surfaceElevated,
+                shape: BoxShape.circle,
               ),
               child: Center(
                 child: concluida
-                    ? const Icon(Icons.check, size: 16, color: Colors.white)
-                    : Text(numero, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                    ? const Icon(Icons.check, color: AppColors.success, size: 16)
+                    : Text(
+                        numero,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: destaque ? AppColors.brandOrange : AppColors.textPrimary,
+                        ),
+                      ),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,18 +472,19 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     titulo,
                     style: TextStyle(
                       fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                      color: destaque ? AppColors.brandCobalt : AppColors.textPrimary,
+                      fontWeight: destaque ? FontWeight.bold : FontWeight.w600,
+                      color: destaque ? AppColors.brandOrange : AppColors.textPrimary,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  Text(detalhes, style: AppTypography.caption.copyWith(fontSize: 10.5)),
+                  Text(
+                    detalhes,
+                    style: AppTypography.caption.copyWith(fontSize: 10.5),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: AppColors.textSecondary),
+            const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.textSecondary),
           ],
         ),
       ),
