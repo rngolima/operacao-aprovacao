@@ -445,7 +445,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                               ),
                               const Text(
-                                '14/20 questões hoje',
+                                '7/10 questões hoje',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -455,7 +455,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ],
                           ),
                           const Text(
-                            'Toque para destravar acesso ilimitado por apenas R\$ 19,90/mês',
+                            'Toque para destravar acesso ilimitado por apenas R\$ 14,99/mês',
                             style: TextStyle(
                               fontSize: 11,
                               color: Color(0xFF64748B),

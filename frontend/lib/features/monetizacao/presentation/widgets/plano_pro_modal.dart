@@ -76,7 +76,7 @@ class PlanoProModal extends StatelessWidget {
 
           const SizedBox(height: 12),
           const Text(
-            'Sua cota diária gratuita (20 questões) foi atingida!',
+            'Sua cota diária gratuita (10 questões) foi atingida!',
             style: TextStyle(
               fontSize: 19,
               fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class PlanoProModal extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'R\$ 29,90',
+                        'R\$ 14,99',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -209,7 +209,7 @@ class PlanoProModal extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'R\$ 19,90',
+                        'R\$ 9,99',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -217,7 +217,7 @@ class PlanoProModal extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        '/mês (12x R\$ 19,90)',
+                        '/mês (12x R\$ 9,99)',
                         style: TextStyle(
                           fontSize: 11,
                           color: Color(0xFF64748B),
@@ -267,7 +267,7 @@ class PlanoProModal extends StatelessWidget {
             child: TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text(
-                'Continuar no plano gratuito (20 questões/dia)',
+                'Continuar no plano gratuito (10 questões/dia)',
                 style: TextStyle(
                   color: Color(0xFF64748B),
                   fontSize: 12,
