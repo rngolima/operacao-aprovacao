@@ -222,6 +222,8 @@ class QuestaoCardWidget extends StatelessWidget {
               onRevisarAssunto: onRevisarAssunto,
               assunto: questao.assunto,
               tempoGastoSegundos: tempoGastoSegundos,
+              enunciado: questao.enunciado,
+              banca: questao.banca,
             ),
           ],
         ],

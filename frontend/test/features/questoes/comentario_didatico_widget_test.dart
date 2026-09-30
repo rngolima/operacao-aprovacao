@@ -53,6 +53,10 @@ A banca adora colocar adjetivos para confundir com descritivo. Linha do tempo em
       // Valida Caixa Dourada de Pegadinha da Banca
       expect(find.text('O PULO DO GATO • PEGADINHA DA BANCA'), findsOneWidget);
       expect(find.textContaining('Linha do tempo em movimento = Narrativa!'), findsOneWidget);
+
+      // Valida Card do Professor CRAVOU AI no final da resposta certa
+      expect(find.text('Professor CRAVOU AI'), findsOneWidget);
+      expect(find.text('TIRAR DÚVIDA / PEDIR MNEMÔNICO'), findsOneWidget);
     });
 
     testWidgets('Exibe Ponto de Vulnerabilidade quando o aluno erra e dispara callback de revisão', (tester) async {
@@ -92,6 +96,10 @@ A banca adora colocar adjetivos para confundir com descritivo. Linha do tempo em
       // Valida Ponto de Vulnerabilidade
       expect(find.text('PONTO DE VULNERABILIDADE DETECTADO'), findsOneWidget);
       expect(find.text('Revisar "Tipologia Textual" no Resumo e Mapa Mental'), findsOneWidget);
+
+      // Valida Card do Professor CRAVOU AI no final da resposta errada
+      expect(find.text('Professor CRAVOU AI'), findsOneWidget);
+      expect(find.text('DESVENDAR PEGADINHA COM O PROFESSOR'), findsOneWidget);
 
       // Clica para revisar
       final btnRevisar = find.text('PONTO DE VULNERABILIDADE DETECTADO');

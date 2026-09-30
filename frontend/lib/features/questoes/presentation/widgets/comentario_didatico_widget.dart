@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:operacao_aprovacao_app/features/ia_tutor/presentation/widgets/professor_cravou_card_widget.dart';
 
 /// Modelo interno para representar uma alternativa destrinchada no comentário pedagógico.
 class _AlternativaComentada {
@@ -25,6 +26,8 @@ class ComentarioDidaticoWidget extends StatelessWidget {
   final VoidCallback? onRevisarAssunto;
   final String? assunto;
   final int? tempoGastoSegundos;
+  final String? enunciado;
+  final String? banca;
 
   const ComentarioDidaticoWidget({
     super.key,
@@ -35,6 +38,8 @@ class ComentarioDidaticoWidget extends StatelessWidget {
     this.onRevisarAssunto,
     this.assunto,
     this.tempoGastoSegundos,
+    this.enunciado,
+    this.banca,
   });
 
   @override
@@ -94,7 +99,18 @@ class ComentarioDidaticoWidget extends StatelessWidget {
           // 6. Botão de Ponto de Vulnerabilidade (se o aluno errou)
           if (!acertou && onRevisarAssunto != null && assunto != null) ...[
             _buildBotaoRevisao(),
+            const SizedBox(height: 12),
           ],
+
+          // 7. Card Oficial do Professor CRAVOU AI (Tira-dúvidas e mentoria tática 24h)
+          ProfessorCravouCardWidget(
+            enunciado: enunciado ?? '',
+            gabaritoOficial: gabaritoOficial,
+            comentario: comentario,
+            acertou: acertou,
+            assunto: assunto,
+            banca: banca,
+          ),
         ],
       ),
     );
