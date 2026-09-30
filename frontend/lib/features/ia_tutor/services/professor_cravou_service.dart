@@ -1,10 +1,47 @@
 import 'dart:async';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../models/ia_mensagem_model.dart';
+import 'gemini_tutor_api_service.dart';
 
 /// Serviço inteligente e humanizado do Professor CRAVOU AI.
-/// Responde como um professor particular experiente, acolhedor, apaixonado
-/// por aprovar concurseiros e focado nas malícias das bancas examinadoras.
+/// Conecta-se diretamente ao modelo oficial Google Gemini 1.5 Flash em tempo real.
+/// Se a chave não estiver configurada ou a rede oscilar, utiliza o motor cognitivo local.
 class ProfessorCravouService {
+  final GeminiTutorApiService _geminiApi;
+  final SecureStorageService _storage;
+
+  ProfessorCravouService({
+    GeminiTutorApiService? geminiApi,
+    SecureStorageService? storage,
+  })  : _geminiApi = geminiApi ?? GeminiTutorApiService(),
+        _storage = storage ?? SecureStorageService();
+
+  /// Verifica se há chave de API do Gemini configurada.
+  Future<bool> temChaveGeminiConfigurada() async {
+    try {
+      final key = await _storage.getGeminiApiKey();
+      return key != null && key.trim().isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Salva a chave do Google Gemini.
+  Future<void> salvarChaveGemini(String apiKey) async {
+    try {
+      await _storage.saveGeminiApiKey(apiKey);
+    } catch (_) {}
+  }
+
+  /// Recupera a chave configurada.
+  Future<String?> obterChaveGemini() async {
+    try {
+      return await _storage.getGeminiApiKey();
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Gera uma resposta viva, empática e didática, com linguagem falada e natural.
   Future<IAMensagemModel> responderDuvida({
     required String pergunta,
@@ -13,9 +50,43 @@ class ProfessorCravouService {
     required String comentario,
     String? assunto,
     String? banca,
+    List<IAMensagemModel>? historico,
   }) async {
-    // Pequena pausa natural de raciocínio pedagógico
-    await Future.delayed(const Duration(milliseconds: 650));
+    // 1. Tenta obter resposta real e inteligente da API do Google Gemini
+    String? apiKey;
+    try {
+      apiKey = await _storage.getGeminiApiKey();
+    } catch (_) {
+      apiKey = null;
+    }
+    if (apiKey != null && apiKey.trim().isNotEmpty) {
+      try {
+        final respostaGemini = await _geminiApi.gerarRespostaComGemini(
+          apiKey: apiKey,
+          pergunta: pergunta,
+          enunciado: enunciado,
+          gabaritoOficial: gabaritoOficial,
+          comentario: comentario,
+          assunto: assunto,
+          banca: banca,
+          historico: historico,
+        );
+
+        if (respostaGemini != null && respostaGemini.isNotEmpty) {
+          return IAMensagemModel(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            texto: respostaGemini,
+            isUser: false,
+            timestamp: DateTime.now(),
+          );
+        }
+      } catch (_) {
+        // Se houver qualquer erro na API, continua suavemente para o motor local
+      }
+    }
+
+    // 2. Motor Cognitivo Local Humanizado (Fallback de alta performance)
+    await Future.delayed(const Duration(milliseconds: 550));
 
     final normalized = pergunta.toLowerCase();
     String resposta;

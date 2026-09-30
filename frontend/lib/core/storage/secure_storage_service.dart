@@ -10,6 +10,7 @@ class SecureStorageService {
   static const String _keyUserEmail = 'op_user_email';
   static const String _keyUserRole = 'op_user_role';
   static const String _keyTargetConcurso = 'op_target_concurso';
+  static const String _keyGeminiApiKey = 'op_gemini_api_key';
 
   SecureStorageService({FlutterSecureStorage? storage})
       : _storage = storage ??
@@ -68,6 +69,16 @@ class SecureStorageService {
   Future<bool> isAuthenticated() async {
     final token = await getToken();
     return token != null && token.isNotEmpty;
+  }
+
+  /// Salva a chave de API do Google Gemini para o Professor CRAVOU AI.
+  Future<void> saveGeminiApiKey(String apiKey) async {
+    await _storage.write(key: _keyGeminiApiKey, value: apiKey.trim());
+  }
+
+  /// Recupera a chave de API do Google Gemini. Retorna null se nao configurada.
+  Future<String?> getGeminiApiKey() async {
+    return await _storage.read(key: _keyGeminiApiKey);
   }
 
   /// Limpa toda a sessao de forma segura.

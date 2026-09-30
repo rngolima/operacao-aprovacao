@@ -61,11 +61,22 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
   final List<IAMensagemModel> _mensagens = [];
   bool _isLoading = false;
   String? _tocandoMensagemId;
+  bool _temGeminiAtivo = false;
 
   @override
   void initState() {
     super.initState();
     _adicionarMensagemBoasVindas();
+    _verificarChaveGemini();
+  }
+
+  Future<void> _verificarChaveGemini() async {
+    final ativa = await _service.temChaveGeminiConfigurada();
+    if (mounted) {
+      setState(() {
+        _temGeminiAtivo = ativa;
+      });
+    }
   }
 
   void _adicionarMensagemBoasVindas() {
@@ -268,7 +279,10 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  runSpacing: 4,
                   children: [
                     const Text(
                       'Professor CRAVOU AI',
@@ -278,47 +292,66 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                         color: AppColors.brandNavy,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppColors.brandOrange.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: AppColors.brandOrange.withValues(alpha: 0.4),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('🔊', style: TextStyle(fontSize: 8)),
-                          SizedBox(width: 3),
-                          Text(
-                            'ÁUDIO + IA',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.brandOrange,
-                            ),
+                    InkWell(
+                      onTap: _abrirConfiguracaoGemini,
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: _temGeminiAtivo
+                              ? const Color(0xFFDCFCE7)
+                              : AppColors.brandOrange.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: _temGeminiAtivo
+                                ? const Color(0xFF16A34A)
+                                : AppColors.brandOrange.withValues(alpha: 0.4),
+                            width: 0.8,
                           ),
-                        ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_temGeminiAtivo ? '🟢' : '⚡', style: const TextStyle(fontSize: 8)),
+                            const SizedBox(width: 3),
+                            Text(
+                              _temGeminiAtivo ? 'GEMINI 1.5 FLASH' : 'CONECTAR GEMINI',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                color: _temGeminiAtivo ? const Color(0xFF15803D) : AppColors.brandOrange,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  widget.assunto != null
-                      ? 'Mentor em ${widget.assunto} • Banca ${widget.banca ?? 'Cebraspe'}'
-                      : 'Mentor Pedagógico 24h • Explicação em Áudio',
-                  style: const TextStyle(
+                  _temGeminiAtivo
+                      ? '🟢 IA Conectada • Raciocínio Gemini 1.5 em Tempo Real'
+                      : (widget.assunto != null
+                          ? 'Mentor em ${widget.assunto} • Explicação em Áudio'
+                          : 'Mentor Pedagógico 24h • Explicação em Áudio'),
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: _temGeminiAtivo ? const Color(0xFF15803D) : AppColors.textSecondary,
+                    fontWeight: _temGeminiAtivo ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
               ],
             ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.vpn_key_rounded,
+              color: _temGeminiAtivo ? const Color(0xFF16A34A) : AppColors.brandOrange,
+              size: 20,
+            ),
+            tooltip: 'Configurar Chave Google Gemini',
+            onPressed: _abrirConfiguracaoGemini,
           ),
           IconButton(
             icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
@@ -326,6 +359,86 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
               _audioService.stop();
               Navigator.of(context).pop();
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _abrirConfiguracaoGemini() async {
+    final chaveAtual = await _service.obterChaveGemini() ?? '';
+    final controller = TextEditingController(text: chaveAtual);
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: const [
+            Icon(Icons.smart_toy_rounded, color: AppColors.brandCobalt, size: 24),
+            SizedBox(width: 8),
+            Text(
+              'Google Gemini 1.5 Flash',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Conecte sua chave gratuita do Google AI Studio para conversar com o modelo oficial do Gemini em tempo real, com raciocínio ilimitado e capacidade de tirar qualquer dúvida complexa!',
+              style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.4),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Chave de API do Gemini (AI Studio)',
+                hintText: 'Cole sua chave AIzaSy...',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.vpn_key_rounded, size: 18),
+              ),
+              style: const TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '💡 Obtenha sua chave grátis em https://aistudio.google.com/',
+              style: TextStyle(fontSize: 11, color: AppColors.brandCobalt, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _service.salvarChaveGemini(controller.text);
+              await _verificarChaveGemini();
+              if (ctx.mounted) Navigator.of(ctx).pop();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      controller.text.trim().isEmpty
+                          ? 'Chave removida. Usando motor cognitivo local.'
+                          : '🚀 Google Gemini 1.5 Flash ativado com sucesso!',
+                    ),
+                    backgroundColor: const Color(0xFF16A34A),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brandCobalt,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Salvar e Ativar'),
           ),
         ],
       ),
