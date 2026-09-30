@@ -5,6 +5,9 @@ import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/widgets/tactical_owl_logo.dart';
 import '../../../questoes/presentation/screens/catalogo_questoes_screen.dart';
 import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
+import '../../../cursos/presentation/screens/guia_estudos_screen.dart';
+import '../../../monetizacao/presentation/widgets/plano_pro_modal.dart';
+import 'adicionar_edital_screen.dart';
 
 /// Tela Principal do Aluno: "Meu Painel" (Dashboard de Alta Performance inspirado no QConcursos).
 /// Apresenta métricas diárias, saldo líquido Cebraspe (C - E), atalho para simulados e certames de PE.
@@ -109,8 +112,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Cabeçalho da Página
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +135,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ],
                 ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const AdicionarEditalScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add_circle_outline, size: 16),
+                  label: const Text('Adicionar Edital (IA)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.brandNavy,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
               ],
+            ),
+            const SizedBox(height: 12),
+
+            // Banner de Cota Diária & Upgrade PRO (Monetização)
+            GestureDetector(
+              onTap: () => PlanoProModal.show(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E3A8A),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Icon(Icons.workspace_premium, color: Colors.white, size: 16),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Text(
+                                'Plano Gratuito: ',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E293B),
+                                ),
+                              ),
+                              const Text(
+                                '14/20 questões hoje',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFD97706),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            'Toque para destravar acesso ilimitado por apenas R\$ 19,90/mês',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, color: Color(0xFF1E3A8A), size: 14),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -465,6 +553,81 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
             ),
 
+            const SizedBox(height: 16),
+
+            // SEÇÃO: GUIA DE ESTUDOS DO EDITAL (CURSOS & RESUMOS ESTILO QCONCURSOS)
+            TacticalCard(
+              padding: const EdgeInsets.all(16),
+              borderColor: AppColors.brandCobalt.withValues(alpha: 0.3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandCobalt.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.school, color: AppColors.brandCobalt, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Guia de Estudos & Reta Final',
+                              style: AppTypography.titleMedium.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'PC-PE • Agente de Polícia • Baseado no Edital Cebraspe',
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Acesse resumos teóricos direcionados (Português, Penal, Processo Penal) e pratique questões reais associadas a cada aula.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const GuiaEstudosScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.menu_book, size: 16),
+                    label: const Text('ABRIR GUIA DE ESTUDOS & AULAS'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.brandCobalt,
+                      side: const BorderSide(color: AppColors.brandCobalt),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 24),
           ],
         ),
@@ -481,6 +644,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: 'Meu Painel',
           ),
           NavigationDestination(
+            icon: Icon(Icons.school_outlined),
+            selectedIcon: Icon(Icons.school, color: AppColors.brandCobalt),
+            label: 'Guia/Cursos',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),
             selectedIcon: Icon(Icons.menu_book, color: AppColors.brandCobalt),
             label: 'Questões',
@@ -494,9 +662,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onDestinationSelected: (index) {
           if (index == 1) {
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CatalogoQuestoesScreen()),
+              MaterialPageRoute(builder: (_) => const GuiaEstudosScreen()),
             );
           } else if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CatalogoQuestoesScreen()),
+            );
+          } else if (index == 3) {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const SimuladoCockpitScreen()),
             );
