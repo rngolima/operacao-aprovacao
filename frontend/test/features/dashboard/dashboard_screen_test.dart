@@ -22,16 +22,18 @@ void main() {
     setUp(() {
       PlanoEstudoState.instance.atualizarPlano(
         concursoAlvo: 'PM-PE (Polícia Militar de Pernambuco)',
-        cargoAlvo: 'Soldado da PM',
-        banca: 'Instituto IAUPE / AOCP',
+        cargoAlvo: 'Soldado da Polícia Militar',
+        banca: 'Instituto AOCP',
         horasPorDia: 3,
-        semanasAteProva: 10,
+        semanasAteProva: 21,
         disciplinas: const [
-          'Língua Portuguesa',
-          'História de Pernambuco',
-          'Geografia de Pernambuco',
-          'Matemática e Raciocínio Lógico',
-          'Noções de Direito Constitucional & Legislação da PMPE',
+          'Língua Portuguesa (10 questões)',
+          'História de Pernambuco (10 questões)',
+          'Raciocínio Lógico Matemático (10 questões)',
+          'Noções de Informática (10 questões)',
+          'Direito Constitucional (10 questões)',
+          'Direitos Humanos e Legislação Extravagante (10 questões)',
+          'Prova Discursiva (Redação - 40 pontos)',
         ],
       );
     });
@@ -57,12 +59,15 @@ void main() {
       expect(find.text('Adicionar Edital'), findsNothing);
       expect(find.text('Adicionar Edital (IA)'), findsNothing);
 
-      // Banner de Contagem Regressiva para a Prova da PM-PE
-      expect(find.textContaining('CONTAGEM REGRESSIVA: 68 DIAS PARA A PROVA DA PM-PE'), findsOneWidget);
+      // Banner de Contagem Regressiva para a Prova da PM-PE (144 dias)
+      expect(find.textContaining('CONTAGEM REGRESSIVA: 144 DIAS PARA A PROVA DA PM-PE (21/02/2027)'), findsOneWidget);
+
+      // Badge de Inscrição Homologada Oficial
+      expect(find.textContaining('INSCRIÇÃO HOMOLOGADA • Nº 2026-PMPE-08942'), findsOneWidget);
     });
 
-    testWidgets('Navega para PlanejadorTaticoScreen com foco estrito na PM-PE e rigor do edital', (tester) async {
-      tester.view.physicalSize = const Size(800, 1400);
+    testWidgets('Navega para PlanejadorTaticoScreen com as 21 semanas completas e rigor do edital AOCP', (tester) async {
+      tester.view.physicalSize = const Size(800, 1800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() {
         tester.view.resetPhysicalSize();
@@ -80,11 +85,15 @@ void main() {
 
       // Valida elementos do Planejador Tático
       expect(find.byType(PlanejadorTaticoScreen), findsOneWidget);
-      expect(find.text('Planejamento de Estudos'), findsWidgets);
-      expect(find.text('CRONOGRAMA RIGOROSO DO EDITAL DA PMPE'), findsOneWidget);
+      expect(find.text('CRONOGRAMA REGRESSIVO OFICIAL DA PM-PE'), findsOneWidget);
       expect(find.text('Sua Disponibilidade Diária de Estudos'), findsOneWidget);
-      expect(find.text('As 4 Fases do Seu Cronograma de Guerra'), findsOneWidget);
-      expect(find.text('68 dias p/ a prova'), findsOneWidget);
+      expect(find.text('Cronograma da Semana 1 ao Dia da Prova'), findsOneWidget);
+      expect(find.text('144 dias p/ a prova'), findsOneWidget);
+      expect(find.text('21 SEMANAS'), findsOneWidget);
+
+      // Valida a presença da Semana 1 e da Semana da Prova
+      expect(find.textContaining('Semana 1 • Compreensão de Texto'), findsOneWidget);
+      expect(find.text('SEMANA ATUAL'), findsOneWidget);
 
       // Seleciona 4 horas/dia
       await tester.tap(find.text('4 horas/dia'));
@@ -100,7 +109,7 @@ void main() {
       expect(PlanoEstudoState.instance.horasPorDia, equals(4));
     });
 
-    testWidgets('Renderiza Métricas de Desempenho focadas na PM-PE', (tester) async {
+    testWidgets('Renderiza Métricas de Desempenho focadas na PM-PE (Instituto AOCP)', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pump();
 
@@ -109,7 +118,7 @@ void main() {
       expect(find.text('ACERTOS (+1)'), findsOneWidget);
       expect(find.text('ERROS (-1)'), findsOneWidget);
       expect(find.text('PONTOS PM-PE'), findsOneWidget);
-      expect(find.textContaining('História de Pernambuco (IAUPE)'), findsOneWidget);
+      expect(find.textContaining('História de Pernambuco (Instituto AOCP)'), findsOneWidget);
     });
 
     testWidgets('Renderiza Meta de Hoje, Concurso Alvo Único e Guia de Estudos da PM-PE', (tester) async {

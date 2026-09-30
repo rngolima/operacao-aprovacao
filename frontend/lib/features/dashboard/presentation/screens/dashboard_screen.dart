@@ -225,7 +225,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       children: [
                         Text(
                           isPmpe
-                              ? 'CONTAGEM REGRESSIVA: 68 DIAS PARA A PROVA DA PM-PE'
+                              ? 'CONTAGEM REGRESSIVA: 144 DIAS PARA A PROVA DA PM-PE (21/02/2027)'
                               : isPppe
                                   ? 'CONTAGEM REGRESSIVA: 58 DIAS PARA A PROVA DA PP-PE'
                                   : 'CONTAGEM REGRESSIVA: 45 DIAS PARA A PROVA DA PC-PE',
@@ -238,7 +238,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Mantenha o foco diário e a disciplina tática • Meta: ${plano.horasPorDia}h/dia rumo à vaga de ${plano.cargoAlvo}.',
+                          isPmpe
+                              ? 'Edital publicado em 30/09 • Banca Instituto AOCP • Meta: ${plano.horasPorDia}h/dia (Semana 1 de 21).'
+                              : 'Mantenha o foco diário e a disciplina tática • Meta: ${plano.horasPorDia}h/dia rumo à vaga de ${plano.cargoAlvo}.',
                           style: const TextStyle(
                             color: Color(0xFFCBD5E1),
                             fontSize: 11,
@@ -250,6 +252,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
+
+            // Card de Inscrição Oficial Homologada do Candidato
+            if (isPmpe)
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF86EFAC)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.verified_rounded, color: Color(0xFF16A34A), size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'INSCRIÇÃO HOMOLOGADA • Nº 2026-PMPE-08942',
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF166534),
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                          Text(
+                            'Soldado Combatente da PMPE • 1.250 Vagas • Banca Instituto AOCP',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF15803D),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const PlanejadorTaticoScreen()),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text(
+                        'VER 21 SEMANAS',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF166534),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
             // Cabeçalho da Página
             Wrap(
@@ -578,7 +642,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Expanded(
                         child: Text(
                           isPmpe
-                              ? 'Objetivo sugerido: 20 questões de História de Pernambuco (IAUPE)'
+                              ? 'Objetivo sugerido: 20 questões de História de Pernambuco (Instituto AOCP)'
                               : isPppe
                                   ? 'Objetivo sugerido: 18 questões de Legislação Penitenciária (LEP)'
                                   : 'Objetivo sugerido: 18 questões de Processo Penal (Cebraspe)',
@@ -874,7 +938,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 12),
                   Text(
                     isPmpe
-                        ? 'Acesse resumos teóricos direcionados (História de PE, Geografia de PE, Português IAUPE, RLM e Legislação) e pratique simulados oficiais para Soldado da PMPE.'
+                        ? 'Acesse resumos teóricos direcionados (Língua Portuguesa, História de PE, RLM, Informática, Direito Constitucional e Direitos Humanos/Legislação) e pratique simulados oficiais do Instituto AOCP para Soldado da PMPE.'
                         : isPppe
                             ? 'Acesse resumos teóricos direcionados (Legislação Penitenciária, Direitos Humanos, Penal) e pratique questões reais para Policial Penal.'
                             : 'Acesse resumos teóricos direcionados (Português, Penal, Processo Penal e Legislação) e pratique questões reais associadas a cada aula.',

@@ -28,15 +28,20 @@ class PlanoEstudoState extends ChangeNotifier {
     _inicializarPadrao();
   }
 
-  // Dados do Concurso Alvo Ativo
-  String _concursoAlvo = 'PC-PE (Polícia Civil de Pernambuco)';
-  String _cargoAlvo = 'Agente de Polícia';
-  String _banca = 'Cebraspe';
+  // Dados do Concurso Alvo Ativo (Edital Oficial PM-PE 2026/2027 - Instituto AOCP)
+  String _concursoAlvo = 'PM-PE (Polícia Militar de Pernambuco)';
+  String _cargoAlvo = 'Soldado da Polícia Militar';
+  String _banca = 'Instituto AOCP';
+  String _vagas = '1.250 Vagas';
+  String _remuneracao = 'R\$ 5.617,92';
+  String _numeroInscricao = '2026-PMPE-08942';
+  String _dataProva = '21 de Fevereiro de 2027';
+  int _diasAteProva = 144;
+  int _semanasAteProva = 21;
   String? _nomeArquivoEdital;
   String? _tamanhoArquivoEdital;
   int _horasPorDia = 3;
-  int _semanasAteProva = 12;
-  bool _temCronogramaAtivo = false;
+  bool _temCronogramaAtivo = true;
   List<String> _disciplinas = [];
   List<MetaDiaEstudo> _trilhaSemanal = [];
 
@@ -44,25 +49,39 @@ class PlanoEstudoState extends ChangeNotifier {
   String get concursoAlvo => _concursoAlvo;
   String get cargoAlvo => _cargoAlvo;
   String get banca => _banca;
+  String get vagas => _vagas;
+  String get remuneracao => _remuneracao;
+  String get numeroInscricao => _numeroInscricao;
+  String get dataProva => _dataProva;
+  int get diasAteProva => _diasAteProva;
+  int get semanasAteProva => _semanasAteProva;
   String? get nomeArquivoEdital => _nomeArquivoEdital;
   String? get tamanhoArquivoEdital => _tamanhoArquivoEdital;
   int get horasPorDia => _horasPorDia;
-  int get semanasAteProva => _semanasAteProva;
   bool get temCronogramaAtivo => _temCronogramaAtivo;
   List<String> get disciplinas => List.unmodifiable(_disciplinas);
   List<MetaDiaEstudo> get trilhaSemanal => List.unmodifiable(_trilhaSemanal);
 
   void _inicializarPadrao() {
     _concursoAlvo = 'PM-PE (Polícia Militar de Pernambuco)';
-    _cargoAlvo = 'Soldado da PM';
-    _banca = 'Instituto IAUPE / AOCP';
-    _semanasAteProva = 10;
+    _cargoAlvo = 'Soldado da Polícia Militar';
+    _banca = 'Instituto AOCP';
+    _vagas = '1.250 Vagas';
+    _remuneracao = 'R\$ 5.617,92';
+    _numeroInscricao = '2026-PMPE-08942';
+    _dataProva = '21 de Fevereiro de 2027';
+    _diasAteProva = 144;
+    _semanasAteProva = 21;
+    _nomeArquivoEdital = 'Edital_Oficial_PMPE_AOCP_2026.pdf';
+    _tamanhoArquivoEdital = '2.4 MB';
     _disciplinas = [
-      'Língua Portuguesa',
-      'História de Pernambuco',
-      'Geografia de Pernambuco',
-      'Matemática e Raciocínio Lógico',
-      'Noções de Direito Constitucional & Legislação da PMPE',
+      'Língua Portuguesa (10 questões)',
+      'História de Pernambuco (10 questões)',
+      'Raciocínio Lógico Matemático (10 questões)',
+      'Noções de Informática (10 questões)',
+      'Direito Constitucional (10 questões)',
+      'Direitos Humanos e Legislação Extravagante (10 questões)',
+      'Prova Discursiva (Redação - 40 pontos)',
     ];
     _gerarTrilhaPadrao();
   }
@@ -76,59 +95,59 @@ class PlanoEstudoState extends ChangeNotifier {
         MetaDiaEstudo(
           diaSemana: 'Segunda-feira',
           disciplina1: 'Língua Portuguesa',
-          topico1: 'Interpretação de Texto & Sintaxe do Período',
-          disciplina2: 'História de Pernambuco',
-          topico2: 'Invasões Holandesas & Período Nassau',
+          topico1: 'Compreensão & Interpretação de Texto • Padrão AOCP',
+          disciplina2: 'Noções de Informática',
+          topico2: 'Segurança da Informação, Vírus, Malware & Backup',
           metaQuestoes: _horasPorDia * 8,
         ),
         MetaDiaEstudo(
           diaSemana: 'Terça-feira',
-          disciplina1: 'Matemática e RLM',
-          topico1: 'Regra de Três, Porcentagem e Análise Combinatória',
-          disciplina2: 'Geografia de Pernambuco',
-          topico2: 'Aspectos Físicos, Relevo e Clima do Sertão/Agreste',
+          disciplina1: 'História de Pernambuco',
+          topico1: 'Ocupação Holandesa & Governo Nassau (1637-1644)',
+          disciplina2: 'Raciocínio Lógico Matemático',
+          topico2: 'Lógica Proposicional, Conectivos e Tabelas-Verdade',
           metaQuestoes: _horasPorDia * 8,
         ),
         MetaDiaEstudo(
           diaSemana: 'Quarta-feira',
           disciplina1: 'Direito Constitucional',
-          topico1: 'Art. 5º da CF/88 (Direitos Individuais e Coletivos)',
+          topico1: 'Art. 5º da CF/88 (Direitos e Garantias Individuais)',
           disciplina2: 'Língua Portuguesa',
-          topico2: 'Crase & Regência Verbal IAUPE',
+          topico2: 'Sintaxe da Oração, Regência e Crase • Regra AOCP',
           metaQuestoes: _horasPorDia * 8,
         ),
         MetaDiaEstudo(
           diaSemana: 'Quinta-feira',
-          disciplina1: 'História de Pernambuco',
-          topico1: 'Revolução Pernambucana de 1817 & Confederação do Equador',
-          disciplina2: 'Matemática e RLM',
-          topico2: 'Probabilidade e Raciocínio Lógico Proposicional',
+          disciplina1: 'Direitos Humanos e Legislação',
+          topico1: 'Declaração Universal dos Direitos Humanos & Estatuto PMPE',
+          disciplina2: 'Raciocínio Lógico Matemático',
+          topico2: 'Equivalências Lógicas, Leis de Morgan & Negações',
           metaQuestoes: _horasPorDia * 8,
         ),
         MetaDiaEstudo(
           diaSemana: 'Sexta-feira',
-          disciplina1: 'Direito Constitucional & Legislação da PMPE',
-          topico1: 'Estatuto dos Militares do Estado de Pernambuco',
-          disciplina2: 'Geografia de Pernambuco',
-          topico2: 'Bacias Hidrográficas e Economia de PE',
+          disciplina1: 'Noções de Informática',
+          topico1: 'Sistemas Operacionais (Windows/Linux) & Pacote Office',
+          disciplina2: 'História de Pernambuco',
+          topico2: 'Revolução de 1817 & Confederação do Equador (1824)',
           metaQuestoes: _horasPorDia * 8,
         ),
         MetaDiaEstudo(
           diaSemana: 'Sábado',
-          disciplina1: 'Simulado Reta Final PM-PE (60 Questões)',
-          topico1: 'Caderno Completo de Prova com Gabarito Oficial',
-          disciplina2: 'Revisão dos Erros',
-          topico2: 'Auditoria de Acertos e Erros da Semana',
+          disciplina1: 'Simulado Oficial PMPE AOCP (60 Questões)',
+          topico1: 'Caderno 60 Questões A-E + Redação Discursiva',
+          disciplina2: 'Auditoria de Acertos e Erros',
+          topico2: 'Caderno de Erros das 6 Disciplinas do Edital',
           metaQuestoes: 60,
           isSimulado: true,
         ),
         MetaDiaEstudo(
           diaSemana: 'Domingo',
-          disciplina1: 'Revisão Leve & Descanso Tático',
-          topico1: 'Flashcards de fórmulas e marcos históricos de PE',
+          disciplina1: 'Revisão Ativa & Flashcards',
+          topico1: 'Memorização de Leis, Fórmulas e Marcos Históricos de PE',
           disciplina2: 'Planejamento da Próxima Semana',
-          topico2: 'Alinhamento de metas com o CRAVOU IA',
-          metaQuestoes: 10,
+          topico2: 'Ajuste de Cargas e Metas no CRAVOU IA',
+          metaQuestoes: 15,
         ),
       ];
     } else if (isPppe) {
