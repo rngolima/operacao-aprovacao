@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.operacaoaprovacao.api.modules.auth.application.dto.VerifyEmailRequest;
+import org.springframework.web.bind.annotation.RequestParam;
+
 /**
  * Controller responsavel por endpoints de autenticacao e registro de contas.
  */
@@ -28,11 +31,25 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    @Operation(summary = "Cadastrar novo usuario", description = "Registra um novo estudante e retorna o token JWT de acesso.")
+    @Operation(summary = "Cadastrar novo usuario", description = "Registra um novo estudante e emite codigo de validacao por e-mail (LGPD).")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.ok("Usuario registrado com sucesso.", response));
+                .body(ApiResponse.ok("Usuario registrado com sucesso. Verifique o codigo enviado por e-mail.", response));
+    }
+
+    @PostMapping("/verify-email")
+    @Operation(summary = "Validar inscricao por e-mail", description = "Valida a titularidade da conta com codigo OTP de 6 digitos conforme a LGPD.")
+    public ResponseEntity<ApiResponse<AuthResponse>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        AuthResponse response = authService.verifyEmail(request);
+        return ResponseEntity.ok(ApiResponse.ok("Inscricao validada com sucesso! Acesso liberado.", response));
+    }
+
+    @PostMapping("/resend-verification")
+    @Operation(summary = "Reenviar codigo de validacao", description = "Gera e envia novo codigo de 6 digitos para o e-mail cadastrado.")
+    public ResponseEntity<ApiResponse<String>> resendVerification(@RequestParam String email) {
+        String novoCodigo = authService.resendVerificationCode(email);
+        return ResponseEntity.ok(ApiResponse.ok("Novo codigo de seguranca enviado.", novoCodigo));
     }
 
     @PostMapping("/login")

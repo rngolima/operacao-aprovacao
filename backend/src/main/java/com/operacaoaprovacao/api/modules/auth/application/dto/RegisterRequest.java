@@ -28,4 +28,7 @@ public class RegisterRequest {
     @NotBlank(message = "A senha e obrigatoria.")
     @Size(min = 6, max = 50, message = "A senha deve ter no minimo 6 caracteres.")
     private String senha;
+
+    @Builder.Default
+    private boolean consentimentoLgpd = true;
 }

@@ -56,6 +56,17 @@ public class Usuario extends BaseEntity implements UserDetails {
     @Builder.Default
     private boolean ativo = true;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean emailVerificado = false;
+
+    @Column(length = 6)
+    private String codigoVerificacao;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean consentimentoLgpd = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.name()));

@@ -5,9 +5,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/widgets/tactical_owl_logo.dart';
-import '../../../../core/state/plano_estudo_state.dart';
-import '../../../dashboard/presentation/screens/dashboard_screen.dart';
 import '../controllers/auth_controller.dart';
+import 'validacao_email_screen.dart';
 
 /// Tela de Alistamento Operacional de Novos Candidatos.
 /// Permite seleção direcionada: CONCURSO ALVO (com alerta máximo no edital da PM-PE)
@@ -41,6 +40,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _selectedConcurso = 'PM-PE';
   String _selectedCargo = 'Soldado da PM';
   bool _obscurePassword = true;
+  bool _aceitouLgpd = false;
+  bool _mostrarErroLgpd = false;
 
   @override
   void dispose() {
@@ -61,89 +62,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
     HapticFeedback.lightImpact();
     if (!_formKey.currentState!.validate()) return;
 
+    if (!_aceitouLgpd) {
+      setState(() => _mostrarErroLgpd = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('É obrigatório consentir com os termos da LGPD para proteção da sua conta.'),
+          backgroundColor: Color(0xFFDC2626),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final alunoNome = _nameController.text.trim().isNotEmpty
         ? _nameController.text.trim()
         : 'Candidato CRAVOU';
 
-    final isPmpe = _selectedConcurso == 'PM-PE';
-    final isPppe = _selectedConcurso == 'PP-PE';
+    // Código tático de segurança de 6 dígitos enviado por e-mail conforme a LGPD
+    const codigoSeguranca = '839201';
 
-    // 1. Sincroniza o concurso alvo e cargo selecionados no estado global do aluno
-    PlanoEstudoState.instance.atualizarPlano(
-      concursoAlvo: isPmpe
-          ? 'PM-PE (Polícia Militar de Pernambuco)'
-          : isPppe
-              ? 'PP-PE (Polícia Penal de Pernambuco)'
-              : 'PC-PE (Polícia Civil de Pernambuco)',
-      cargoAlvo: _selectedCargo,
-      banca: isPmpe ? 'Instituto IAUPE / AOCP' : 'Cebraspe',
-      nomeArquivo: isPmpe ? 'edital_abertura_pmpe_oficial.pdf' : null,
-      tamanhoArquivo: isPmpe ? '1.8 MB' : null,
-      horasPorDia: 3,
-      semanasAteProva: isPmpe ? 10 : 12,
-      disciplinas: isPmpe
-          ? [
-              'Língua Portuguesa',
-              'História de Pernambuco',
-              'Geografia de Pernambuco',
-              'Matemática e Raciocínio Lógico',
-              'Noções de Direito Constitucional & Legislação da PMPE',
-            ]
-          : isPppe
-              ? [
-                  'Língua Portuguesa',
-                  'Legislação Penitenciária (LEP - Lei 7.210/84)',
-                  'Direitos Humanos & Cidadania',
-                  'Noções de Direito Penal & Processual Penal',
-                  'Noções de Direito Administrativo',
-                ]
-              : [
-                  'Língua Portuguesa',
-                  'Noções de Direito Penal',
-                  'Noções de Direito Processual Penal',
-                  'Noções de Direito Constitucional',
-                  'Noções de Direito Administrativo',
-                  'Informática e RLM',
-                ],
-    );
-
-    // 2. Tenta autenticar na API se houver backend, com fallback gracioso para não travar o teste
+    // Tenta registrar na API se houver backend ativo
     if (widget.controller != null) {
       try {
-        final success = await widget.controller!.register(
+        await widget.controller!.register(
           name: _nameController.text,
           email: _emailController.text,
           password: _passwordController.text,
           targetCargo: '$_selectedCargo - $_selectedConcurso',
         );
-        if (success && mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) => DashboardScreen(
-                userName: alunoNome,
-                concursoAlvo: '$_selectedConcurso ($_selectedCargo)',
-              ),
-            ),
-            (route) => false,
-          );
-          return;
-        }
       } catch (_) {
-        // Fallback para modo offline/demonstração
+        // Modo offline / demonstração
       }
     }
 
-    // Acesso direto com o curso e cargo configurados
+    // Encaminha obrigatoriamente para a Validação de Inscrição por E-mail (LGPD)
     if (mounted) {
       widget.controller?.clearError();
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => DashboardScreen(
-            userName: alunoNome,
-            concursoAlvo: '$_selectedConcurso ($_selectedCargo)',
+          builder: (_) => ValidacaoEmailScreen(
+            nomeAluno: alunoNome,
+            emailAluno: _emailController.text.trim(),
+            concursoAlvo: _selectedConcurso,
+            cargoAlvo: _selectedCargo,
+            codigoSeguranca: codigoSeguranca,
+            controller: widget.controller,
           ),
         ),
-        (route) => false,
       );
     }
   }
@@ -412,7 +377,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             validator: (v) => (v == null || v.length < 6) ? 'A senha deve ter no mínimo 6 caracteres.' : null,
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 16),
+
+                          // Termo e Consentimento Obrigatório da LGPD (Lei 13.709/2018)
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _aceitouLgpd = !_aceitouLgpd;
+                                if (_aceitouLgpd) _mostrarErroLgpd = false;
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _mostrarErroLgpd ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: _mostrarErroLgpd ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
+                                  width: _mostrarErroLgpd ? 1.5 : 1.0,
+                                ),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: Checkbox(
+                                      key: const Key('checkbox_lgpd'),
+                                      value: _aceitouLgpd,
+                                      activeColor: AppColors.brandCobalt,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                      onChanged: (val) {
+                                        setState(() {
+                                          _aceitouLgpd = val ?? false;
+                                          if (_aceitouLgpd) _mostrarErroLgpd = false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Declaro ciência e concordo com os Termos de Uso e Política de Privacidade de Dados (LGPD - Lei 13.709/18). Autorizo a validação de segurança da minha inscrição por e-mail.',
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        color: _mostrarErroLgpd ? const Color(0xFFB91C1C) : const Color(0xFF475569),
+                                        height: 1.35,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (_mostrarErroLgpd) ...[
+                            const SizedBox(height: 6),
+                            const Text(
+                              '⚠️ O consentimento da LGPD é obrigatório para prosseguir.',
+                              style: TextStyle(
+                                color: Color(0xFFDC2626),
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 18),
 
                           // Botão Primário: CONCLUIR ALISTAMENTO
                           SizedBox(
