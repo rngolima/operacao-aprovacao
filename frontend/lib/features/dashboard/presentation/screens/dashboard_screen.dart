@@ -48,21 +48,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final plano = PlanoEstudoState.instance;
+    final nomeUpper = plano.concursoAlvo.toUpperCase();
+    final isPmpe = nomeUpper.contains('MILITAR') || nomeUpper.contains('PMPE') || nomeUpper.contains('PM-PE');
+    final isPppe = nomeUpper.contains('PENAL') || nomeUpper.contains('PPPE') || nomeUpper.contains('PP-PE');
+    final String sigla = isPmpe ? 'PM-PE' : isPppe ? 'PP-PE' : 'PC-PE';
+    final cargoCurto = plano.cargoAlvo.split(' ').first;
+
+    // Iniciais do Candidato para o avatar (ex: RL)
+    final iniciais = widget.userName.trim().isNotEmpty
+        ? widget.userName.trim().split(' ').map((n) => n.isNotEmpty ? n[0] : '').take(2).join().toUpperCase()
+        : 'RL';
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0.5,
+        titleSpacing: 12,
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const TacticalOwlLogo(size: 32),
-            const SizedBox(width: 8),
+            const TacticalOwlLogo(size: 30),
+            const SizedBox(width: 6),
             RichText(
               text: TextSpan(
                 style: AppTypography.heading2.copyWith(
-                  fontSize: 18,
+                  fontSize: 17,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
+                  letterSpacing: 1.1,
                   color: AppColors.brandNavy,
                 ),
                 children: const [
@@ -78,46 +91,94 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         actions: [
-          // Badge de Ofensiva / Sequência de Estudos
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.brandOrange.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.brandOrange.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('🔥', style: TextStyle(fontSize: 12)),
-                const SizedBox(width: 4),
-                Text(
-                  '12 dias',
-                  style: AppTypography.tagLabel.copyWith(
-                    fontSize: 11,
-                    color: AppColors.brandOrange,
-                    fontWeight: FontWeight.bold,
+          // Bloco Fiel à Imagem de Referência: [🔥 12 dias seguidos] | (RL) Rudson Lima / Foco: PM-PE Soldado
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 14.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Badge Pílula de Sequência & Disciplina (Estilo QConcursos)
+                  Tooltip(
+                    message: 'Sequência de estudos ativos: 12 dias consecutivos mantendo o foco!',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF7ED),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFFFEDD5), width: 1.2),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text('🔥', style: TextStyle(fontSize: 13)),
+                          SizedBox(width: 4),
+                          Text(
+                            '12 dias seguidos',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF9A3412),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
 
-          // Avatar do Aluno
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: AppColors.brandNavy,
-              child: Text(
-                widget.userName.split(' ').map((n) => n[0]).take(2).join(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
+                  // Linha Divisória Vertical sutil
+                  Container(
+                    height: 24,
+                    width: 1,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    color: const Color(0xFFE2E8F0),
+                  ),
+
+                  // Avatar Circular do Candidato (Azul Marinho com Iniciais em Branco)
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1E3A8A),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        iniciais,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Nome do Candidato e Foco no Concurso Alvo
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.userName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                      Text(
+                        'Foco: $sigla $cargoCurto',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -128,6 +189,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Banner de Contagem Regressiva para a Prova & Foco Militar
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0F172A), Color(0xFF1E3A8A)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.brandOrange,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text('⏳', style: TextStyle(fontSize: 14)),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isPmpe
+                              ? 'CONTAGEM REGRESSIVA: 68 DIAS PARA A PROVA DA PM-PE'
+                              : isPppe
+                                  ? 'CONTAGEM REGRESSIVA: 58 DIAS PARA A PROVA DA PP-PE'
+                                  : 'CONTAGEM REGRESSIVA: 45 DIAS PARA A PROVA DA PC-PE',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Mantenha o foco diário e a disciplina tática • Meta: ${plano.horasPorDia}h/dia rumo à vaga de ${plano.cargoAlvo}.',
+                          style: const TextStyle(
+                            color: Color(0xFFCBD5E1),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Cabeçalho da Página
             Wrap(
               alignment: WrapAlignment.spaceBetween,
@@ -147,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Acompanhe seu ritmo de treino para os certames de Pernambuco.',
+                      'Acompanhe seu ritmo de treino exclusivo para $sigla (${plano.cargoAlvo}).',
                       style: AppTypography.bodySmall,
                     ),
                   ],
@@ -161,7 +284,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     );
                   },
                   icon: const Icon(Icons.add_circle_outline, size: 16),
-                  label: const Text('Adicionar Edital (IA)'),
+                  label: const Text('Adicionar Edital'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.brandNavy,
                     foregroundColor: Colors.white,
@@ -377,7 +500,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: _metricBox(
                                     titulo: 'ERROS (-1)',
                                     valor: '6',
-                                    subtitulo: '-6 no Cebraspe',
+                                    subtitulo: isPmpe ? 'Taxa de Erro: 14.3%' : '-6 no Cebraspe',
                                     corValor: AppColors.error,
                                     corFundo: AppColors.errorBackground,
                                   ),
@@ -385,9 +508,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: _metricBox(
-                                    titulo: 'LÍQUIDA (C-E)',
-                                    valor: '30.0',
-                                    subtitulo: 'Corte: 36.0',
+                                    titulo: isPmpe ? 'PONTOS PM-PE' : 'LÍQUIDA (C-E)',
+                                    valor: '36.0',
+                                    subtitulo: isPmpe ? 'Corte Previsto: 42.0' : 'Corte: 36.0',
                                     corValor: AppColors.brandNavy,
                                     corFundo: AppColors.brandCobalt.withValues(alpha: 0.08),
                                     isMono: true,
@@ -424,7 +547,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             child: _metricBox(
                               titulo: 'ERROS (-1)',
                               valor: '6',
-                              subtitulo: '-6 no Cebraspe',
+                              subtitulo: isPmpe ? 'Taxa de Erro: 14.3%' : '-6 no Cebraspe',
                               corValor: AppColors.error,
                               corFundo: AppColors.errorBackground,
                             ),
@@ -432,9 +555,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: _metricBox(
-                              titulo: 'LÍQUIDA (C-E)',
-                              valor: '30.0',
-                              subtitulo: 'Corte: 36.0',
+                              titulo: isPmpe ? 'PONTOS PM-PE' : 'LÍQUIDA (C-E)',
+                              valor: '36.0',
+                              subtitulo: isPmpe ? 'Corte Previsto: 42.0' : 'Corte: 36.0',
                               corValor: AppColors.brandNavy,
                               corFundo: AppColors.brandCobalt.withValues(alpha: 0.08),
                               isMono: true,
@@ -454,7 +577,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Objetivo sugerido: 18 questões de Proc. Penal',
+                          isPmpe
+                              ? 'Objetivo sugerido: 20 questões de História de Pernambuco (IAUPE)'
+                              : isPppe
+                                  ? 'Objetivo sugerido: 18 questões de Legislação Penitenciária (LEP)'
+                                  : 'Objetivo sugerido: 18 questões de Processo Penal (Cebraspe)',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textSecondary,
                             fontSize: 11,
@@ -733,7 +860,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ),
                             Text(
-                              'PC-PE • Agente de Polícia • Baseado no Edital Cebraspe',
+                              '$sigla • ${plano.cargoAlvo} • Baseado no Edital ${plano.banca}',
                               style: AppTypography.caption.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -744,9 +871,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Acesse resumos teóricos direcionados (Português, Penal, Processo Penal) e pratique questões reais associadas a cada aula.',
-                    style: TextStyle(
+                  Text(
+                    isPmpe
+                        ? 'Acesse resumos teóricos direcionados (História de PE, Geografia de PE, Português IAUPE, RLM e Legislação) e pratique simulados oficiais para Soldado da PMPE.'
+                        : isPppe
+                            ? 'Acesse resumos teóricos direcionados (Legislação Penitenciária, Direitos Humanos, Penal) e pratique questões reais para Policial Penal.'
+                            : 'Acesse resumos teóricos direcionados (Português, Penal, Processo Penal e Legislação) e pratique questões reais associadas a cada aula.',
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                       height: 1.35,
@@ -762,7 +893,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                     icon: const Icon(Icons.menu_book, size: 16),
-                    label: const Text('ABRIR GUIA DE ESTUDOS & AULAS'),
+                    label: Text('ABRIR GUIA DE ESTUDOS DE $sigla'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.brandCobalt,
                       side: const BorderSide(color: AppColors.brandCobalt),

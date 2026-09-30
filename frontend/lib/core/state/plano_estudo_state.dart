@@ -53,16 +53,16 @@ class PlanoEstudoState extends ChangeNotifier {
   List<MetaDiaEstudo> get trilhaSemanal => List.unmodifiable(_trilhaSemanal);
 
   void _inicializarPadrao() {
-    _concursoAlvo = 'PC-PE (Polícia Civil de Pernambuco)';
-    _cargoAlvo = 'Agente de Polícia';
-    _banca = 'Cebraspe';
+    _concursoAlvo = 'PM-PE (Polícia Militar de Pernambuco)';
+    _cargoAlvo = 'Soldado da PM';
+    _banca = 'Instituto IAUPE / AOCP';
+    _semanasAteProva = 10;
     _disciplinas = [
       'Língua Portuguesa',
-      'Noções de Direito Penal',
-      'Noções de Direito Processual Penal',
-      'Noções de Direito Constitucional',
-      'Noções de Direito Administrativo',
-      'Informática e RLM',
+      'História de Pernambuco',
+      'Geografia de Pernambuco',
+      'Matemática e Raciocínio Lógico',
+      'Noções de Direito Constitucional & Legislação da PMPE',
     ];
     _gerarTrilhaPadrao();
   }
