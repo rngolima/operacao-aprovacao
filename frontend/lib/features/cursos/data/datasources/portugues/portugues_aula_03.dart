@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../../questoes/data/models/questao_model.dart';
 import '../../models/aula_guia_model.dart';
 import '../../models/mapa_mental_model.dart';
@@ -168,7 +168,19 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
         'E': 'Proporcionalidade.',
       },
       gabaritoOficial: 'C',
-      comentarioDidatico: 'CRAVOU NA C! "Conquanto" é conjunção subordinativa concessiva (equivale a "embora", "ainda que", "a despeito de"), introduzindo uma oposição ou quebra de expectativa sem invalidar a oração principal.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C (Concessão)
+
+🔍 DESTRINCHANDO ALTERNATIVA POR ALTERNATIVA:
+• A) INCORRETA. Conectivos conclusivos encerram um raciocínio lógico (portanto, logo, por conseguinte, destarte, dessarte).
+• B) INCORRETA. Conectivos causais indicam a origem/motivo do fato expresso na oração principal (porque, visto que, já que, uma vez que, porquanto).
+• C) CORRETA. "Conquanto" é a conjunção subordinativa concessiva clássica da língua culta! A oração concessiva veicula um obstáculo, objeção ou quebra de expectativa que NÃO é suficiente para impedir a realização do fato expresso na oração principal. Equivale a: embora, ainda que, mesmo que, a despeito de, posto que, se bem que, nada obstante.
+• D) INCORRETA. Conectivos finais apontam o propósito ou objetivo da ação (para que, a fim de que).
+• E) INCORRETA. Conectivos proporcionais indicam simultaneidade gradual de variações (à medida que, ao passo que).
+
+💡 O PULO DO GATO / PEGADINHA MORTAL DA AOCP:
+Jamais confunda:
+• CONQUANTO = Concessão (Embora) -> Exige verbo no SUBJUNTIVO ("conquanto tenha sido").
+• PORQUANTO = Causa / Explicação (Porque / Visto que) -> Geralmente usa verbo no INDICATIVO.''',
     ),
     QuestaoModel(
       id: 302,
@@ -181,7 +193,19 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'Em: "As estratégias QUE o batalhão adotou foram exitosas", o vocábulo destacado classifica-se morfologicamente como pronome relativo e exerce a função sintática de objeto direto.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! O "que" retoma "as estratégias" ("as quais o batalhão adotou"). O batalhão adotou O QUÊ? As estratégias (objeto direto do verbo adotar). Análise morfossintática irretocável.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 ANÁLISE MORFOSSINTÁTICA PASSO A PASSO (MÉTODO CRAVOU):
+1. Análise Morfológica:
+   • O vocábulo "QUE" retoma um substantivo antecedente ("as estratégias") e pode ser substituído com perfeição por "as quais" ("As estratégias AS QUAIS o batalhão adotou..."). Logo, morfologicamente é um PRONOME RELATIVO.
+2. Análise Sintática (Como achar a função sintática do pronome relativo):
+   • Isole a oração subordinada adjetiva: "...que o batalhão adotou".
+   • Substitua o pronome relativo pelo antecedente que ele representa: "O batalhão adotou as estratégias".
+   • Organize na ordem direta (Sujeito + Verbo + Complemento):
+     - Sujeito: "O batalhão"
+     - Verbo: "adotou" (Verbo Transitivo Direto - VTD: quem adota, adota algo)
+     - Objeto Direto: "as estratégias"
+   • Conclusão: Como o pronome relativo "que" está no lugar de "as estratégias", ele exerce a função sintática exata de OBJETO DIRETO! O item é 100% perfeito.''',
     ),
     QuestaoModel(
       id: 303,
@@ -201,7 +225,20 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
         'E': 'O suspeito cujo onde estava escondido foi capturado.',
       },
       gabaritoOficial: 'B',
-      comentarioDidatico: 'CRAVOU NA B! O pronome relativo "cujo" e suas variações nunca admitem artigo imediatamente após si ("cujo o", "cuja a" constituem erro gravíssimo). Em B, concordou corretamente com "objetivos" (cujos objetivos).',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: B
+
+🔍 DESTRINCHANDO AS 4 REGRAS DE OURO DO PRONOME "CUJO":
+1. Sempre estabelece relação de POSSE entre o termo antecedente (possuidor) e o consequente (coisa possuída): em B, os objetivos pertencem à operação (os objetivos da operação).
+2. Sempre concorda em GÊNERO e NÚMERO com a coisa POSSUÍDA (termo posterior): "cujos objetivos" (masculino plural).
+3. NUNCA, JAMAIS admite artigo imediatamente após si! As formas "cujo o", "cuja a", "cujos os", "cujas as" são ABERRAÇÕES gramaticais em concurso público!
+4. Nunca pode ser substituído simplesmente por "o qual" ou "onde".
+
+Análise das alternativas:
+• A) INCORRETA: Erro clássico de uso de artigo: "cujo o armamento" (deveria ser "cujo armamento").
+• B) CORRETA: Estabelece posse, concorda com "objetivos" (masculino plural) e NÃO usa artigo.
+• C) INCORRETA: Erro de concordância e de artigo: "cujo a casa" (deveria ser "cuja casa").
+• D) INCORRETA: Presença indevida de artigo no plural: "cujos os cadernos".
+• E) INCORRETA: Mistura bizarra de pronomes ("cujo onde").''',
     ),
     QuestaoModel(
       id: 304,
@@ -214,7 +251,23 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'Na oração "O comandante confirmou que os novos soldados seriam designados para o interior", a palavra "que" classifica-se como pronome relativo.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'ERRADO',
-      comentarioDidatico: 'CRAVOU NO ERRO! Aplique o Teste CRAVOU: "O comandante confirmou [ISSO]". Como a oração pode ser substituída por "ISSO", o termo "que" é uma CONJUNÇÃO INTEGRANTE, introduzindo uma Oração Subordinada Substantiva Objetiva Direta.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: ERRADO
+
+🔍 O FAMOSO TESTE DO "ISSO" (MÉTODO CRAVOU):
+Para diferenciar o "QUE" Pronome Relativo do "QUE" Conjunção Integrante em 5 segundos de prova:
+1. Pronome Relativo:
+   • Vem após um substantivo/pronome antecedente;
+   • Pode ser trocado por: o qual, a qual, os quais, as quais;
+   • Inicia Oração Subordinada Adjetiva.
+2. Conjunção Integrante:
+   • Vem após um verbo transitivo, verbo de ligação ou substantivo abstrato que exige complemento oracional;
+   • Permite que TODA a oração subordinada iniciada por ela seja substituída pelo pronome demonstrativo neutro "ISSO" (ou "DISSO", "NISSO");
+   • Inicia Oração Subordinada Substantiva.
+
+No período em análise:
+• "O comandante confirmou [que os novos soldados seriam designados para o interior]"
+• Teste: "O comandante confirmou [ISSO]!"
+• Encaixe perfeito! Quem confirma, confirma algo (ISSO). Logo, o "que" é uma CONJUNÇÃO INTEGRANTE que encabeça uma Oração Subordinada Substantiva Objetiva Direta. Jamais pronome relativo!''',
     ),
     QuestaoModel(
       id: 305,
@@ -234,7 +287,22 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
         'E': 'Tudo falou-me a respeito da sua coragem.',
       },
       gabaritoOficial: 'C',
-      comentarioDidatico: 'CRAVOU NA C! A palavra negativa "Não" é atrativa obrigatória da próclise ("Não se afaste"). Em A, é proibido iniciar período com pronome oblíquo na norma culta. Em B, a palavra "Jamais" exige próclise ("Jamais te enganarei"). Em E, "Tudo" é pronome indefinido atrativo ("Tudo me falou").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C
+
+🔍 DESTRINCHANDO A COLOCAÇÃO PRONOMINAL:
+• A) INCORRETA. Na norma-padrão culta, é ESTRITAMENTE PROIBIDO iniciar períodos ou frases por pronome oblíquo átono! O correto é a ênclise: "Diga-me a verdade...".
+• B) INCORRETA. A palavra com sentido negativo "Jamais" é palavra atrativa soberana que impõe a PRÓCLISE obrigatória ("Jamais te enganarei"). A mesóclise é imediatamente anulada quando houver palavra atrativa antes do verbo no futuro!
+• C) CORRETA. O advérbio de negação "Não" é um forte ímã atrativo, atraindo compulsoriamente o pronome oblíquo "se" para antes do verbo ("Não se afaste").
+• D) INCORRETA. A conjunção temporal "quando" é palavra subordinativa e atrai o pronome para a próclise: "quando nos chamaram", e nunca "quando chamaram-nos".
+• E) INCORRETA. O pronome indefinido "Tudo" é palavra atrativa de próclise: "Tudo me falou", e nunca "falou-me".
+
+💡 MNEMÔNICO DAS PALAVRAS ATRATIVAS DE PRÓCLISE (NARIS-D):
+• N = Negativas (não, jamais, nunca, nem).
+• A = Advérbios (ontem, aqui, sempre, talvez).
+• R = Relativos (que, quem, cujo, onde).
+• I = Indefinidos e Interrogativos (tudo, nada, alguém, quem?).
+• S = Subordinativas conjunções (quando, se, embora, porque).
+• D = Demonstrativos neutros (isso, aquilo, isto).''',
     ),
     QuestaoModel(
       id: 306,
@@ -254,7 +322,18 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
         'E': 'conseguinte.',
       },
       gabaritoOficial: 'C',
-      comentarioDidatico: 'CRAVOU NA C! "Todavia" e "contudo" são conjunções coordenativas adversativas equivalentes (mas, porém, contudo, todavia, entretanto, no entanto). "Porquanto" é explicativo/causal; "dessarte" é conclusivo; "conquanto" é concessivo subordinativo.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C (contudo)
+
+🔍 ANÁLISE DETALHADA DAS CONJUNÇÕES ADVERSATIVAS:
+• "Todavia" é uma conjunção coordenativa adversativa que exprime contraste, oposição ou quebra de expectativa entre duas orações coordenadas.
+• O time completo das CONJUNÇÕES ADVERSATIVAS intercambiáveis é: MAS, PORÉM, CONTUDO, TODAVIA, ENTRETANTO, NO ENTANTO, NÃO OBSTANTE.
+• Portanto, "contudo" substitui "todavia" com perfeita preservação do sentido original e da correção gramatical.
+
+Descarte dos distratores:
+• A) Porquanto: Conjunção causal ou explicativa (= porque, visto que).
+• B) Dessarte: Conjunção conclusiva culta (= desse modo, assim sendo, portanto).
+• D) Conquanto: Conjunção subordinativa concessiva (= embora, ainda que).
+• E) Conseguinte: Conclusiva na locução "por conseguinte" (= logo).''',
     ),
     QuestaoModel(
       id: 307,
@@ -267,7 +346,18 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'Na expressão "homem pobre" e "pobre homem", a inversão da ordem dos vocábulos altera a classe gramatical das palavras mantendo rigorosamente inalterado o sentido semântico.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'ERRADO',
-      comentarioDidatico: 'CRAVOU NO ERRO! A classe gramatical não muda (substantivo e adjetivo), mas o valor semântico muda drasticamente: "homem pobre" = sem recursos financeiros (sentido denotativo objetivo); "pobre homem" = coitado, digno de pena (sentido conotativo subjetivo).',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: ERRADO
+
+🔍 POSIÇÃO DO ADJETIVO E TRANSFORMAÇÃO SEMÂNTICA:
+O item comete duplo equívoco conceituado pelas bancas examinadoras:
+1. Quanto à classe gramatical: Em ambas as expressões, "homem" continua sendo SUBSTANTIVO e "pobre" continua funcionando como ADJETIVO modificador. Não há mudança de classe gramatical.
+2. Quanto ao valor semântico (significado): O sentido é RADICALMENTE ALTERADO!
+   • "Homem pobre" (adjetivo posposto ao substantivo): Sentido denotativo, literal, objetivo. Refere-se à condição socioeconômica do indivíduo (indigente, desprovido de dinheiro ou patrimônio).
+   • "Pobre homem" (adjetivo anteposto ao substantivo): Sentido conotativo, figurado, afetivo e subjetivo. Refere-se a um indivíduo desafortunado, digno de compaixão, coitado ou infeliz.
+
+Outros exemplos clássicos de prova:
+• "Grande homem" (ilustre, notável) vs. "Homem grande" (de elevada estatura física).
+• "Velho amigo" (amizade antiga) vs. "Amigo velho" (idoso em idade).''',
     ),
     QuestaoModel(
       id: 308,
@@ -280,7 +370,20 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'A locução conjuntiva "à medida que" expressa ideia de proporção, enquanto a expressão "na medida em que" expressa ideia de causa.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Distinção clássica: "À medida que" = proporcional (ex: À medida que treinava, ficava mais rápido). "Na medida em que" = causal / explicativo (ex: Não foi promovido na medida em que cometeu falta). Expressões como "à medida em que" são anomalias gramaticais que devem ser evitadas.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 DIFERENCIAÇÃO SEMÂNTICA RIGOROSA:
+1. "À MEDIDA QUE" (Proporcional):
+   • Conjunção subordinativa proporcional. Indica que duas grandezas ou acontecimentos variam de forma simultânea e proporcional.
+   • Equivale a: "à proporção que", "ao passo que".
+   • Exemplo: "À medida que os agentes avançavam no curso tático, ganhavam precisão nos disparos."
+2. "NA MEDIDA EM QUE" (Causal / Explicativo):
+   • Locução conjuntiva causal. Indica o motivo determinante, a justificativa pela qual algo ocorre.
+   • Equivale a: "já que", "visto que", "porque", "uma vez que".
+   • Exemplo: "A operação foi suspensa na medida em que a tempestade comprometeu a visibilidade dos helicópteros."
+
+💡 AVISO DE ERRO CRASSO:
+Expressões híbridas como "à medida em que" ou "na medida que" NÃO EXISTEM no padrão culto e são consideradas erros gravíssimos de redação oficial!''',
     ),
     QuestaoModel(
       id: 309,
@@ -293,7 +396,19 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'O vocábulo "bastante" comporta-se como advérbio invariável quando modifica adjetivos, verbos ou outros advérbios, mas flexiona-se como pronome indefinido adjetivo quando modifica substantivos plurais.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Como advérbio de intensidade, é invariável: "Eles estavam BASTANTE cansados". Como pronome indefinido ligado a substantivo, pluraliza: "Havia BASTANTES policiais no local" (troque por "muitos").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 O TESTE INFALÍVEL DO "MUITO / MUITOS":
+O vocábulo "bastante" tem duas personalidades morfossintáticas na prova:
+1. BASTANTE como ADVÉRBIO (Invariável):
+   • Modifica um verbo, um adjetivo ou outro advérbio, indicando intensidade.
+   • Teste: Substitua por "MUITO" (no singular). Se couber "muito", use "bastante" (sempre invariável).
+   • Exemplo: "Os policiais estavam BASTANTE cansados" (troque: estavam muito cansados).
+2. BASTANTES como PRONOME INDEFINIDO ADJETIVO (Variável):
+   • Acompanha um substantivo, indicando quantidade considerável.
+   • Teste: Substitua por "MUITOS / MUITAS". Se for para o plural, "bastantes" OBRIGATORIAMENTE vai para o plural!
+   • Exemplo: "Havia BASTANTES viaturas no pátio" (troque: havia muitas viaturas).
+   • Exemplo: "Eles apresentaram BASTANTES provas ao delegado" (troque: muitas provas).''',
     ),
     QuestaoModel(
       id: 310,
@@ -313,7 +428,19 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
         'E': 'Pretérito perfeito do indicativo.',
       },
       gabaritoOficial: 'A',
-      comentarioDidatico: 'CRAVOU NA A! A terminação "-sse" (estudassem, fizessem, comprassem) é a desinência típica do pretérito imperfeito do subjuntivo, expressando hipótese ou condição correlacionada ao futuro do pretérito ("obteriam").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: A (Pretérito imperfeito do subjuntivo)
+
+🔍 CORRELAÇÃO VERBAL TÍPICA DE CONCURSOS POLICIAIS:
+O período apresenta a clássica estrutura de hipótese ou condição irreal:
+• Oração Subordinada Condicional: "Se os candidatos estudassem..."
+  - A desinência modo-temporal "-SSE-" (estuda-SSE-m, fize-SSE-m, quise-SSE-m) é a marca registrada e exclusiva do PRETÉRITO IMPERFEITO DO SUBJUNTIVO. Expressa uma hipótese ou condição incerta no plano da imaginação.
+• Oração Principal: "...obteriam melhores notas."
+  - O verbo "obteriam" traz a terminação "-RIA-" (obte-RIA-m), que é a marca exclusiva do FUTURO DO PRETÉRITO DO INDICATIVO.
+
+💡 REGRA DE CORRELAÇÃO VERBAL OBRIGATÓRIA:
+Pretérito Imperfeito do Subjuntivo (-sse) SEMPRE faz par harmônico com o Futuro do Pretérito do Indicativo (-ria):
+• "Se eu estudasse (-sse), passaria (-ria)!"
+• "Se nós treinássemos (-sse), venceríamos (-ria)!"''',
     ),
     QuestaoModel(
       id: 311,
@@ -326,7 +453,21 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'Em "Constatou-se a irregularidade nos livros contábeis", a partícula "se" atua como índice de indeterminação do sujeito.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'ERRADO',
-      comentarioDidatico: 'CRAVOU NO ERRO! O verbo "constatar" é transitivo direto (quem constata, constata algo). Com verbo transitivo direto (VTD) + SE, a partícula é PRONOME APASSIVADOR (partícula apassivadora), e o termo "a irregularidade" é o SUJEITO PACIENTE ("A irregularidade foi constatada").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: ERRADO
+
+🔍 O FAMOSO DUELO: PARTÍCULA APASSIVADORA (PA) VS ÍNDICE DE INDETERMINAÇÃO DO SUJEITO (IIS):
+Para nunca mais errar essa questão no Cebraspe ou na AOCP:
+1. Identifique a Transitividade do Verbo:
+   • O verbo é "constatar". Quem constata, constata algo (Verbo Transitivo Direto - VTD).
+2. Aplique a Regra de Ouro:
+   • Verbo Transitivo Direto (VTD) + SE = O "SE" é PARTÍCULA APASSIVADORA (Pronome Apassivador)!
+   • O elemento que parece objeto direto é, na verdade, o SUJEITO PACIENTE da oração.
+   • Prova Real (Voz Passiva Analítica): "A irregularidade [Sujeito] foi constatada [Locução Passiva] nos livros contábeis."
+3. E se fosse para o plural?
+   • A concordância seria obrigatória: "Constataram-se as irregularidades" (As irregularidades foram constatadas).
+
+Quando o "SE" seria Índice de Indeterminação do Sujeito (IIS)?
+• Somente com Verbo Transitivo Indireto (VTI), Verbo Intransitivo (VI) ou Verbo de Ligação (VL), ficando o verbo OBRIGATORIAMENTE fixado na 3ª pessoa do singular (ex: "Precisa-se de agentes", "Vive-se bem aqui").''',
     ),
     QuestaoModel(
       id: 312,
@@ -346,7 +487,15 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
         'E': 'Conformidade.',
       },
       gabaritoOficial: 'C',
-      comentarioDidatico: 'CRAVOU NA C! "Com bravura" indica o modo como a ação foi executada (bravamente). Não é companhia ("com amigos") nem instrumento ("com arma de fogo").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C (Modo)
+
+🔍 VALORES SEMÂNTICOS DA PREPOSIÇÃO "COM":
+A preposição "com" é riquíssima em nuances circunstanciais. Veja como diferenciar com precisão cirúrgica:
+• Modo: Responde à pergunta "De que maneira / Como a ação foi realizada?". Na frase: Como o policial defendeu a comunidade? "Com bravura" (= bravamente, de modo bravo). Trata-se de Adjunto Adverbial de Modo.
+• Companhia (Alternativa A): Exige coparticipante humano na conduta: "O policial patrulhou as ruas com o sargento."
+• Instrumento (Alternativa B): Refere-se à ferramenta, arma ou meio físico utilizado na execução do ato: "O policial rompeu o obstáculo com um aríete."
+• Causa (Alternativa D): Representa o motivo originador: "Tremia com o frio intenso da madrugada."
+• Conformidade (Alternativa E): Traduz acordo com norma: "Agiu de acordo com o regulamento."''',
     ),
     QuestaoModel(
       id: 313,
@@ -359,7 +508,20 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'O pronome "este" (e suas variações) é empregado para fazer referência a algo que ainda será dito no texto (catáfora), enquanto "esse" refere-se a algo imediatamente mencionado antes (anáfora).',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Uso textual do pronome demonstrativo: ESTE antecipa informação ("O dever é este: honrar a farda"); ESSE retoma termo já citado ("Honrar a farda: esse é o nosso dever").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 EMPREGO TEXTUAL (ENDOFÓRICO) DOS DEMONSTRATIVOS:
+No interior do texto, os pronomes demonstrativos exercem funções coesivas rigorosamente catalogadas na gramática normativa:
+1. "ESTE / ESTA / ISTO" (Função Catafórica):
+   • Aponta para uma informação nova, que será revelada logo a seguir.
+   • Exemplo: "O lema da tropa é ESTE: servir e proteger com coragem." (O lema ainda vai ser lido após os dois-pontos).
+2. "ESSE / ESSA / ISSO" (Função Anafórica):
+   • Resgata uma informação, conceito ou fato que acabou de ser exposto nas linhas anteriores.
+   • Exemplo: "A disciplina é o alicerce da corporação. Sem ESSA base, as instituições ruem." ("ESSA base" resgata a palavra "disciplina" dita antes).
+
+💡 MACETE CRAVOU:
+• ESSE (com dois "S") = Olha para o PASSADO do texto (anáfora).
+• ESTE (com "T") = Aponta para o FUTURO do texto (catáfora).''',
     ),
     QuestaoModel(
       id: 314,
@@ -372,7 +534,20 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'A conjunção "pois", quando colocada depois do verbo da oração (posposta), possui valor estritamente conclusivo.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Regra do "POIS": se estiver antes do verbo, é explicativo/causal (ex: "Não saia, pois está perigoso"). Se estiver entre vírgulas depois do verbo, é CONCLUSIVO (ex: "Treinou incansavelmente; será, pois, aprovado").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 A REGRA DE OURO DA CONJUNÇÃO "POIS":
+A posição sintática do vocábulo "pois" altera completamente o seu valor lógico-semântico na oração coordenada:
+1. "POIS" ANTEPOSTO AO VERBO (Antes do verbo):
+   • Classificação: Conjunção Coordenativa Explicativa (ou Subordinativa Causal).
+   • Sentido: Porque, visto que, já que.
+   • Exemplo: "Não avance na escuridão, POIS há perigo iminente." (Explicação).
+2. "POIS" POSPOSTO AO VERBO (Depois do verbo, isolado entre vírgulas):
+   • Classificação: Conjunção Coordenativa Conclusiva.
+   • Sentido: Portanto, por conseguinte, logo.
+   • Exemplo: "O candidato treinou intensamente todos os dias; será, POIS, convocado para o curso de formação." (Conclusão lógica inquestionável).
+
+Portanto, o item expressa um dos axiomas gramaticais mais consagrados em concursos públicos.''',
     ),
     QuestaoModel(
       id: 315,
@@ -385,7 +560,14 @@ final AulaGuiaItem portuguesAula03 = AulaGuiaItem(
       enunciado: 'O emprego do artigo indefinido antes de substantivo próprio, como em "Ele pensa que é um Sherlock Holmes da perícia", produz efeito semântico de aproximação estilística ou comparação figurada.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! O artigo indefinido diante de substantivo próprio atribui valor conotativo de semelhança ("alguém que se assemelha às características do célebre detetive").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 VALOR ESTILÍSTICO DO ARTIGO INDEFINIDO:
+Gramaticalmente, substantivos próprios (nomes de pessoas, cidades, marcas) dispensam o artigo indefinido, pois já possuem referente único e determinado no mundo.
+• Quando o falante deliberadamente antepõe um artigo indefinido ("um Sherlock Holmes", "uma Maria Bonita", "um Pelé"), ocorre um fenômeno semântico de metaplasmo ou personificação comparativa:
+  - O nome próprio converte-se simbolicamente em um substantivo comum de valor qualitativo;
+  - Significa: "alguém dotado das qualidades, habilidades investigativas ou traços notáveis daquele personagem".
+• O item define essa nuance com perfeita precisão estilística e gramatical.''',
     ),
   ],
 );

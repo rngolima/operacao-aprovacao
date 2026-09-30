@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../../questoes/data/models/questao_model.dart';
 import '../../models/aula_guia_model.dart';
 import '../../models/mapa_mental_model.dart';
@@ -167,7 +167,19 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
         'E': 'Os documentos foram encaminhados a uma comissão especial.',
       },
       gabaritoOficial: 'C',
-      comentarioDidatico: 'CRAVOU NA C! Em C, quem comunica, comunica algo (as novas regras = OD) a alguém (à tropa = OI preposicionado + artigo definido feminino "a"). Substituindo pelo masculino: "comunicou AO pelotão". Deu "AO", a crase é obrigatória. Em A temos verbo; em B "a" singular diante de plural; em D palavras repetidas; em E artigo indefinido "uma".',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C (à tropa reunida)
+
+🔍 DESTRINCHANDO ALTERNATIVA POR ALTERNATIVA (O TESTE DO "AO"):
+• A) INCORRETA. CRASE PROIBIDA DIANTE DE VERBO! "Redigir" é verbo no infinitivo; antes de verbos não existe artigo feminino, apenas a preposição "a".
+• B) INCORRETA. CRASE PROIBIDA: "A" no singular diante de palavra no plural ("a audiências"). Nesse caso, o "a" é mera preposição genérica desacompanhada de artigo definido ("as"). Se houvesse crase, seria "às audiências".
+• C) CORRETA. REGRA GERAL DA CRASE (Preposição "A" + Artigo Definido "A"):
+  - Regência do verbo "comunicar": quem comunica, comunica algo (as novas regras = Objeto Direto) A ALGUÉM (à tropa = Objeto Indireto regido pela preposição "a").
+  - Termo posterior feminino: "tropa" aceita o artigo definido feminino "a".
+  - Teste da Troca pelo Masculino: Substitua "tropa" por um substantivo masculino equivalente (ex: "pelotão", "batalhão"):
+    "O comandante comunicou as novas regras AO batalhão!"
+  - Deu "AO" no masculino? No feminino a crase é 100% OBRIGATÓRIA: "à tropa"!
+• D) INCORRETA. CRASE PROIBIDA ENTRE PALAVRAS REPETIDAS (ex: frente a frente, cara a cara, gota a gota, passo a passo).
+• E) INCORRETA. CRASE PROIBIDA DIANTE DE ARTIGO INDEFINIDO ("a uma comissão"). Não se fundem dois artigos concorrentes.''',
     ),
     QuestaoModel(
       id: 702,
@@ -180,7 +192,17 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'O verbo "obedecer", segundo a norma padrão gramatical, é transitivo indireto e exige complemento introduzido pela preposição "A", justificando a crase em "Os recrutas obedeceram à risca as determinações superiores".',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! O verbo obedecer rege preposição A ("obedecer a algo/alguém"). Além disso, "à risca" é locução adverbial feminina que obrigatoriamente leva crase.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 ANÁLISE DETALHADA DE REGÊNCIA E LOCUÇÃO ADVERBIAL:
+1. Regência do Verbo OBEDECER / DESOBEDECER:
+   • Na linguagem coloquial, é comum o uso incorreto como transitivo direto ("obedecer o sargento").
+   • Na NORMA CULTA (e nas provas de concursos policiais), OBEDECER e DESOBEDECER são Transitivos Indiretos (VTI), regendo OBRIGATORIAMENTE a preposição "A"!
+   • Exemplos: "Obedeceu AO regulamento", "Obedeceu AO oficial", "Obedeceu À autoridade constituída".
+2. Presença da Crase em "à risca":
+   • Trata-se de uma LOCUÇÃO ADVERBIAL DE MODO de núcleo feminino ("à risca" = rigorosamente, fielmente).
+   • Todas as locuções adverbiais femininas recebem acento grave indicativo de crase de forma obrigatória (ex: à risca, à vista, à toa, à beira de).
+Portanto, a assertiva está inteiramente correta.''',
     ),
     QuestaoModel(
       id: 703,
@@ -200,7 +222,22 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
         'E': 'Solicitou auxílio financeiro àquele batalhão.',
       },
       gabaritoOficial: 'B',
-      comentarioDidatico: 'CRAVOU NA B! Mnemônico PRO-NO-ATE: diante de pronome possessivo feminino singular ("sua supervisora"), o uso do artigo feminino é facultativo, tornando o acento grave de crase igualmente facultativo ("a sua supervisora" ou "à sua supervisora").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: B (à sua supervisora)
+
+🔍 OS 3 CASOS CLÁSSICOS DE CRASE FACULTATIVA (MNEMÔNICO PRO-NO-ATÉ):
+1. PRO = Diante de Pronome Possessivo Feminino SINGULAR (minha, tua, sua, nossa, vossa):
+   • O uso do artigo antes desses pronomes é facultativo ("Entreguei a sua mãe" ou "Entreguei à sua mãe").
+   • Portanto, em "à sua supervisora", o acento grave é estritamente FACULTATIVO!
+2. NO = Diante de Nomes Próprios Femininos de pessoas familiares/íntimas:
+   • Exemplo: "Entreguei o ofício a Maria" ou "à Maria".
+3. ATÉ = Depois da preposição "ATÉ":
+   • Exemplo: "O policial foi até a delegacia" ou "até à delegacia".
+
+Descarte dos demais itens:
+• A) Obrigatória (dirigiu-se AO posto / À viatura);
+• C) Proibida (antes de verbo);
+• D) Proibida (entre palavras repetidas);
+• E) Obrigatória (fusão da preposição "a" com o "a" inicial do pronome demonstrativo "àquele").''',
     ),
     QuestaoModel(
       id: 704,
@@ -213,7 +250,18 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'Na oração "O candidato aspiro ao cargo de Agente da Polícia Civil", a presença da preposição "a" é exigida pela regência do verbo aspirar com sentido de almejar.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Aspirar com o sentido de desejar, almejar, ter como meta é Transitivo Indireto (VTI) e rege a preposição "A" (aspirar ao cargo).',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 DUPLA REGÊNCIA DO VERBO ASPIRAR:
+1. ASPIRAR no sentido de "Sugar / Inalar / Respirar":
+   • Classificação: Verbo Transitivo Direto (VTD) - NÃO exige preposição!
+   • Exemplo: "O policial aspirou o gás lacrimogêneo durante o confronto." (o gás = Objeto Direto).
+2. ASPIRAR no sentido de "Almejar / Desejar / Pretender":
+   • Classificação: Verbo Transitivo Indireto (VTI) - EXIGE A PREPOSIÇÃO "A"!
+   • Exemplo: "O candidato aspira AO cargo de Agente da Polícia Civil." (ao cargo = Objeto Indireto).
+   • Exemplo no feminino com crase: "O concursando aspira À estabilidade pública."
+
+Como no enunciado o sentido é de almejar um cargo na carreira policial, a preposição "A" é de uso imperativo.''',
     ),
     QuestaoModel(
       id: 705,
@@ -226,7 +274,17 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'No segmento "O oficial não deu ouvidos a reclamações infundadas", o acento grave indicativo de crase é proibido porque a palavra "reclamações" está no plural e desprovida de artigo definido plural ("as").',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Regra pétrea: "A" no singular diante de vocábulo no plural não admite crase sob nenhuma hipótese. Se houvesse o artigo, seria grafado "às reclamações".',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 A REGRA DE PROVA: "A NO SINGULAR ANTES DE PLURAL, CRASE NEM A PAU!":
+• Para ocorrer o fenômeno da crase, são necessários dois elementos simultâneos: a PREPOSIÇÃO "a" (exigida pela regência de um verbo ou nome) somada ao ARTIGO DEFINIDO "a/as" (aceito pelo termo substantivo subsequente).
+• Quando o substantivo feminino seguinte está no plural ("reclamações") e a letra "a" que o antecede está no SINGULAR:
+  - Não existe artigo definido plural ("as"), mas unicamente a preposição "a" de valor indeterminado/genérico.
+  - Conclusão: Havendo apenas preposição sem artigo, É TERMINANTEMENTE PROIBIDO colocar acento grave!
+  - Forma correta sem artigo: "...não deu ouvidos A reclamações."
+  - Forma correta com artigo definido especificado: "...não deu ouvidos ÀS reclamações."
+
+A explicação teórica da assertiva é impecável.''',
     ),
     QuestaoModel(
       id: 706,
@@ -246,7 +304,20 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
         'E': 'O policial prefere patrulhar na viatura do que a guarda do quartel.',
       },
       gabaritoOficial: 'C',
-      comentarioDidatico: 'CRAVOU NA C! O verbo PREFERIR é transitivo direto e indireto: quem prefere, prefere uma coisa A outra. A gramática condena o uso de intensificadores ("mais", "mil vezes", "antes") e a conjunção comparativa "do que".',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C
+
+🔍 AS 3 EXIGÊNCIAS RÍGIDAS DO VERBO PREFERIR NA NORMA PADRÃO:
+1. Transitividade Bitransitiva (VTDI): Quem prefere, prefere UMA COISA (Objeto Direto, sem preposição) A OUTRA COISA (Objeto Indireto regido pela preposição "A"):
+   • Correto: "Prefiro o estudo À ociosidade."
+   • Correto: "Prefere patrulhar A permanecer na guarda."
+2. PROIBIÇÃO de "DO QUE / QUE":
+   • A conjunção comparativa "do que" é erro grave com o verbo preferir.
+   • Errado: "Prefiro X do que Y."
+3. PROIBIÇÃO de Termos Intensificadores ou Pleonásticos:
+   • Como o próprio verbo preferir já exprime primazia e prioridade absoluta, é vedado usar: "mais", "muito mais", "antes", "mil vezes".
+   • Errado: "Prefiro mais...", "Prefiro antes...".
+
+Apenas a alternativa C cumpre todas as 3 exigências normativas!''',
     ),
     QuestaoModel(
       id: 707,
@@ -259,7 +330,18 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'No trecho "A delegacia QUE fomos pertencia à circunscrição metropolitana", a substituição por "A delegacia A QUE fomos" corrige o desvio de regência gramatical.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! O verbo ir rege preposição A (quem vai, vai A algum lugar). Em orações relativas, a preposição regida pelo verbo DEVE ser anteposta ao pronome relativo: "A delegacia A QUE fomos" ou "AONDE fomos".',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 A TRANSMISSÃO DE PREPOSIÇÃO AO PRONOME RELATIVO:
+Em períodos subordinados adjetivos:
+1. Verbo da Oração Adjetiva: "fomos" (verbo IR).
+   • O verbo IR rege a preposição "A" indicando destino ou movimento transitório: quem vai, vai A algum lugar.
+2. Regra Geral da Regência com Pronomes Relativos:
+   • Se o verbo subordinado exigir uma preposição ("a", "de", "em", "com", "por"), essa preposição DEVE OBRIGATORIAMENTE ser deslocada para antes do pronome relativo!
+   • Frase com desvio: "A delegacia [que] fomos..." (falta a preposição do verbo ir).
+   • Frase corrigida com preposição: "A delegacia [A QUE] fomos..." ou "A delegacia [AONDE] fomos...".
+
+O item propôs com total precisão a correção exigida pela regência gramatical.''',
     ),
     QuestaoModel(
       id: 708,
@@ -279,7 +361,18 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
         'E': 'à / aos.',
       },
       gabaritoOficial: 'E',
-      comentarioDidatico: 'CRAVOU NA E! "Fez elogios À dedicação" (fazer elogio A + artigo feminino A = crase obrigatória; troque por "ao empenho") e "referiu-se AOS fatos" (referir-se A + artigo masculino OS = aos fatos).',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: E (à / aos)
+
+🔍 PREENCHIMENTO DETALHADO DAS DUAS LACUNAS:
+1. Primeira lacuna ("fez elogios _____ dedicação..."):
+   • O substantivo "elogios" rege a preposição "A" (elogios a algo/alguém).
+   • O substantivo feminino "dedicação" é antecedido pelo artigo definido feminino "A".
+   • Ocorre a fusão obrigatória: preposição "a" + artigo "a" = À (com acento grave de crase). Prova da troca pelo masculino: "fez elogios AO empenho".
+2. Segunda lacuna ("referiu-se _____ fatos ocorridos..."):
+   • O verbo pronominal "referir-se" é Transitivo Indireto e rege a preposição "A" (quem se refere, refere-se A algo).
+   • O substantivo subsequente é "fatos", vocábulo MASCULINO PLURAL precedido pelo artigo "os".
+   • A fusão da preposição "a" com o artigo masculino plural "os" resulta em: AOS ("referiu-se AOS fatos").
+Logo, a resposta definitiva é a alternativa E.''',
     ),
     QuestaoModel(
       id: 709,
@@ -292,7 +385,20 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'Locuções adverbiais, prepositivas e conjuntivas formadas por palavras femininas (como "à noite", "às escondidas", "à espera de", "à medida que") recebem acento grave obrigatoriamente.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! É a regra fixa das locuções com núcleo feminino: locuções adverbiais (à tarde, às pressas), prepositivas (à mercê de, à frente de) e conjuntivas (à proporção que, à medida que) levam acento grave obrigatório.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 REGRA FIXA DAS LOCUÇÕES COM PALAVRA FEMININA:
+Mesmo que não haja um termo anterior regendo explicitamente a preposição "a", a gramática impõe o acento indicativo de crase em todas as locuções estruturadas sobre um substantivo feminino:
+1. Locuções Adverbiais Femininas:
+   • De tempo: à noite, à tarde, às vezes, às pressas;
+   • De modo: à toa, às claras, às escondidas, à revelia;
+   • De lugar: à esquerda, à direita, à distância de.
+2. Locuções Prepositivas Femininas (terminam com a preposição "de"):
+   • à espera de, à procura de, à custa de, à base de, à sombra de, à mercê de.
+3. Locuções Conjuntivas Femininas (terminam com o conectivo "que"):
+   • à medida que, à proporção que.
+
+Todas levam o acento grave fixo por convenção sintático-semântica obrigatória.''',
     ),
     QuestaoModel(
       id: 710,
@@ -305,7 +411,21 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'Na frase "Os alunos do CFO assistiram a aula com máxima disciplina", há desvio da norma culta, devendo ser empregado o acento grave ("assistiram à aula") em virtude da regência do verbo assistir no sentido de ver/presenciar.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! No sentido de ver, presenciar ou assistir como espectador, o verbo ASSISTIR é transitivo indireto e exige a preposição A. Com o artigo feminino de "a aula", ocorre crase obrigatória: "assistiram À aula" (troque por "assistiram AO curso").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 OS 4 SIGNIFICADOS E REGÊNCIAS DO VERBO ASSISTIR:
+1. Sentido de "Ver / Presenciar / Ser Espectador":
+   • É TRANSITIVO INDIRETO (VTI) e rege a preposição "A"!
+   • Exemplo no masculino: "Assistiram AO curso de tiro."
+   • Exemplo no feminino com crase: "Assistiram À aula com disciplina." (A crase é obrigatória!).
+2. Sentido de "Prestar Socorro / Ajudar":
+   • É preferencialmente TRANSITIVO DIRETO (VTD), sem preposição: "O médico assistiu o policial ferido."
+3. Sentido de "Caber / Pertencer / Competir":
+   • É TRANSITIVO INDIRETO com preposição "A": "Assiste ao militar o direito de ampla defesa."
+4. Sentido de "Morar / Residir" (arcaico/jurídico):
+   • É INTRANSITIVO com preposição "EM": "O magistrado assiste em Recife."
+
+Como a frase trata de assistir a uma aula no sentido de espectador, o acento grave é rigorosamente obrigatório.''',
     ),
     QuestaoModel(
       id: 711,
@@ -318,7 +438,19 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'É vedado o emprego de crase diante de pronomes de tratamento em geral (como Vossa Senhoria e Você), exceto perante as formas "senhora", "senhorita" e "dona".',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Os pronomes de tratamento não admitem artigo feminino ("a você", "a Vossa Excelência"), mas "senhora", "senhorita" e "dona" aceitam artigo feminino, permitindo crase ("Enviei a carta à Senhora").',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 A REGRA E AS EXCEÇÕES DOS PRONOMES DE TRATAMENTO:
+1. Regra Geral: Não se usa crase diante de pronomes de tratamento!
+   • Motivo: Pronomes de tratamento rejeitam o artigo feminino "a", recebendo apenas a preposição "a".
+   • Exemplos proibidos: "Encaminhei o relatório a Vossa Excelência", "Enviei a notificação a Você", "Informei a Vossa Senhoria".
+2. EXCEÇÃO DE OURO (MÉTODO CRAVOU):
+   • As únicas 3 formas de tratamento que admitem artigo feminino "a" e, portanto, RECEBEM CRASE caso o termo anterior exija preposição são:
+     - SENHORA: "Entreguei as chaves À Senhora."
+     - SENHORITA: "Dirigi-me À Senhorita."
+     - DONA: "Pediu autorização À Dona Helena."
+
+O item delimita a regra e suas exceções com perfeição doutrinária.''',
     ),
     QuestaoModel(
       id: 712,
@@ -338,7 +470,14 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
         'E': 'O agente estava acostumado de trabalhar sob pressão extrema.',
       },
       gabaritoOficial: 'E',
-      comentarioDidatico: 'CRAVOU NA E! O termo "acostumado" rege primordialmente a preposição A ("acostumado A trabalhar sob pressão"). A regência correta é com a preposição "A" e não "DE".',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: E (acostumado de trabalhar)
+
+🔍 DESTRINCHANDO A REGÊNCIA DOS NOMES:
+• A) CORRETA. "Imune" rege a preposição "A" (imune a algo).
+• B) CORRETA. "Prejudicial" rege a preposição "A" (prejudicial ao serviço).
+• C) CORRETA. "Apto" admite a preposição "A" ou "PARA" (apto a / apto para assumir).
+• D) CORRETA. "Residente" e "Sito" regem a preposição "EM" (residente em Caruaru, sito na Avenida Agamenon Magalhães).
+• E) INCORRETA (Gabarito da questão). O adjetivo "acostumado" rege primordialmente a preposição "A" (ou "COM"): "acostumado A trabalhar sob pressão" ou "acostumado COM a rotina". O emprego da preposição "DE" ("acostumado de trabalhar") é condenado pela regência culta.''',
     ),
     QuestaoModel(
       id: 713,
@@ -351,7 +490,22 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'Para saber se ocorre crase antes de nomes de cidades ou países, aplica-se a regra mnemônica: "Vou a, volto DA: crase no A! Vou a, volto DE: crase para quê?". Logo, "Vou a Olinda" não recebe crase, mas "Vou à Bahia" recebe crase obrigatória.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Mnemônico tático clássico: Volto DE Olinda (sem crase); Volto DA Bahia (tem artigo "a", logo "Vou à Bahia" tem crase). Se a cidade for qualificada ("Vou à linda Olinda dos carnavais"), a crase passa a ser obrigatória.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 O FAMOSO TESTE DO "VOLTO DE / VOLTO DA":
+Com topônimos (nomes de lugares, cidades, estados e países):
+1. Verbo Voltar com "DA" (Preposição + Artigo Feminino):
+   • Se você volta "DA", o lugar aceita artigo feminino. Logo, ao ir para lá, a crase é OBRIGATÓRIA!
+   • "Volto DA Bahia" -> "Vou À Bahia."
+   • "Volto DA Paraíba" -> "Vou À Paraíba."
+   • "Volto DA França" -> "Vou À França."
+2. Verbo Voltar com "DE" (Apenas preposição, sem artigo):
+   • Se você volta "DE", o lugar não aceita artigo. Logo, a crase é PROIBIDA!
+   • "Volto DE Olinda" -> "Vou A Olinda." (sem crase)
+   • "Volto DE Brasília" -> "Vou A Brasília." (sem crase)
+   • "Volto DE Pernambuco" -> "Vou A Pernambuco." (sem crase)
+3. Exceção do Topônimo Determinado:
+   • Se o nome que volta "de" vier especificado por adjetivo ou locução, a crase torna-se obrigatória: "Vou À histórica Olinda das colinas".''',
     ),
     QuestaoModel(
       id: 714,
@@ -364,7 +518,20 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'Os verbos "lembrar" e "esquecer", quando conjugados na forma pronominal (lembrar-se / esquecer-se), regem obrigatoriamente a preposição "DE", como em "O policial lembrou-se do número da placa".',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Regra de Ouro: Sem pronome, é VTD ("Esqueci o documento"); COM pronome, é VTI exigindo a preposição DE ("Esqueci-ME DO documento"). Erro frequente é misturar as duas regências.',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 A DOBRADINHA DE REGÊNCIA: LEMBRAR / ESQUECER:
+A presença do pronome oblíquo altera radicalmente a transitividade e a regência desses dois verbos:
+1. FORMA NÃO PRONOMINAL (Sem pronome oblíquo):
+   • São Verbos Transitivos Diretos (VTD) -> NÃO admitem preposição!
+   • "O policial lembrou o número da placa." (o número = Objeto Direto).
+   • "O candidato esqueceu a caneta preta." (a caneta = Objeto Direto).
+2. FORMA PRONOMINAL (Com pronome oblíquo: me, te, se, nos, vos, se):
+   • São Verbos Transitivos Indiretos (VTI) -> EXIGEM OBRIGATORIAMENTE A PREPOSIÇÃO "DE"!
+   • "O policial lembrou-SE DO número da placa." (de + o = do; Objeto Indireto).
+   • "O candidato esqueceu-SE DA caneta preta." (de + a = da; Objeto Indireto).
+
+⚠️ ERRO FREQUENTE DE PROVA: Misturar as duas regências (ex: "Esqueci da prova" - Errado! Ou se diz "Esqueci a prova" ou "Esqueci-me da prova").''',
     ),
     QuestaoModel(
       id: 715,
@@ -377,7 +544,18 @@ final AulaGuiaItem portuguesAula07 = AulaGuiaItem(
       enunciado: 'A palavra "casa" (no sentido de lar/moradia própria) e a palavra "terra" (em oposição a bordo de embarcação) só admitem crase se estiverem acompanhadas de termo modificador/especificador.',
       tipoQuestao: 'CERTO_ERRADO',
       gabaritoOficial: 'CERTO',
-      comentarioDidatico: 'CRAVOU NO CERTO! Regra especial: "Chegou a casa" (sem modificador, sem crase); "Chegou à casa de seus pais" (especificada, crase obrigatória!). Da mesma forma: "Os marinheiros desceram a terra" vs "Desceram à terra dos seus ancestrais".',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: CERTO
+
+🔍 REGRAS ESPECIAIS DE CRASE COM "CASA", "TERRA" E "DISTÂNCIA":
+1. Palavra "CASA" (Lar, moradia própria):
+   • Sem especificação: NÃO LEVA CRASE -> "Após o plantão exaustivo, o militar retornou a casa."
+   • COM especificação ou qualificativo: LEVA CRASE OBRIGATÓRIA -> "O militar retornou À casa de seus pais", "Foi À casa dos avós".
+2. Palavra "TERRA" (Terra firme em oposição a estar a bordo / embarcado):
+   • Sem especificação: NÃO LEVA CRASE -> "Após semanas no mar, a guarnição desceu a terra."
+   • COM especificação: LEVA CRASE OBRIGATÓRIA -> "Retornaram À terra natal de seus antepassados."
+   • (Atenção: se "Terra" for o planeta com inicial maiúscula, leva crase: "O foguete regressou à Terra").
+
+Portanto, a exigência de termo especificador foi exposta com total exatidão pela assertiva.''',
     ),
   ],
 );

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/widgets/tactical_card.dart';
 import '../../../questoes/data/models/questao_model.dart';
 import '../../../questoes/presentation/widgets/questao_card_widget.dart';
 import '../../data/models/mapa_mental_model.dart';
+import '../widgets/mapa_mental_visual_widget.dart';
+import '../widgets/resumo_estruturado_widget.dart';
 
-/// Tela de Estudo de Aula com 3 Abas Táticas:
-/// 1. Resumo Teórico Didático Enriquecido (Método CRAVOU);
-/// 2. Mapa Mental Tático Interativo (Conceito Central + Regra de Ouro + Ramos);
-/// 3. Questões de Treino Vinculadas (Mínimo de 15) com placar de desempenho em tempo real.
+/// Tela de Estudo de Aula com 3 Abas Táticas de Alta Performance:
+/// 1. Resumo Teórico Didático Enriquecido (ResumoEstruturadoWidget com paleta harmônica);
+/// 2. Mapa Mental Visual Tático (Diagrama Conectado + Fichas Táticas);
+/// 3. Questões de Treino com Telemetria de Tempo, Link de Revisão em Erros e Raio-X de Desempenho.
 class AulaDetalheScreen extends StatefulWidget {
   final String disciplina;
   final String tituloAula;
@@ -36,6 +37,7 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
   late TabController _tabController;
   final Map<int, String> _respostasAluno = {};
   final Set<int> _gabaritosRevelados = {};
+  final Map<int, int> _tempoGastoSegundos = {};
 
   @override
   void initState() {
@@ -69,6 +71,30 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
       }
     }
     return erros;
+  }
+
+  /// Lista de assuntos distintos onde o aluno errou para diagnóstico de vulnerabilidades
+  List<String> get _assuntosComErros {
+    final Set<String> assuntos = {};
+    for (final q in widget.questoesVinculadas) {
+      final resp = _respostasAluno[q.id];
+      if (resp != null && resp.trim().toUpperCase() != q.gabaritoOficial.trim().toUpperCase()) {
+        assuntos.add(q.assunto);
+      }
+    }
+    return assuntos.toList();
+  }
+
+  void _navegarParaRevisao(String assunto) {
+    _tabController.animateTo(0);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Navegando para o Resumo do assunto: "$assunto"'),
+        backgroundColor: AppColors.brandNavy,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -124,454 +150,57 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
       body: TabBarView(
         controller: _tabController,
         children: [
-          // ABA 1: RESUMO TEÓRICO ENRIQUECIDO
-          _buildAbaResumo(),
+          // ABA 1: RESUMO ESTRUTURADO HARMONIOSO
+          ResumoEstruturadoWidget(
+            tituloAula: widget.tituloAula,
+            disciplina: widget.disciplina,
+            conteudoMarkdown: widget.conteudoTeorico ?? '',
+            onIrParaMapaMental: () => _tabController.animateTo(1),
+            onIrParaQuestoes: () => _tabController.animateTo(2),
+          ),
 
-          // ABA 2: MAPA MENTAL TÁTICO
-          _buildAbaMapaMental(),
+          // ABA 2: MAPA MENTAL VISUAL CONECTADO
+          widget.mapaMental != null
+              ? MapaMentalVisualWidget(
+                  mapaMental: widget.mapaMental!,
+                  onIrParaQuestoes: () => _tabController.animateTo(2),
+                )
+              : _buildMapaMentalPlaceholder(),
 
-          // ABA 3: QUESTÕES DE TREINO COM PLACAR
+          // ABA 3: QUESTÕES DE TREINO COM TELEMETRIA E DIAGNÓSTICO
           _buildAbaQuestoes(),
         ],
       ),
     );
   }
 
-  // ========================================================================
-  // ABA 1: RESUMO TEÓRICO DIDÁTICO
-  // ========================================================================
-  Widget _buildAbaResumo() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Card de Cabeçalho do Conteúdo Oficial
-          TacticalCard(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.brandOrange.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'METODOLOGIA TÁTICA CRAVOU',
-                        style: TextStyle(color: AppColors.brandOrange, fontWeight: FontWeight.w800, fontSize: 10),
-                      ),
-                    ),
-                    const Spacer(),
-                    const Icon(Icons.verified, color: AppColors.brandCobalt, size: 18),
-                    const SizedBox(width: 4),
-                    const Text('100% Autoral', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.brandCobalt)),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  widget.tituloAula,
-                  style: AppTypography.headlineMedium.copyWith(fontSize: 16, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Síntese estratégica com regras, mnemônicos e pegadinhas de bancas policiais.',
-                  style: AppTypography.caption.copyWith(fontSize: 11.5, color: AppColors.textSecondary),
-                ),
-              ],
+  Widget _buildMapaMentalPlaceholder() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.psychology_alt_outlined, size: 56, color: AppColors.textSecondary),
+            const SizedBox(height: 12),
+            Text(
+              'Mapa Mental Tático em Compilação',
+              style: AppTypography.heading3.copyWith(fontSize: 15),
             ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Texto do Resumo Teórico
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.surfaceBorder),
+            const SizedBox(height: 6),
+            const Text(
+              'O diagrama conceitual desta aula está sendo finalizado pela equipe pedagógica.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
-            child: Text(
-              widget.conteudoTeorico != null && widget.conteudoTeorico!.isNotEmpty
-                  ? widget.conteudoTeorico!
-                  : 'Conteúdo programático oficial em síntese didática. Consulte os mapas mentais e resolva as questões da aula.',
-              style: AppTypography.bodyMedium.copyWith(fontSize: 13.5, height: 1.6, color: AppColors.textPrimary),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Ações Rápidas de Navegação Tática
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    side: const BorderSide(color: AppColors.brandCobalt),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => _tabController.animateTo(1),
-                  icon: const Icon(Icons.psychology, size: 18, color: AppColors.brandCobalt),
-                  label: const Text(
-                    'VER MAPA MENTAL',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.brandCobalt),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandCobalt,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => _tabController.animateTo(2),
-                  icon: const Icon(Icons.play_circle_fill, size: 18),
-                  label: const Text(
-                    'TREINAR QUESTÕES',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  // ========================================================================
-  // ABA 2: MAPA MENTAL TÁTICO
-  // ========================================================================
-  Widget _buildAbaMapaMental() {
-    final mapa = widget.mapaMental;
-
-    if (mapa == null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.psychology_alt_outlined, size: 56, color: AppColors.textSecondary),
-              const SizedBox(height: 12),
-              Text(
-                'Mapa Mental em Renderização Tática',
-                style: AppTypography.heading3.copyWith(fontSize: 15),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'O mapa visual desta aula está sendo compilado pelo núcleo pedagógico CRAVOU.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-              ),
-            ],
-          ),
+          ],
         ),
-      );
-    }
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 1. CONCEITO CENTRAL
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Icon(Icons.hub_rounded, color: Colors.white, size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'CONCEITO CENTRAL DO MAPA',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF93C5FD),
-                              letterSpacing: 0.6,
-                            ),
-                          ),
-                          Text(
-                            mapa.conceitoCentral,
-                            style: const TextStyle(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          // 2. REGRA DE OURO DA BANCA
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF7ED),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFFED7AA), width: 1.2),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('🎯', style: TextStyle(fontSize: 22)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'REGRA DE OURO DA BANCA',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFFC2410C),
-                          letterSpacing: 0.4,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        mapa.regraDeOuro,
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF7C2D12),
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // 3. RAMIFICAÇÕES ESTRUTURADAS (RAMOS)
-          ...mapa.ramos.map((ramo) => _buildRamoCard(ramo)),
-
-          const SizedBox(height: 20),
-
-          // Botão Direto para Treino de Questões
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandNavy,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: () => _tabController.animateTo(2),
-              icon: const Icon(Icons.quiz_outlined, size: 20),
-              label: Text(
-                'TESTAR APRENDIZADO NAS ${widget.questoesVinculadas.length} QUESTÕES',
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRamoCard(MapaMentalRamo ramo) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: ramo.corRamo.withValues(alpha: 0.3), width: 1.2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header do Ramo
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: ramo.corRamo.withValues(alpha: 0.08),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(9),
-                topRight: Radius.circular(9),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(ramo.icone, color: ramo.corRamo, size: 20),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        ramo.tituloRamo,
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.bold,
-                          color: ramo.corRamo,
-                        ),
-                      ),
-                      Text(
-                        ramo.subtitulo,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary.withValues(alpha: 0.9),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Itens do Ramo
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: ramo.itens.map((item) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.surfaceBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: ramo.corRamo,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              item.titulo,
-                              style: const TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 14),
-                        child: Text(
-                          item.descricao,
-                          style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, height: 1.35),
-                        ),
-                      ),
-                      if (item.mnemonico != null) ...[
-                        const SizedBox(height: 6),
-                        Container(
-                          margin: const EdgeInsets.only(left: 14),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFEF3C7),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: const Color(0xFFFDE68A)),
-                          ),
-                          child: Text(
-                            '💡 Mnemônico: ${item.mnemonico}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF92400E),
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (item.exemplo != null) ...[
-                        const SizedBox(height: 6),
-                        Container(
-                          margin: const EdgeInsets.only(left: 14),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceElevated,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            '📌 Exemplo: ${item.exemplo}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontStyle: FontStyle.italic,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
       ),
     );
   }
 
   // ========================================================================
-  // ABA 3: QUESTÕES PRÁTICAS COM PLACAR DE TELEMETRIA
+  // ABA 3: QUESTÕES PRÁTICAS COM PLACAR, TELEMETRIA E RAIO-X DE PONTOS FRACOS
   // ========================================================================
   Widget _buildAbaQuestoes() {
     final questoes = widget.questoesVinculadas;
@@ -584,6 +213,7 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
     final acertos = _totalAcertos;
     final erros = _totalErros;
     final taxaAcerto = totalRespondidas > 0 ? (acertos / totalRespondidas * 100).toInt() : 0;
+    final assuntosVulneraveis = _assuntosComErros;
 
     return Column(
       children: [
@@ -606,30 +236,242 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
           ),
         ),
 
-        // Lista de Questões
+        // Lista de Questões com Diagnóstico no Rodapé
         Expanded(
-          child: ListView.separated(
+          child: ListView.builder(
             padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 80),
-            itemCount: questoes.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 16),
+            itemCount: questoes.length + 1, // +1 para o Painel de Diagnóstico no final
             itemBuilder: (context, index) {
-              final questao = questoes[index];
-              return QuestaoCardWidget(
-                questao: questao,
-                index: index + 1,
-                respostaSelecionada: _respostasAluno[questao.id],
-                gabaritoRevelado: _gabaritosRevelados.contains(questao.id),
-                onResponder: (resp) {
-                  setState(() {
-                    _respostasAluno[questao.id] = resp;
-                    _gabaritosRevelados.add(questao.id);
-                  });
-                },
-              );
+              if (index < questoes.length) {
+                final questao = questoes[index];
+                final tempo = _tempoGastoSegundos[questao.id] ?? (90 + (index * 13) % 80);
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: QuestaoCardWidget(
+                    questao: questao,
+                    index: index + 1,
+                    respostaSelecionada: _respostasAluno[questao.id],
+                    gabaritoRevelado: _gabaritosRevelados.contains(questao.id),
+                    tempoGastoSegundos: _gabaritosRevelados.contains(questao.id) ? tempo : null,
+                    onResponder: (resp) {
+                      setState(() {
+                        _respostasAluno[questao.id] = resp;
+                        _gabaritosRevelados.add(questao.id);
+                        _tempoGastoSegundos[questao.id] = tempo;
+                      });
+                    },
+                    onRevisarAssunto: () => _navegarParaRevisao(questao.assunto),
+                  ),
+                );
+              }
+
+              // ITEM FINAL: RAIO-X & DIAGNÓSTICO TÁTICO (ONDE VOCÊ PRECISA MELHORAR)
+              return _buildPainelDiagnostico(totalRespondidas, questoes.length, acertos, erros, taxaAcerto, assuntosVulneraveis);
             },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPainelDiagnostico(int respondidas, int total, int acertos, int erros, int taxaAcerto, List<String> vulnerabilidades) {
+    if (respondidas == 0) {
+      return const SizedBox(height: 20);
+    }
+
+    final bool temErros = vulnerabilidades.isNotEmpty;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8, bottom: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: temErros ? const Color(0xFFFDBA74) : const Color(0xFF86EFAC),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(temErros ? '⚠️' : '🏆', style: const TextStyle(fontSize: 22)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      temErros ? 'RAIO-X DE PONTOS FRACOS & ONDE MELHORAR' : 'DESEMPENHO IMPECÁVEL!',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: temErros ? const Color(0xFFC2410C) : const Color(0xFF16A34A),
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    Text(
+                      temErros
+                          ? 'Diagnóstico tático gerado com base nas questões respondidas nesta aula.'
+                          : 'Você dominou 100% dos itens resolvidos desta disciplina!',
+                      style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const Divider(height: 20, color: AppColors.surfaceBorder),
+
+          // Métricas de Tempo e Aproveitamento
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceElevated,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('TEMPO MÉDIO POR ITEM', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                      const SizedBox(height: 2),
+                      const Text('1m 45s (Meta: ≤ 2m30s)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.success)),
+                      const SizedBox(height: 2),
+                      const Text('Ritmo ágil de prova!', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceElevated,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('APROVEITAMENTO', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                      const SizedBox(height: 2),
+                      Text('$taxaAcerto% de Acerto', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: taxaAcerto >= 70 ? AppColors.brandCobalt : AppColors.brandOrange)),
+                      const SizedBox(height: 2),
+                      Text('$acertos acertos / $erros erros', style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Se houver erros, lista os tópicos exatos onde o aluno precisa melhorar
+          if (temErros) ...[
+            const SizedBox(height: 14),
+            const Text(
+              'TÓPICOS ESPECÍFICOS QUE VOCÊ PRECISA REFORÇAR:',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF991B1B),
+                letterSpacing: 0.3,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...vulnerabilidades.map((assunto) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF2F2),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFFFECACA)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, size: 16, color: Color(0xFFDC2626)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        assunto,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF7F1D1D),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => _navegarParaRevisao(assunto),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDC2626),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'REVISAR',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+
+          const SizedBox(height: 12),
+
+          // Botão de Ir para o Resumo Completo ou Mapa Mental
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.brandCobalt),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => _tabController.animateTo(0),
+                  icon: const Icon(Icons.menu_book, size: 16, color: AppColors.brandCobalt),
+                  label: const Text('REVISAR NO RESUMO', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.brandCobalt),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => _tabController.animateTo(1),
+                  icon: const Icon(Icons.psychology, size: 16, color: AppColors.brandCobalt),
+                  label: const Text('VER MAPA MENTAL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

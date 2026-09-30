@@ -12,6 +12,8 @@ class QuestaoCardWidget extends StatelessWidget {
   final String? respostaSelecionada;
   final bool gabaritoRevelado;
   final Function(String resposta) onResponder;
+  final VoidCallback? onRevisarAssunto;
+  final int? tempoGastoSegundos;
 
   const QuestaoCardWidget({
     super.key,
@@ -20,6 +22,8 @@ class QuestaoCardWidget extends StatelessWidget {
     required this.respostaSelecionada,
     required this.gabaritoRevelado,
     required this.onResponder,
+    this.onRevisarAssunto,
+    this.tempoGastoSegundos,
   });
 
   @override
@@ -101,6 +105,39 @@ class QuestaoCardWidget extends StatelessWidget {
               _metaChip('Banca: ${questao.banca}'),
               _metaChip('Órgão: ${questao.orgao}'),
               _metaChip('Cargo: ${questao.cargo}'),
+              if (tempoGastoSegundos != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                  decoration: BoxDecoration(
+                    color: tempoGastoSegundos! > 150
+                        ? const Color(0xFFFEF2F2)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: tempoGastoSegundos! > 150
+                          ? const Color(0xFFFCA5A5)
+                          : const Color(0xFFCBD5E1),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(tempoGastoSegundos! > 150 ? '⚠️' : '⏱️', style: const TextStyle(fontSize: 10)),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${tempoGastoSegundos! ~/ 60}:${(tempoGastoSegundos! % 60).toString().padLeft(2, '0')}${tempoGastoSegundos! > 150 ? ' (Tempo alto)' : ''}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: tempoGastoSegundos! > 150
+                              ? const Color(0xFFDC2626)
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
 
@@ -257,6 +294,52 @@ class QuestaoCardWidget extends StatelessWidget {
                       fontSize: 13,
                     ),
                   ),
+                  if (!acertou && onRevisarAssunto != null) ...[
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: onRevisarAssunto,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF2F2),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFF87171), width: 1.2),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.menu_book_rounded, color: Color(0xFFDC2626), size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'PONTO DE VULNERABILIDADE DETECTADO',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFFDC2626),
+                                      letterSpacing: 0.4,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Revisar "${questao.assunto}" no Resumo e Mapa Mental',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF991B1B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFDC2626), size: 14),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
