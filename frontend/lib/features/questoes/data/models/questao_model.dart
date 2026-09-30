@@ -13,6 +13,7 @@ class QuestaoModel {
   final String comentarioDidatico;
   final bool anulada;
   final Map<String, String>? alternativas;
+  final String? tipoQuestao;
 
   const QuestaoModel({
     required this.id,
@@ -27,6 +28,7 @@ class QuestaoModel {
     required this.comentarioDidatico,
     this.anulada = false,
     this.alternativas,
+    this.tipoQuestao,
   });
 
   factory QuestaoModel.fromJson(Map<String, dynamic> json) {

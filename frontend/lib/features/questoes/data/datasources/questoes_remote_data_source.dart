@@ -1,5 +1,6 @@
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../../cursos/data/datasources/portugues/portugues_conteudo_oficial.dart';
 import '../models/disciplina_model.dart';
 import '../models/filtro_questoes.dart';
 import '../models/questao_model.dart';
@@ -46,17 +47,17 @@ class QuestoesRemoteDataSource {
 
   /// Retorna as disciplinas oficiais do edital PC-PE, PM-PE e PP-PE
   Future<List<DisciplinaModel>> getDisciplinas() async {
-    return const [
-      DisciplinaModel(id: 0, nome: 'Todas', icone: '🔥', totalQuestoes: 80),
-      DisciplinaModel(id: 1, nome: 'Língua Portuguesa', icone: '✍️', totalQuestoes: 20),
-      DisciplinaModel(id: 2, nome: 'Direito Constitucional', icone: '📜', totalQuestoes: 10),
-      DisciplinaModel(id: 3, nome: 'Direito Administrativo', icone: '🏛️', totalQuestoes: 10),
-      DisciplinaModel(id: 4, nome: 'Direito Penal', icone: '⚖️', totalQuestoes: 12),
-      DisciplinaModel(id: 5, nome: 'Direito Processual Penal', icone: '🚓', totalQuestoes: 12),
-      DisciplinaModel(id: 6, nome: 'Legislação Especial', icone: '🛡️', totalQuestoes: 10),
-      DisciplinaModel(id: 7, nome: 'Noções de Informática', icone: '💻', totalQuestoes: 8),
-      DisciplinaModel(id: 8, nome: 'Raciocínio Lógico & Info', icone: '🧠', totalQuestoes: 8),
-      DisciplinaModel(id: 9, nome: 'História & Geografia de PE', icone: '🌴', totalQuestoes: 8),
+    return [
+      DisciplinaModel(id: 0, nome: 'Todas', icone: '🔥', totalQuestoes: 80 + PortuguesConteudoOficial.todasAsQuestoes.length),
+      DisciplinaModel(id: 1, nome: 'Língua Portuguesa', icone: '✍️', totalQuestoes: 4 + PortuguesConteudoOficial.todasAsQuestoes.length),
+      const DisciplinaModel(id: 2, nome: 'Direito Constitucional', icone: '📜', totalQuestoes: 10),
+      const DisciplinaModel(id: 3, nome: 'Direito Administrativo', icone: '🏛️', totalQuestoes: 10),
+      const DisciplinaModel(id: 4, nome: 'Direito Penal', icone: '⚖️', totalQuestoes: 12),
+      const DisciplinaModel(id: 5, nome: 'Direito Processual Penal', icone: '🚓', totalQuestoes: 12),
+      const DisciplinaModel(id: 6, nome: 'Legislação Especial', icone: '🛡️', totalQuestoes: 10),
+      const DisciplinaModel(id: 7, nome: 'Noções de Informática', icone: '💻', totalQuestoes: 8),
+      const DisciplinaModel(id: 8, nome: 'Raciocínio Lógico & Info', icone: '🧠', totalQuestoes: 8),
+      const DisciplinaModel(id: 9, nome: 'História & Geografia de PE', icone: '🌴', totalQuestoes: 8),
     ];
   }
 
@@ -262,7 +263,11 @@ class QuestoesRemoteDataSource {
       ),
     ];
 
-    var filtradas = [..._questoesCustomizadas, ...todas];
+    var filtradas = [
+      ..._questoesCustomizadas,
+      ...todas,
+      ...PortuguesConteudoOficial.todasAsQuestoes,
+    ];
 
     if (filtro.disciplina != null && filtro.disciplina!.isNotEmpty && filtro.disciplina != 'Todas') {
       filtradas = filtradas.where((q) => q.disciplina == filtro.disciplina).toList();

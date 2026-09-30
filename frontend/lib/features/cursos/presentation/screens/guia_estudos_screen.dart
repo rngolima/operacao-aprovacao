@@ -5,49 +5,10 @@ import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/state/plano_estudo_state.dart';
 import '../../../admin/data/services/admin_content_service.dart';
 import '../../../questoes/data/models/questao_model.dart';
+import '../../data/datasources/portugues/portugues_conteudo_oficial.dart';
+import '../../data/models/aula_guia_model.dart';
+import '../../data/models/mapa_mental_model.dart';
 import 'aula_detalhe_screen.dart';
-
-/// Modelo de Aula Didática do Conteúdo Programático do Edital
-class AulaGuiaItem {
-  final String numero;
-  final String titulo;
-  final String detalhes;
-  final bool concluida;
-  final bool destaque;
-  final List<QuestaoModel>? questoes;
-  final String? conteudoTeorico;
-
-  const AulaGuiaItem({
-    required this.numero,
-    required this.titulo,
-    required this.detalhes,
-    this.concluida = false,
-    this.destaque = false,
-    this.questoes,
-    this.conteudoTeorico,
-  });
-}
-
-/// Modelo de Módulo / Disciplina Oficial do Edital
-class ModuloGuiaEstudo {
-  final String id;
-  final String nome;
-  final String icone;
-  final Color corBadge;
-  final int totalAulas;
-  final int totalQuestoes;
-  final List<AulaGuiaItem> aulas;
-
-  const ModuloGuiaEstudo({
-    required this.id,
-    required this.nome,
-    required this.icone,
-    required this.corBadge,
-    required this.totalAulas,
-    required this.totalQuestoes,
-    required this.aulas,
-  });
-}
 
 /// Tela do Guia de Estudos Oficial (Inspirada na arquitetura do QConcursos).
 /// Exibe a trilha por disciplinas do edital com aulas em síntese didática,
@@ -163,66 +124,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   // ========================================================================
   List<ModuloGuiaEstudo> _obterModulosPmpe() {
     final baseModulos = <ModuloGuiaEstudo>[
-      ModuloGuiaEstudo(
-        id: 'portugues',
-        nome: 'Língua Portuguesa (Instituto AOCP)',
-        icone: '✍️',
-        corBadge: AppColors.brandCobalt,
-        totalAulas: 8,
-        totalQuestoes: 45,
-        aulas: [
-          AulaGuiaItem(
-            numero: '01',
-            titulo: 'Compreensão, Interpretação e Tipologia Textual (Narrativo, Descritivo e Dissertativo)',
-            detalhes: '14 min • Padrão AOCP • 10 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '02',
-            titulo: 'Ortografia Oficial, Acentuação Gráfica e Emprego do Hífen (Novo Acordo)',
-            detalhes: '12 min • Síntese com Regras Práticas • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '03',
-            titulo: 'Classes de Palavras: Substantivo, Adjetivo, Pronomes e Emprego dos Verbos',
-            detalhes: '16 min • Morfossintaxe AOCP • 15 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '04',
-            titulo: 'Sintaxe da Oração e do Período: Termos Essenciais, Integrantes e Acessórios',
-            detalhes: '15 min • Análise Sintática Direcionada • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '05',
-            titulo: 'Emprego dos Sinais de Pontuação (Vírgula, Ponto e Vírgula, Dois-Pontos e Aspas)',
-            detalhes: '10 min • Casos Proibitivos e Obrigatórios • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '06',
-            titulo: 'Concordância Nominal e Concordância Verbal (Casos Gerais e Especiais)',
-            detalhes: '15 min • Pegadinhas Típicas de Prova • 14 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '07',
-            titulo: 'Regência Nominal, Regência Verbal e Emprego do Acento Indicativo de Crase',
-            detalhes: '18 min • Regra de Ouro + Casos Proibidos • 16 questões',
-            concluida: false,
-            questoes: _questoesCrase,
-          ),
-          AulaGuiaItem(
-            numero: '08',
-            titulo: 'Semântica: Sinonímia, Antonímia, Polissemia e Reescrita de Frases',
-            detalhes: '12 min • Equivalência de Sentido • 10 questões',
-            concluida: false,
-          ),
-        ],
-      ),
+      PortuguesConteudoOficial.moduloGuiaEstudo,
       ModuloGuiaEstudo(
         id: 'historia',
         nome: 'História de Pernambuco',
@@ -962,6 +864,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                           'Aula ${aula.numero}: ${aula.titulo}',
                           questoes: aula.questoes,
                           conteudoTeorico: aula.conteudoTeorico,
+                          mapaMental: aula.mapaMental,
                         ),
                       );
                     }).toList(),
@@ -983,7 +886,13 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     titulo: 'Compreensão, Coesão & Conectivos no Cebraspe',
                     detalhes: '12 min • Síntese Didática • 10 questões',
                     concluida: true,
-                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Compreensão e Coesão Textual'),
+                    onTap: () => _abrirAula(
+                      'Língua Portuguesa',
+                      'Aula 01: Compreensão e Coesão Textual',
+                      questoes: PortuguesConteudoOficial.aulas[0].questoes,
+                      conteudoTeorico: PortuguesConteudoOficial.aulas[0].conteudoTeorico,
+                      mapaMental: PortuguesConteudoOficial.aulas[0].mapaMental,
+                    ),
                   ),
                   _aulaItem(
                     numero: '02',
@@ -991,7 +900,13 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     detalhes: '15 min • Síntese Didática • 15 questões',
                     concluida: false,
                     destaque: true,
-                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase & Regência sem Mistério', questoes: _questoesCrase),
+                    onTap: () => _abrirAula(
+                      'Língua Portuguesa',
+                      'Aula 02: Crase & Regência sem Mistério',
+                      questoes: PortuguesConteudoOficial.aulas[6].questoes,
+                      conteudoTeorico: PortuguesConteudoOficial.aulas[6].conteudoTeorico,
+                      mapaMental: PortuguesConteudoOficial.aulas[6].mapaMental,
+                    ),
                   ),
                 ],
               ),
@@ -1004,7 +919,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     );
   }
 
-  void _abrirAula(String disciplina, String titulo, {List<QuestaoModel>? questoes, String? conteudoTeorico}) {
+  void _abrirAula(String disciplina, String titulo, {List<QuestaoModel>? questoes, String? conteudoTeorico, MapaMentalData? mapaMental}) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AulaDetalheScreen(
@@ -1012,6 +927,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
           tituloAula: titulo,
           questoesVinculadas: questoes ?? _questoesCrase,
           conteudoTeorico: conteudoTeorico,
+          mapaMental: mapaMental,
         ),
       ),
     );
