@@ -8,6 +8,7 @@ import '../../../questoes/presentation/screens/catalogo_questoes_screen.dart';
 import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
 import '../../../cursos/presentation/screens/guia_estudos_screen.dart';
 import '../../../monetizacao/presentation/widgets/plano_pro_modal.dart';
+import '../../../admin/presentation/screens/admin_dashboard_screen.dart';
 import 'planejador_tatico_screen.dart';
 
 /// Tela Principal do Aluno: "Meu Painel" (Dashboard de Alta Performance inspirado no QConcursos).
@@ -90,23 +91,73 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         actions: [
+          // Botão Direto para o Painel do Administrador
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => AdminDashboardScreen(adminNome: widget.userName),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(6),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4.5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.brandOrange, width: 1.2),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.admin_panel_settings_rounded, size: 14, color: AppColors.brandOrange),
+                      SizedBox(width: 4),
+                      Text(
+                        'ADMIN',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 14.0),
             child: Center(
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF1E3A8A),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    iniciais,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w800,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => AdminDashboardScreen(adminNome: widget.userName),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(17),
+                child: Container(
+                  width: 34,
+                  height: 34,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF1E3A8A),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      iniciais,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ),
