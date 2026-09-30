@@ -38,32 +38,30 @@ void main() {
       );
     });
 
-    testWidgets('Renderiza Header Fiel à Imagem (Foguinho 12 dias, Iniciais e Foco PM-PE)', (tester) async {
+    testWidgets('Renderiza Banner Heroico de Contagem Regressiva e Header Limpo (Foguinho 12 dias e Foco PM-PE)', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pump();
 
-      // Valida logo Coruja no AppBar
+      // Valida logo Coruja e Iniciais no AppBar
       expect(find.byType(TacticalOwlLogo), findsOneWidget);
+      expect(find.text('RL'), findsOneWidget);
 
-      // Pílula com o foguinho e sequência: "🔥 12 dias seguidos" (conforme imagem)
+      // Pílula com o foguinho e sequência de guerra integrada no banner heroico
       expect(find.text('12 dias seguidos'), findsOneWidget);
       expect(find.text('🔥'), findsWidgets);
-
-      // Iniciais e Foco do candidato no topo
-      expect(find.text('RL'), findsWidgets);
-      expect(find.text('Rudson Lima'), findsOneWidget);
-      expect(find.textContaining('Foco: PM-PE Soldado'), findsOneWidget);
 
       // Botão "Planejamento de Estudos" substitui "Adicionar Edital"
       expect(find.text('Planejamento de Estudos'), findsOneWidget);
       expect(find.text('Adicionar Edital'), findsNothing);
       expect(find.text('Adicionar Edital (IA)'), findsNothing);
 
-      // Banner de Contagem Regressiva para a Prova da PM-PE (144 dias)
+      // Banner Heroico Aprimorado de Contagem Regressiva para a Prova da PM-PE (144 dias)
       expect(find.textContaining('CONTAGEM REGRESSIVA: 144 DIAS PARA A PROVA DA PM-PE (21/02/2027)'), findsOneWidget);
+      expect(find.textContaining('Prova Oficial: 21 de Fevereiro de 2027'), findsOneWidget);
+      expect(find.text('VER CRONOGRAMA'), findsOneWidget);
 
-      // Badge de Inscrição Homologada Oficial
-      expect(find.textContaining('INSCRIÇÃO HOMOLOGADA • Nº 2026-PMPE-08942'), findsOneWidget);
+      // Confirma que os cards poluídos foram removidos da tela inicial
+      expect(find.textContaining('INSCRIÇÃO HOMOLOGADA • Nº 2026-PMPE-08942'), findsNothing);
     });
 
     testWidgets('Navega para PlanejadorTaticoScreen com as 21 semanas completas e rigor do edital AOCP', (tester) async {
@@ -142,6 +140,28 @@ void main() {
       expect(find.text('Guia/Cursos'), findsOneWidget);
       expect(find.text('Questões'), findsOneWidget);
       expect(find.text('Simulado'), findsOneWidget);
+    });
+
+    testWidgets('Planejador Tático exibe Mapeamento de Dificuldades e permite selecionar matérias', (tester) async {
+      tester.view.physicalSize = const Size(800, 1800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pump();
+
+      // Navega para o Planejador Tático
+      await tester.tap(find.text('VER CRONOGRAMA'));
+      await tester.pumpAndSettle();
+
+      // Valida card de dificuldades
+      expect(find.text('Matérias de Maior Dificuldade'), findsOneWidget);
+      expect(find.textContaining('Priorização Tática no Guia de Estudos'), findsOneWidget);
+      expect(find.text('Raciocínio Lógico Matemático'), findsWidgets);
+      expect(find.text('Direito Constitucional'), findsWidgets);
     });
   });
 }

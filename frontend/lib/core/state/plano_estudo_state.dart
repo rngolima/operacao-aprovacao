@@ -44,6 +44,10 @@ class PlanoEstudoState extends ChangeNotifier {
   bool _temCronogramaAtivo = true;
   List<String> _disciplinas = [];
   List<MetaDiaEstudo> _trilhaSemanal = [];
+  Set<String> _materiasDificuldade = {
+    'Raciocínio Lógico Matemático',
+    'Direito Constitucional',
+  };
 
   // Getters
   String get concursoAlvo => _concursoAlvo;
@@ -61,6 +65,34 @@ class PlanoEstudoState extends ChangeNotifier {
   bool get temCronogramaAtivo => _temCronogramaAtivo;
   List<String> get disciplinas => List.unmodifiable(_disciplinas);
   List<MetaDiaEstudo> get trilhaSemanal => List.unmodifiable(_trilhaSemanal);
+  Set<String> get materiasDificuldade => Set.unmodifiable(_materiasDificuldade);
+
+  bool isMateriaDificuldade(String materia) {
+    final mLower = materia.toLowerCase();
+    return _materiasDificuldade.any((d) {
+      final dLower = d.toLowerCase();
+      return mLower.contains(dLower) || dLower.contains(mLower);
+    });
+  }
+
+  void toggleMateriaDificuldade(String materia) {
+    // Normaliza para o nome base
+    final existente = _materiasDificuldade.firstWhere(
+      (d) => d.toLowerCase() == materia.toLowerCase() || materia.toLowerCase().contains(d.toLowerCase()),
+      orElse: () => '',
+    );
+    if (existente.isNotEmpty) {
+      _materiasDificuldade.remove(existente);
+    } else {
+      _materiasDificuldade.add(materia);
+    }
+    notifyListeners();
+  }
+
+  void setMateriasDificuldade(Set<String> novasMaterias) {
+    _materiasDificuldade = Set.from(novasMaterias);
+    notifyListeners();
+  }
 
   void _inicializarPadrao() {
     _concursoAlvo = 'PM-PE (Polícia Militar de Pernambuco)';

@@ -6,8 +6,49 @@ import '../../../../core/state/plano_estudo_state.dart';
 import '../../../questoes/data/models/questao_model.dart';
 import 'aula_detalhe_screen.dart';
 
+/// Modelo de Aula Didática do Conteúdo Programático do Edital
+class AulaGuiaItem {
+  final String numero;
+  final String titulo;
+  final String detalhes;
+  final bool concluida;
+  final bool destaque;
+  final List<QuestaoModel>? questoes;
+
+  const AulaGuiaItem({
+    required this.numero,
+    required this.titulo,
+    required this.detalhes,
+    this.concluida = false,
+    this.destaque = false,
+    this.questoes,
+  });
+}
+
+/// Modelo de Módulo / Disciplina Oficial do Edital
+class ModuloGuiaEstudo {
+  final String id;
+  final String nome;
+  final String icone;
+  final Color corBadge;
+  final int totalAulas;
+  final int totalQuestoes;
+  final List<AulaGuiaItem> aulas;
+
+  const ModuloGuiaEstudo({
+    required this.id,
+    required this.nome,
+    required this.icone,
+    required this.corBadge,
+    required this.totalAulas,
+    required this.totalQuestoes,
+    required this.aulas,
+  });
+}
+
 /// Tela do Guia de Estudos Oficial (Inspirada na arquitetura do QConcursos).
-/// Exibe a trilha por disciplinas do edital com aulas em síntese didática e questões práticas.
+/// Exibe a trilha por disciplinas do edital com aulas em síntese didática,
+/// questões práticas e priorização inteligente pelas maiores dificuldades do candidato.
 class GuiaEstudosScreen extends StatefulWidget {
   final String? concursoNome;
   final List<String>? disciplinasFoco;
@@ -25,11 +66,23 @@ class GuiaEstudosScreen extends StatefulWidget {
 class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   final Map<String, bool> _moduloAberto = {};
   bool _mostrarApenasFoco = true;
+  bool _priorizarDificuldades = true;
 
   @override
   void initState() {
     super.initState();
     _mostrarApenasFoco = widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty;
+    PlanoEstudoState.instance.addListener(_onPlanoMudou);
+  }
+
+  @override
+  void dispose() {
+    PlanoEstudoState.instance.removeListener(_onPlanoMudou);
+    super.dispose();
+  }
+
+  void _onPlanoMudou() {
+    if (mounted) setState(() {});
   }
 
   bool _deveExibirModulo(String nomeModulo) {
@@ -55,7 +108,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
       assunto: 'Crase & Regência',
       enunciado: 'No trecho: "O policial civil obedeceu a ordens emanadas de seus superiores hierárquicos sem hesitar.", o emprego do acento grave indicativo de crase no vocábulo "a" seria gramaticalmente obrigatório.',
       gabaritoOficial: 'ERRADO',
-      comentarioDidatico: 'CRAVOU NO ERRO! Regra de Ouro do Cebraspe: "A" no singular diante de palavra no plural não tem crase ("a ordens"). O termo "ordens" está no plural e o "a" está desprovido de artigo feminino plural ("as"). Se houvesse crase, teria de ser "às ordens". Logo, o item está ERRADO.',
+      comentarioDidatico: 'CRAVOU NO ERRO! Regra de Ouro da banca: "A" no singular diante de palavra no plural não tem crase ("a ordens"). O termo "ordens" está no plural e o "a" está desprovido de artigo feminino plural ("as"). Se houvesse crase, teria de ser "às ordens". Logo, o item está ERRADO.',
     ),
     QuestaoModel(
       id: 2,
@@ -75,7 +128,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   final List<QuestaoModel> _questoesHistoriaPe = const [
     QuestaoModel(
       id: 3,
-      banca: 'IAUPE',
+      banca: 'Instituto AOCP',
       orgao: 'PM-PE',
       cargo: 'Soldado da Polícia Militar',
       ano: 2024,
@@ -87,7 +140,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     ),
     QuestaoModel(
       id: 4,
-      banca: 'IAUPE',
+      banca: 'Instituto AOCP',
       orgao: 'PM-PE',
       cargo: 'Soldado da Polícia Militar',
       ano: 2024,
@@ -99,6 +152,466 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     ),
   ];
 
+  // ========================================================================
+  // GRADE COMPLETA E RIGOROSA DO CONTEÚDO PROGRAMÁTICO DA PM-PE (AOCP)
+  // 6 DISCIPLINAS OFICIAIS • 10 QUESTÕES CADA • TOTAL 60 QUESTÕES
+  // ========================================================================
+  List<ModuloGuiaEstudo> _obterModulosPmpe() {
+    return [
+      ModuloGuiaEstudo(
+        id: 'portugues',
+        nome: 'Língua Portuguesa (Instituto AOCP)',
+        icone: '✍️',
+        corBadge: AppColors.brandCobalt,
+        totalAulas: 8,
+        totalQuestoes: 45,
+        aulas: [
+          AulaGuiaItem(
+            numero: '01',
+            titulo: 'Compreensão, Interpretação e Tipologia Textual (Narrativo, Descritivo e Dissertativo)',
+            detalhes: '14 min • Padrão AOCP • 10 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '02',
+            titulo: 'Ortografia Oficial, Acentuação Gráfica e Emprego do Hífen (Novo Acordo)',
+            detalhes: '12 min • Síntese com Regras Práticas • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '03',
+            titulo: 'Classes de Palavras: Substantivo, Adjetivo, Pronomes e Emprego dos Verbos',
+            detalhes: '16 min • Morfossintaxe AOCP • 15 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '04',
+            titulo: 'Sintaxe da Oração e do Período: Termos Essenciais, Integrantes e Acessórios',
+            detalhes: '15 min • Análise Sintática Direcionada • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '05',
+            titulo: 'Emprego dos Sinais de Pontuação (Vírgula, Ponto e Vírgula, Dois-Pontos e Aspas)',
+            detalhes: '10 min • Casos Proibitivos e Obrigatórios • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '06',
+            titulo: 'Concordância Nominal e Concordância Verbal (Casos Gerais e Especiais)',
+            detalhes: '15 min • Pegadinhas Típicas de Prova • 14 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '07',
+            titulo: 'Regência Nominal, Regência Verbal e Emprego do Acento Indicativo de Crase',
+            detalhes: '18 min • Regra de Ouro + Casos Proibidos • 16 questões',
+            concluida: false,
+            questoes: _questoesCrase,
+          ),
+          AulaGuiaItem(
+            numero: '08',
+            titulo: 'Semântica: Sinonímia, Antonímia, Polissemia e Reescrita de Frases',
+            detalhes: '12 min • Equivalência de Sentido • 10 questões',
+            concluida: false,
+          ),
+        ],
+      ),
+      ModuloGuiaEstudo(
+        id: 'historia',
+        nome: 'História de Pernambuco',
+        icone: '⚔️',
+        corBadge: const Color(0xFF15803D),
+        totalAulas: 7,
+        totalQuestoes: 38,
+        aulas: [
+          AulaGuiaItem(
+            numero: '01',
+            titulo: 'Ocupação Pré-Colonial, Capitania Hereditária de Duarte Coelho e Economia Açucareira',
+            detalhes: '14 min • Formação Social e Econômica • 8 questões',
+            concluida: true,
+            questoes: _questoesHistoriaPe,
+          ),
+          AulaGuiaItem(
+            numero: '02',
+            titulo: 'As Invasões Holandesas e o Governo de Maurício de Nassau no Recife (1637-1644)',
+            detalhes: '16 min • Tolerância Religiosa e Urbanismo • 10 questões',
+            concluida: false,
+            destaque: true,
+            questoes: _questoesHistoriaPe,
+          ),
+          AulaGuiaItem(
+            numero: '03',
+            titulo: 'A Insurreição Pernambucana e a Batalha dos Guararapes (1645-1654)',
+            detalhes: '12 min • Expulsão Neerlandesa e Sentimento Nativista • 8 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '04',
+            titulo: 'A Guerra dos Mascates (1710-1711) e o Conflito entre Nobreza de Olinda e Comerciantes do Recife',
+            detalhes: '12 min • Autonomia Política • 8 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '05',
+            titulo: 'A Revolução Pernambucana de 1817: República Provisória e Ruptura com a Coroa Joanina',
+            detalhes: '15 min • Marco Revolucionário • 12 questões',
+            concluida: false,
+            questoes: _questoesHistoriaPe,
+          ),
+          AulaGuiaItem(
+            numero: '06',
+            titulo: 'A Confederação do Equador (1824) e a Luta Republicana de Frei Caneca',
+            detalhes: '14 min • Constituição Outorgada de 1824 • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '07',
+            titulo: 'A Revolução Praieira (1848) e Movimentos Político-Sociais em Pernambuco',
+            detalhes: '12 min • Manifesto ao Mundo • 8 questões',
+            concluida: false,
+          ),
+        ],
+      ),
+      ModuloGuiaEstudo(
+        id: 'rlm',
+        nome: 'Raciocínio Lógico Matemático',
+        icone: '📐',
+        corBadge: const Color(0xFF6366F1),
+        totalAulas: 7,
+        totalQuestoes: 40,
+        aulas: [
+          AulaGuiaItem(
+            numero: '01',
+            titulo: 'Estrutura Lógica de Relações Arbitrárias entre Pessoas, Lugares e Objetos',
+            detalhes: '14 min • Associação Lógica • 10 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '02',
+            titulo: 'Lógica Proposicional: Proposições Simples/Compostas e Conectivos (e, ou, se...então)',
+            detalhes: '16 min • Fundamentos Proposicionais • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '03',
+            titulo: 'Construção de Tabelas-Verdade, Tautologia, Contradição e Contingência',
+            detalhes: '15 min • Métodos Rápidos de Resolução • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '04',
+            titulo: 'Equivalências Lógicas e Aplicação Rigorosa das Leis de De Morgan',
+            detalhes: '14 min • Fórmulas Essenciais AOCP • 14 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '05',
+            titulo: 'Negação de Proposições Compostas e Condicionais (Regra do MANÉ)',
+            detalhes: '12 min • Macetes Práticos de Prova • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '06',
+            titulo: 'Diagramas Lógicos, Operações com Conjuntos e Quantificadores (Todo, Algum, Nenhum)',
+            detalhes: '14 min • Interseção e Negação • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '07',
+            titulo: 'Princípios de Contagem (Arranjo, Combinação e Permutação) e Probabilidade Básica',
+            detalhes: '15 min • Análise Combinatória para Concursos • 10 questões',
+            concluida: false,
+          ),
+        ],
+      ),
+      ModuloGuiaEstudo(
+        id: 'informatica',
+        nome: 'Noções de Informática',
+        icone: '💻',
+        corBadge: const Color(0xFF0284C7),
+        totalAulas: 7,
+        totalQuestoes: 36,
+        aulas: [
+          AulaGuiaItem(
+            numero: '01',
+            titulo: 'Hardware: Processadores, Memórias (RAM, ROM, Cache), Barramentos e Periféricos',
+            detalhes: '12 min • Arquitetura de Computadores • 8 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '02',
+            titulo: 'Sistemas Operacionais: Windows 10/11 (Atalhos de Teclado, Gerenciador de Tarefas e Painel)',
+            detalhes: '14 min • Recursos Práticos do Sistema • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '03',
+            titulo: 'Conceitos Básicos do Ambiente Linux (Estrutura de Diretórios e Comandos do Terminal)',
+            detalhes: '12 min • Comandos Essenciais para Concursos • 8 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '04',
+            titulo: 'Pacote Microsoft Office (Word e Excel) e LibreOffice (Writer e Calc)',
+            detalhes: '15 min • Fórmulas do Excel e Formatação • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '05',
+            titulo: 'Redes de Computadores, Conceitos de Internet/Intranet, Navegadores Web e E-mail',
+            detalhes: '12 min • Protocolos (HTTP, HTTPS, TCP/IP, DNS) • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '06',
+            titulo: 'Segurança da Informação: Vírus, Ransomware, Worms, Phishing, Engenharia Social e Backup',
+            detalhes: '16 min • Ameaças e Mecanismos de Proteção • 15 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '07',
+            titulo: 'Armazenamento em Nuvem (Cloud Storage), Google Drive e Microsoft OneDrive',
+            detalhes: '10 min • Sincronização e Compartilhamento • 8 questões',
+            concluida: false,
+          ),
+        ],
+      ),
+      ModuloGuiaEstudo(
+        id: 'constitucional',
+        nome: 'Direito Constitucional',
+        icone: '🏛️',
+        corBadge: const Color(0xFFB45309),
+        totalAulas: 7,
+        totalQuestoes: 42,
+        aulas: [
+          AulaGuiaItem(
+            numero: '01',
+            titulo: 'Princípios Fundamentais da República Federativa do Brasil (Art. 1º ao 4º da CF/88)',
+            detalhes: '12 min • Fundamentos e Objetivos Fundamentais • 8 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '02',
+            titulo: 'Art. 5º da CF/88: Direitos e Deveres Individuais e Coletivos (Vida, Liberdade e Igualdade)',
+            detalhes: '18 min • Letra de Lei + Jurisprudência AOCP • 16 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '03',
+            titulo: 'Remédios Constitucionais: Habeas Corpus, Mandado de Segurança, Habeas Data e Ação Popular',
+            detalhes: '15 min • Garantias Processuais Constitucionais • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '04',
+            titulo: 'Direitos Sociais, Nacionalidade e Direitos Políticos (Art. 6º ao 16 da CF/88)',
+            detalhes: '14 min • Cargos Privativos de Brasileiro Nato • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '05',
+            titulo: 'Da Administração Pública: Princípios Constitucionais (LIMPE) e Servidores (Art. 37 a 41)',
+            detalhes: '15 min • Acumulação de Cargos e Estabilidade • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '06',
+            titulo: 'Da Segurança Pública (Art. 144 da CF/88): Órgãos Policiais e Atribuições Constitucionais',
+            detalhes: '16 min • Missão Constitucional da Polícia Militar • 14 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '07',
+            titulo: 'Forças Armadas e Segurança dos Estados (Art. 42 e 142 da CF/88)',
+            detalhes: '12 min • Militares dos Estados e DF • 10 questões',
+            concluida: false,
+          ),
+        ],
+      ),
+      ModuloGuiaEstudo(
+        id: 'direitos_humanos',
+        nome: 'Direitos Humanos e Legislação Extravagante',
+        icone: '⚖️',
+        corBadge: const Color(0xFFDC2626),
+        totalAulas: 7,
+        totalQuestoes: 38,
+        aulas: [
+          AulaGuiaItem(
+            numero: '01',
+            titulo: 'Teoria Geral dos Direitos Humanos, Gerações/Dimensões de Direitos e Princípios Fundamentais',
+            detalhes: '14 min • Conceitos Doutrinários • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '02',
+            titulo: 'Declaração Universal dos Direitos Humanos (DUDH 1948 - ONU): Artigos e Aplicação Policial',
+            detalhes: '15 min • Letra Integral da DUDH • 12 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '03',
+            titulo: 'Convenção Americana sobre Direitos Humanos (Pacto de San José da Costa Rica)',
+            detalhes: '14 min • Direitos Civis e Políticos • 10 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '04',
+            titulo: 'Estatuto dos Policiais Militares do Estado de Pernambuco (Lei Estadual nº 6.783/1974)',
+            detalhes: '18 min • Hierarquia, Disciplina, Direitos e Deveres • 15 questões',
+            concluida: false,
+            destaque: true,
+          ),
+          AulaGuiaItem(
+            numero: '05',
+            titulo: 'Lei de Abuso de Autoridade (Lei Federal nº 13.869/2019): Crimes e Sanções Administrativas',
+            detalhes: '15 min • Condutas Típicas na Atividade Policial • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '06',
+            titulo: 'Lei dos Crimes Hediondos (Lei nº 8.072/1990) e Lei de Tortura (Lei nº 9.455/1997)',
+            detalhes: '14 min • Inafiançabilidade e Cumprimento de Pena • 12 questões',
+            concluida: false,
+          ),
+          AulaGuiaItem(
+            numero: '07',
+            titulo: 'Estatuto do Desarmamento (Lei nº 10.826/2003) e Lei Maria da Penha (Lei nº 11.340/2006)',
+            detalhes: '16 min • Tipos Penais e Medidas Protetivas • 12 questões',
+            concluida: false,
+          ),
+        ],
+      ),
+    ];
+  }
+
+  void _abrirModalAjustarDificuldades() {
+    final plano = PlanoEstudoState.instance;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 18,
+                right: 18,
+                top: 18,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: const [
+                          Text('🎯', style: TextStyle(fontSize: 18)),
+                          SizedBox(width: 8),
+                          Text(
+                            'Minhas Maiores Dificuldades',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.brandNavy,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Selecione as disciplinas onde você mais erra ou tem receio na prova da PM-PE. Elas subirão imediatamente para o topo do seu Guia de Estudos com badge de prioridade tática máxima.',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.35),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      'Raciocínio Lógico Matemático',
+                      'Direito Constitucional',
+                      'Língua Portuguesa',
+                      'História de Pernambuco',
+                      'Noções de Informática',
+                      'Direitos Humanos e Legislação',
+                    ].map((materia) {
+                      final isSelected = plano.isMateriaDificuldade(materia);
+                      return FilterChip(
+                        avatar: Text(isSelected ? '⚠️' : '📚', style: const TextStyle(fontSize: 12)),
+                        label: Text(
+                          materia,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: isSelected ? const Color(0xFF9A3412) : AppColors.textPrimary,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFFFFEDD5),
+                        backgroundColor: AppColors.surfaceElevated,
+                        checkmarkColor: const Color(0xFFEA580C),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: isSelected ? const Color(0xFFFB923C) : AppColors.surfaceBorder,
+                            width: isSelected ? 1.5 : 1,
+                          ),
+                        ),
+                        onSelected: (selected) {
+                          plano.toggleMateriaDificuldade(materia);
+                          setModalState(() {});
+                          setState(() {});
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandNavy,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text(
+                        'APLICAR PRIORIDADES TÁTICAS',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final plano = PlanoEstudoState.instance;
@@ -106,6 +619,26 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     final bool isPmpe = concursoAtivo.toUpperCase().contains('MILITAR') ||
         concursoAtivo.toUpperCase().contains('PMPE') ||
         concursoAtivo.toUpperCase().contains('PM-PE');
+
+    // Módulos oficiais da PMPE ou gerais
+    final modulosPmpe = _obterModulosPmpe();
+
+    // Aplica a regra de priorização por dificuldade
+    List<ModuloGuiaEstudo> modulosExibicao = List.from(modulosPmpe);
+    if (_priorizarDificuldades) {
+      modulosExibicao.sort((a, b) {
+        final aDificuldade = plano.isMateriaDificuldade(a.nome);
+        final bDificuldade = plano.isMateriaDificuldade(b.nome);
+        if (aDificuldade && !bDificuldade) return -1;
+        if (!aDificuldade && bDificuldade) return 1;
+        return 0;
+      });
+    }
+
+    // Filtra pelo modo foco se ativo
+    if (_mostrarApenasFoco && widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty) {
+      modulosExibicao = modulosExibicao.where((m) => _deveExibirModulo(m.nome)).toList();
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -120,7 +653,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
               style: AppTypography.heading3.copyWith(fontSize: 17, fontWeight: FontWeight.bold),
             ),
             Text(
-              isPmpe ? 'PM-PE — Soldado da Polícia Militar' : 'PC-PE — Agente de Polícia',
+              isPmpe ? 'PM-PE — Soldado da Polícia Militar • AOCP' : 'PC-PE — Agente de Polícia',
               style: AppTypography.caption.copyWith(fontSize: 12, color: AppColors.brandOrange, fontWeight: FontWeight.bold),
             ),
           ],
@@ -131,7 +664,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Card Principal do Curso
+            // Card Principal do Curso da PM-PE (Edital Publicado AOCP)
             TacticalCard(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -153,13 +686,13 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isPmpe ? 'Curso Reta Final PM-PE (Edital Publicado)' : 'Curso Reta Final PC-PE (Cebraspe)',
+                              isPmpe ? 'Conteúdo Programático Oficial PM-PE' : 'Curso Reta Final PC-PE',
                               style: AppTypography.titleMedium.copyWith(fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               isPmpe
-                                  ? 'Banca IAUPE/AOCP • 2.400 Vagas • Material Autoral + Questões'
+                                  ? 'Banca Instituto AOCP • 1.250 Vagas Soldado • 6 Disciplinas do Edital'
                                   : 'Banca Cebraspe • Material Autoral + Questões do Edital',
                               style: AppTypography.caption.copyWith(fontSize: 12),
                             ),
@@ -170,19 +703,19 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Barra de Progresso do Curso
+                  // Barra de Progresso Geral do Curso
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text('Progresso do Guia', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                      Text('18% concluído', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
+                      Text('Progresso Global do Edital', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                      Text('24% concluído (10/43 aulas)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.brandCobalt)),
                     ],
                   ),
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: 0.18,
+                      value: 0.24,
                       minHeight: 6,
                       backgroundColor: AppColors.surfaceElevated,
                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.brandCobalt),
@@ -192,7 +725,101 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 14),
+
+            // CARD TÁTICO DE INTELIGÊNCIA: PRIORIZAÇÃO POR DIFICULDADE DO CANDIDATO
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF7ED),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFFFEDD5), width: 1.2),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: const [
+                          Text('🎯', style: TextStyle(fontSize: 16)),
+                          SizedBox(width: 6),
+                          Text(
+                            'INTELIGÊNCIA DE DIFICULDADES CRAVOU',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF9A3412),
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: _abrirModalAjustarDificuldades,
+                        borderRadius: BorderRadius.circular(4),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: const Color(0xFFFB923C)),
+                          ),
+                          child: const Text(
+                            'AJUSTAR DIFICULDADES',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFFC2410C),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    plano.materiasDificuldade.isNotEmpty
+                        ? 'Matérias em destaque no topo: ${plano.materiasDificuldade.join(', ')}.'
+                        : 'Nenhuma matéria marcada como dificuldade. Selecione para ordenar por prioridade.',
+                    style: const TextStyle(fontSize: 11, color: Color(0xFF9A3412), height: 1.3),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      ChoiceChip(
+                        label: const Text('⭐ Priorizar Minhas Dificuldades', style: TextStyle(fontSize: 11)),
+                        selected: _priorizarDificuldades,
+                        selectedColor: const Color(0xFFEA580C),
+                        labelStyle: TextStyle(
+                          color: _priorizarDificuldades ? Colors.white : AppColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        onSelected: (val) {
+                          setState(() => _priorizarDificuldades = true);
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: const Text('Ordem do Edital', style: TextStyle(fontSize: 11)),
+                        selected: !_priorizarDificuldades,
+                        selectedColor: AppColors.brandNavy,
+                        labelStyle: TextStyle(
+                          color: !_priorizarDificuldades ? Colors.white : AppColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        onSelected: (val) {
+                          setState(() => _priorizarDificuldades = false);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 14),
 
             // Banner de Modo Foco (Meta de Hoje)
             if (widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty)
@@ -200,32 +827,32 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBEB),
+                  color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFDE68A)),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
                 ),
                 child: Row(
                   children: [
-                    const Text('🎯', style: TextStyle(fontSize: 18)),
+                    const Text('📌', style: TextStyle(fontSize: 16)),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'MODO FOCO • METAS DO DIA',
+                            'FILTRADO: DISCIPLINAS DA META DE HOJE',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF92400E),
+                              color: Color(0xFF1E3A8A),
                               letterSpacing: 0.4,
                             ),
                           ),
                           Text(
                             _mostrarApenasFoco
-                                ? 'Exibindo apenas as disciplinas do seu treino de hoje.'
-                                : 'Exibindo todas as disciplinas do edital completo da PM-PE.',
-                            style: const TextStyle(fontSize: 10.5, color: Color(0xFFB45309)),
+                                ? 'Exibindo apenas as matérias do seu planejamento de hoje.'
+                                : 'Exibindo todo o edital programático.',
+                            style: const TextStyle(fontSize: 10.5, color: Color(0xFF1D4ED8)),
                           ),
                         ],
                       ),
@@ -239,7 +866,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                       ),
                       child: Text(
                         _mostrarApenasFoco ? 'VER TODAS' : 'SÓ DO DIA',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF92400E)),
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF1E3A8A)),
                       ),
                     ),
                   ],
@@ -247,205 +874,60 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
               ),
 
             // Título da Seção de Disciplinas
-            Text(
-              _mostrarApenasFoco ? 'DISCIPLINAS DO DIA (FOCO 100%)' : 'DISCIPLINAS DO EDITAL OFICIAL',
-              style: AppTypography.tagLabel.copyWith(
-                color: AppColors.textPrimary,
-                letterSpacing: 0.8,
-                fontSize: 13,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _mostrarApenasFoco ? 'DISCIPLINAS DO DIA (FOCO)' : 'CONTEÚDO PROGRAMÁTICO (EDITAL AOCP)',
+                  style: AppTypography.tagLabel.copyWith(
+                    color: AppColors.textPrimary,
+                    letterSpacing: 0.8,
+                    fontSize: 12.5,
+                  ),
+                ),
+                Text(
+                  '${modulosExibicao.length} Disciplinas',
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
 
             if (isPmpe) ...[
-              // MÓDULO 1 PM-PE: LÍNGUA PORTUGUESA (AOCP)
-              if (_deveExibirModulo('Língua Portuguesa')) ...[
-                _moduloCard(
-                  nome: 'Língua Portuguesa (Instituto AOCP)',
-                  icone: '✍️',
-                  totalAulas: 3,
-                  totalQuestoes: 18,
-                  corBadge: AppColors.brandCobalt,
-                  aulas: [
-                    _aulaItem(
-                      numero: '01',
-                      titulo: 'Compreensão, Interpretação e Tipologia Textual AOCP',
-                      detalhes: '12 min • Síntese Didática • 10 questões',
-                      concluida: false,
-                      destaque: true,
-                      onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Interpretação de Texto AOCP'),
-                    ),
-                    _aulaItem(
-                      numero: '02',
-                      titulo: 'Acento Indicativo de Crase & Regência Verbal e Nominal',
-                      detalhes: '15 min • Síntese Didática • 15 questões',
-                      concluida: false,
-                      onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase e Regência para PM-PE', questoes: _questoesCrase),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-
-              // MÓDULO 2 PM-PE: NOÇÕES DE INFORMÁTICA
-              if (_deveExibirModulo('Noções de Informática')) ...[
-                _moduloCard(
-                  nome: 'Noções de Informática',
-                  icone: '💻',
-                  totalAulas: 2,
-                  totalQuestoes: 14,
-                  corBadge: const Color(0xFF0284C7),
-                  aulas: [
-                    _aulaItem(
-                      numero: '01',
-                      titulo: 'Segurança da Informação: Vírus, Ransomware, Phishing & Backup',
-                      detalhes: '14 min • Resumo com Casos Práticos • 12 questões',
-                      concluida: false,
-                      destaque: true,
-                      onTap: () => _abrirAula('Noções de Informática', 'Aula 01: Segurança da Informação e Ameaças'),
-                    ),
-                    _aulaItem(
-                      numero: '02',
-                      titulo: 'Sistemas Operacionais Windows 10/11 & Conceitos de Linux',
-                      detalhes: '10 min • Comandos e Atalhos • 10 questões',
-                      concluida: false,
-                      onTap: () => _abrirAula('Noções de Informática', 'Aula 02: Sistemas Operacionais'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-
-              // MÓDULO 3 PM-PE: HISTÓRIA DE PERNAMBUCO
-              if (_deveExibirModulo('História de Pernambuco')) ...[
-                _moduloCard(
-                  nome: 'História de Pernambuco',
-                  icone: '⚔️',
-                  totalAulas: 3,
-                  totalQuestoes: 15,
-                  corBadge: const Color(0xFF15803D),
-                  aulas: [
-                    _aulaItem(
-                      numero: '01',
-                      titulo: 'Invasões Holandesas & Governo de Maurício de Nassau (1637-1644)',
-                      detalhes: '14 min • Síntese Didática • 8 questões',
-                      concluida: true,
-                      onTap: () => _abrirAula('História de Pernambuco', 'Aula 01: Invasões Holandesas em PE', questoes: _questoesHistoriaPe),
-                    ),
-                    _aulaItem(
-                      numero: '02',
-                      titulo: 'Insurreição Pernambucana & Guerra dos Mascates (1710)',
-                      detalhes: '12 min • Síntese Didática • 10 questões',
-                      concluida: false,
-                      destaque: true,
-                      onTap: () => _abrirAula('História de Pernambuco', 'Aula 02: Insurreição e Mascates', questoes: _questoesHistoriaPe),
-                    ),
-                    _aulaItem(
-                      numero: '03',
-                      titulo: 'Revolução de 1817 & Confederação do Equador (1824)',
-                      detalhes: '15 min • Síntese Didática • 12 questões',
-                      concluida: false,
-                      onTap: () => _abrirAula('História de Pernambuco', 'Aula 03: Movimentos Revolucionários de PE', questoes: _questoesHistoriaPe),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-
-              // MÓDULO 4 PM-PE: RACIOCÍNIO LÓGICO MATEMÁTICO
-              if (_deveExibirModulo('Raciocínio Lógico')) ...[
-                _moduloCard(
-                  nome: 'Raciocínio Lógico Matemático',
-                  icone: '📐',
-                  totalAulas: 2,
-                  totalQuestoes: 12,
-                  corBadge: const Color(0xFF6366F1),
-                  aulas: [
-                    _aulaItem(
-                      numero: '01',
-                      titulo: 'Lógica Proposicional: Conectivos, Tabela-Verdade e Negações',
-                      detalhes: '14 min • Macetes Práticos • 12 questões',
-                      concluida: false,
-                      destaque: true,
-                      onTap: () => _abrirAula('RLM', 'Aula 01: Lógica Proposicional'),
-                    ),
-                    _aulaItem(
-                      numero: '02',
-                      titulo: 'Equivalências Lógicas & Leis de De Morgan',
-                      detalhes: '10 min • Fórmulas • 10 questões',
-                      concluida: false,
-                      onTap: () => _abrirAula('RLM', 'Aula 02: Equivalências e Negações'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-
-              // MÓDULO 5 PM-PE: DIREITO CONSTITUCIONAL
-              if (_deveExibirModulo('Direito Constitucional')) ...[
-                _moduloCard(
-                  nome: 'Direito Constitucional',
-                  icone: '🏛️',
-                  totalAulas: 2,
-                  totalQuestoes: 14,
-                  corBadge: const Color(0xFFB45309),
-                  aulas: [
-                    _aulaItem(
-                      numero: '01',
-                      titulo: 'Art. 5º da CF/88: Direitos e Garantias Individuais e Coletivos',
-                      detalhes: '16 min • Letra de Lei Explicada • 15 questões',
-                      concluida: false,
-                      destaque: true,
-                      onTap: () => _abrirAula('Direito Constitucional', 'Aula 01: Art. 5º da CF/88'),
-                    ),
-                    _aulaItem(
-                      numero: '02',
-                      titulo: 'Da Segurança Pública (Art. 144 da CF/88) & Atribuições da PM',
-                      detalhes: '12 min • Síntese Didática • 10 questões',
-                      concluida: false,
-                      onTap: () => _abrirAula('Direito Constitucional', 'Aula 02: Art. 144 - Segurança Pública'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-
-              // MÓDULO 6 PM-PE: DIREITOS HUMANOS E LEGISLAÇÃO
-              if (_deveExibirModulo('Direitos Humanos') || _deveExibirModulo('Legislação')) ...[
-                _moduloCard(
-                  nome: 'Direitos Humanos & Legislação da PMPE',
-                  icone: '⚖️',
-                  totalAulas: 2,
-                  totalQuestoes: 12,
-                  corBadge: const Color(0xFFDC2626),
-                  aulas: [
-                    _aulaItem(
-                      numero: '01',
-                      titulo: 'Declaração Universal dos DH (1948) & Pacto de San José',
-                      detalhes: '12 min • Princípios Fundamentais • 10 questões',
-                      concluida: false,
-                      onTap: () => _abrirAula('Direitos Humanos', 'Aula 01: DUDH e Pacto de San José'),
-                    ),
-                    _aulaItem(
-                      numero: '02',
-                      titulo: 'Estatuto dos Policiais Militares de PE (Lei nº 6.783/74) & Maria da Penha',
-                      detalhes: '15 min • Letra da Lei • 12 questões',
-                      concluida: false,
-                      destaque: true,
-                      onTap: () => _abrirAula('Legislação PMPE', 'Aula 02: Estatuto dos Militares de PE'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
+              // Renderiza todos os módulos com ordenação inteligente e marcação de dificuldade
+              ...modulosExibicao.map((modulo) {
+                final ehDificuldade = plano.isMateriaDificuldade(modulo.nome);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: _moduloCard(
+                    nome: modulo.nome,
+                    icone: modulo.icone,
+                    totalAulas: modulo.totalAulas,
+                    totalQuestoes: modulo.totalQuestoes,
+                    corBadge: modulo.corBadge,
+                    isDificuldade: ehDificuldade,
+                    aulas: modulo.aulas.map((aula) {
+                      return _aulaItem(
+                        numero: aula.numero,
+                        titulo: aula.titulo,
+                        detalhes: aula.detalhes,
+                        concluida: aula.concluida,
+                        destaque: aula.destaque,
+                        onTap: () => _abrirAula(modulo.nome, 'Aula ${aula.numero}: ${aula.titulo}', questoes: aula.questoes),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }),
             ] else ...[
-              // MÓDULOS PADRÃO PC-PE
+              // Fallback para PC-PE
               _moduloCard(
                 nome: 'Língua Portuguesa',
                 icone: '✍️',
                 totalAulas: 4,
                 totalQuestoes: 20,
                 corBadge: AppColors.brandCobalt,
+                isDificuldade: false,
                 aulas: [
                   _aulaItem(
                     numero: '01',
@@ -461,23 +943,6 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     concluida: false,
                     destaque: true,
                     onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase & Regência sem Mistério', questoes: _questoesCrase),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              _moduloCard(
-                nome: 'Noções de Direito Penal',
-                icone: '⚖️',
-                totalAulas: 2,
-                totalQuestoes: 12,
-                corBadge: const Color(0xFF15803D),
-                aulas: [
-                  _aulaItem(
-                    numero: '01',
-                    titulo: 'Aplicação da Lei Penal & Retroatividade Benéfica',
-                    detalhes: '12 min • Síntese Didática • 8 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('Direito Penal', 'Aula 01: Aplicação da Lei Penal'),
                   ),
                 ],
               ),
@@ -508,41 +973,75 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     required int totalAulas,
     required int totalQuestoes,
     required Color corBadge,
+    required bool isDificuldade,
     required List<Widget> aulas,
   }) {
     final isOpen = _moduloAberto[nome] ?? true;
 
     return TacticalCard(
       padding: EdgeInsets.zero,
+      borderColor: isDificuldade ? const Color(0xFFF97316) : null,
       child: Column(
         children: [
           InkWell(
             onTap: () => setState(() => _moduloAberto[nome] = !isOpen),
             child: Padding(
               padding: const EdgeInsets.all(14),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(icone, style: const TextStyle(fontSize: 22)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          nome,
-                          style: AppTypography.titleMedium.copyWith(fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '$totalAulas aulas • $totalQuestoes questões oficiais',
-                          style: AppTypography.caption.copyWith(fontSize: 11),
-                        ),
-                      ],
+                  if (isDificuldade) ...[
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF7ED),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: const Color(0xFFFDBA74)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text('⚠️', style: TextStyle(fontSize: 11)),
+                          SizedBox(width: 4),
+                          Text(
+                            'PRIORIDADE TÁTICA • SUA MAIOR DIFICULDADE (CARGA REFORÇADA)',
+                            style: TextStyle(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFFC2410C),
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Icon(
-                    isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    color: AppColors.textSecondary,
+                  ],
+                  Row(
+                    children: [
+                      Text(icone, style: const TextStyle(fontSize: 22)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              nome,
+                              style: AppTypography.titleMedium.copyWith(fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '$totalAulas aulas • $totalQuestoes questões oficiais AOCP',
+                              style: AppTypography.caption.copyWith(fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                        color: AppColors.textSecondary,
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -52,7 +52,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final isPmpe = nomeUpper.contains('MILITAR') || nomeUpper.contains('PMPE') || nomeUpper.contains('PM-PE');
     final isPppe = nomeUpper.contains('PENAL') || nomeUpper.contains('PPPE') || nomeUpper.contains('PP-PE');
     final String sigla = isPmpe ? 'PM-PE' : isPppe ? 'PP-PE' : 'PC-PE';
-    final cargoCurto = plano.cargoAlvo.split(' ').first;
 
     // Iniciais do Candidato para o avatar (ex: RL)
     final iniciais = widget.userName.trim().isNotEmpty
@@ -121,234 +120,195 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Barra de Perfil e Sequência de Guerra (Foguinho destacado e sem sobreposição com o logo)
+            // BANNER HEROICO APRIMORADO: Contagem Regressiva Oficial para a Prova da PM-PE (21/02/2027)
             Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.surfaceBorder),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1E3A8A),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        iniciais,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.userName,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          'Foco: $sigla $cargoCurto • ${plano.banca}',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF7ED),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFFFEDD5), width: 1.2),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Text('🔥', style: TextStyle(fontSize: 13)),
-                        SizedBox(width: 4),
-                        Text(
-                          '12 dias seguidos',
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF9A3412),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Banner de Contagem Regressiva para a Prova & Foco Militar
-            Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF0F172A), Color(0xFF1E3A8A)],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+                  colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF334155), width: 1.2),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    color: Colors.black.withValues(alpha: 0.18),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: AppColors.brandOrange,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text('⏳', style: TextStyle(fontSize: 14)),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isPmpe
-                              ? 'CONTAGEM REGRESSIVA: 144 DIAS PARA A PROVA DA PM-PE (21/02/2027)'
-                              : isPppe
-                                  ? 'CONTAGEM REGRESSIVA: 58 DIAS PARA A PROVA DA PP-PE'
-                                  : 'CONTAGEM REGRESSIVA: 45 DIAS PARA A PROVA DA PC-PE',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
+                  // Badges superiores: Concurso e Sequência de Guerra
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF16A34A),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.verified_rounded, color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              isPmpe ? 'EDITAL PUBLICADO • PM-PE' : 'CONCURSO ALVO • $sigla',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF7C2D12).withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFF97316).withValues(alpha: 0.5)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text('🔥', style: TextStyle(fontSize: 11)),
+                            SizedBox(width: 4),
+                            Text(
+                              '12 dias seguidos',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFFFEDD5),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Bloco de Contagem Regressiva Imponente
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandOrange,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.brandOrange.withValues(alpha: 0.35),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Text('⏳', style: TextStyle(fontSize: 22)),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isPmpe
+                                  ? 'CONTAGEM REGRESSIVA: 144 DIAS PARA A PROVA DA PM-PE (21/02/2027)'
+                                  : isPppe
+                                      ? 'CONTAGEM REGRESSIVA: 58 DIAS PARA A PROVA DA PP-PE'
+                                      : 'CONTAGEM REGRESSIVA: 45 DIAS PARA A PROVA DA PC-PE',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              isPmpe
+                                  ? 'Prova Oficial: 21 de Fevereiro de 2027 • 21 Semanas de Preparação'
+                                  : 'Meta diária: ${plano.horasPorDia}h líquidas de estudo.',
+                              style: const TextStyle(
+                                color: Color(0xFF94A3B8),
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+                  const Divider(color: Color(0xFF334155), height: 1),
+                  const SizedBox(height: 10),
+
+                  // Rodapé do Banner com Informações Oficiais e Botão de Ação Direto
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
                           isPmpe
-                              ? 'Edital publicado em 30/09 • Banca Instituto AOCP • Meta: ${plano.horasPorDia}h/dia (Semana 1 de 21).'
-                              : 'Mantenha o foco diário e a disciplina tática • Meta: ${plano.horasPorDia}h/dia rumo à vaga de ${plano.cargoAlvo}.',
+                              ? '1.250 Vagas Soldado • ${plano.banca} • R\$ 5.617,92'
+                              : 'Banca: ${plano.banca} • Foco total no certame',
                           style: const TextStyle(
                             color: Color(0xFFCBD5E1),
                             fontSize: 11,
+                            fontWeight: FontWeight.w600,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Card de Inscrição Oficial Homologada do Candidato (Responsivo sem vazar do quadro)
-            if (isPmpe)
-              Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFF86EFAC)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.verified_rounded, color: Color(0xFF16A34A), size: 18),
-                        const SizedBox(width: 6),
-                        const Expanded(
-                          child: Text(
-                            'INSCRIÇÃO HOMOLOGADA • Nº 2026-PMPE-08942',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF166534),
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFDCFCE7),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: const Color(0xFF86EFAC)),
-                          ),
-                          child: const Text(
-                            'OFICIAL',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF15803D),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Soldado Combatente da PMPE • 1.250 Vagas • Banca Instituto AOCP',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF15803D),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () {
+                      InkWell(
+                        onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(builder: (_) => const PlanejadorTaticoScreen()),
                           );
                         },
-                        icon: const Icon(Icons.calendar_month_rounded, size: 14, color: Color(0xFF166534)),
-                        label: const Text(
-                          'ACESSAR CRONOGRAMA DE 21 SEMANAS',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF166534),
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1E3A8A),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFF3B82F6)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Text(
+                                'VER CRONOGRAMA',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              SizedBox(width: 4),
+                              Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 12),
+                            ],
                           ),
                         ),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF86EFAC)),
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
+            ),
 
             // Cabeçalho da Página
             Wrap(

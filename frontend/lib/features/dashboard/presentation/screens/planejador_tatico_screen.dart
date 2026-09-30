@@ -59,6 +59,7 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
   final int _diasAteProva = 144;
   final int _semanasAteProva = 21;
   final Set<String> _turnosSelecionados = {'🌙 Noite'};
+  late Set<String> _materiasDificuldade;
   int _filtroFase = 0; // 0 = Todas, 1 = Fase 1, 2 = Fase 2, 3 = Fase 3, 4 = Fase 4
   bool _salvando = false;
 
@@ -69,6 +70,7 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
   void initState() {
     super.initState();
     _horasPorDia = PlanoEstudoState.instance.horasPorDia;
+    _materiasDificuldade = Set.from(PlanoEstudoState.instance.materiasDificuldade);
     _cronograma21Semanas = _gerar21SemanasOficiais();
   }
 
@@ -365,6 +367,7 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
 
     final plano = PlanoEstudoState.instance;
 
+    plano.setMateriasDificuldade(_materiasDificuldade);
     plano.atualizarPlano(
       concursoAlvo: plano.concursoAlvo,
       cargoAlvo: plano.cargoAlvo,
@@ -740,6 +743,143 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
                         },
                       );
                     }).toList(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // CARD 3.1: Mapeamento de Vulnerabilidades / Matérias de Maior Dificuldade
+            TacticalCard(
+              padding: const EdgeInsets.all(16),
+              borderColor: const Color(0xFFEA580C).withValues(alpha: 0.35),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF7ED),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFFFFEDD5)),
+                        ),
+                        child: const Text('🎯', style: TextStyle(fontSize: 16)),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Matérias de Maior Dificuldade',
+                              style: AppTypography.titleMedium.copyWith(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            Text(
+                              'Priorização Tática no Guia de Estudos e Simulados',
+                              style: AppTypography.caption.copyWith(
+                                color: const Color(0xFFC2410C),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Selecione as disciplinas em que você sente maior vulnerabilidade. O CRAVOU IA colocará essas matérias no topo do seu Guia de Estudos com selo de prioridade e reforço na carga de questões.',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 11.5,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Chips das 6 Matérias Oficiais da PMPE
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      'Raciocínio Lógico Matemático',
+                      'Direito Constitucional',
+                      'Língua Portuguesa',
+                      'História de Pernambuco',
+                      'Noções de Informática',
+                      'Direitos Humanos e Legislação',
+                    ].map((materia) {
+                      final isSelected = _materiasDificuldade.any((d) =>
+                          d.toLowerCase() == materia.toLowerCase() ||
+                          materia.toLowerCase().contains(d.toLowerCase()));
+                      return FilterChip(
+                        avatar: Text(
+                          isSelected ? '⚠️' : '📚',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        label: Text(
+                          materia,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: isSelected ? const Color(0xFF9A3412) : AppColors.textPrimary,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFFFFEDD5),
+                        backgroundColor: AppColors.surfaceElevated,
+                        checkmarkColor: const Color(0xFFEA580C),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: isSelected ? const Color(0xFFFB923C) : AppColors.surfaceBorder,
+                            width: isSelected ? 1.5 : 1,
+                          ),
+                        ),
+                        onSelected: (selected) {
+                          HapticFeedback.selectionClick();
+                          setState(() {
+                            if (selected) {
+                              _materiasDificuldade.add(materia);
+                            } else {
+                              _materiasDificuldade.removeWhere((d) =>
+                                  d.toLowerCase() == materia.toLowerCase() ||
+                                  materia.toLowerCase().contains(d.toLowerCase()));
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFBEB),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFFFDE68A)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, size: 14, color: Color(0xFFB45309)),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            '${_materiasDificuldade.length} matéria(s) prioritária(s) selecionada(s) para reforço intensivo.',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF92400E),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
