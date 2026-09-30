@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
+import '../../../../core/state/plano_estudo_state.dart';
 import '../../../cursos/presentation/screens/guia_estudos_screen.dart';
 
 /// Tela de Processamento de Edital e Geração de Cronograma Adaptativo com IA.
@@ -78,8 +79,45 @@ class _AdicionarEditalScreenState extends State<AdicionarEditalScreen> {
         final tamanhoMb = (file.size / (1024 * 1024)).toStringAsFixed(2);
         final tamanhoStr = file.size > 1024 * 1024 ? '$tamanhoMb MB' : '$tamanhoKb KB';
 
-        // Inteligência de Reconhecimento Estrutural do Edital por IA
-        final nomeLower = nome.toLowerCase();
+        // Extrai amostra de texto dos bytes do PDF para inspeção de cabeçalhos e termos oficiais
+        String textoBytes = '';
+        if (file.bytes != null && file.bytes!.isNotEmpty) {
+          try {
+            final sampleSize = file.bytes!.length > 131072 ? 131072 : file.bytes!.length;
+            final chars = file.bytes!.sublist(0, sampleSize).map((b) => (b >= 32 && b <= 126) ? String.fromCharCode(b) : ' ').join();
+            textoBytes = chars.toUpperCase();
+          } catch (_) {
+            textoBytes = '';
+          }
+        }
+
+        final nomeUpper = nome.toUpperCase();
+        final isMilitar = nomeUpper.contains('PMPE') ||
+            nomeUpper.contains('MILITAR') ||
+            nomeUpper.contains('SOLDADO') ||
+            nomeUpper.contains('PM-PE') ||
+            _concursoSelecionado.toUpperCase().contains('MILITAR') ||
+            _concursoSelecionado.toUpperCase().contains('PM-PE') ||
+            _concursoSelecionado.toUpperCase().contains('PMPE') ||
+            textoBytes.contains('MILITAR') ||
+            textoBytes.contains('PMPE') ||
+            textoBytes.contains('PM-PE') ||
+            textoBytes.contains('IAUPE') ||
+            textoBytes.contains('UPENET') ||
+            textoBytes.contains('SOLDADO');
+
+        final isPenal = nomeUpper.contains('PPPE') ||
+            nomeUpper.contains('PENAL') ||
+            nomeUpper.contains('SERES') ||
+            nomeUpper.contains('PP-PE') ||
+            _concursoSelecionado.toUpperCase().contains('PENAL') ||
+            _concursoSelecionado.toUpperCase().contains('PP-PE') ||
+            _concursoSelecionado.toUpperCase().contains('PPPE') ||
+            textoBytes.contains('PENAL') ||
+            textoBytes.contains('PPPE') ||
+            textoBytes.contains('SERES') ||
+            textoBytes.contains('PENITENCI');
+
         String certame = 'PC-PE (Polícia Civil de Pernambuco)';
         String cargo = 'Agente de Polícia';
         String banca = 'Cebraspe';
@@ -93,19 +131,19 @@ class _AdicionarEditalScreenState extends State<AdicionarEditalScreen> {
           'Legislação Especial & Direitos Humanos',
         ];
 
-        if (nomeLower.contains('pmpe') || nomeLower.contains('militar') || nomeLower.contains('soldado')) {
+        if (isMilitar) {
           certame = 'PM-PE (Polícia Militar de Pernambuco)';
           cargo = 'Soldado da Polícia Militar';
-          banca = 'Instituto AOCP / IAUPE';
+          banca = 'Instituto IAUPE / AOCP';
           questoes = 60;
           disciplinas = [
             'Língua Portuguesa',
             'História de Pernambuco',
             'Geografia de Pernambuco',
             'Matemática / Raciocínio Lógico',
-            'Noções de Direito Constitucional',
+            'Noções de Direito Constitucional & Legislação da PMPE',
           ];
-        } else if (nomeLower.contains('pppe') || nomeLower.contains('penal') || nomeLower.contains('seres')) {
+        } else if (isPenal) {
           certame = 'PP-PE (Polícia Penal de Pernambuco)';
           cargo = 'Policial Penal';
           banca = 'Cebraspe';
@@ -117,13 +155,13 @@ class _AdicionarEditalScreenState extends State<AdicionarEditalScreen> {
             'Noções de Direito Penal & Processual Penal',
             'Noções de Direito Administrativo',
           ];
-        } else if (nomeLower.contains('escriv')) {
+        } else if (nomeUpper.contains('ESCRIV') || textoBytes.contains('ESCRIVAO')) {
           cargo = 'Escrivão de Polícia Civil';
           disciplinas.add('Arquivologia & Redação Oficial');
-        } else if (nomeLower.contains('2016')) {
+        } else if (nomeUpper.contains('2016') || textoBytes.contains('2016')) {
           certame = 'PC-PE 2016 (Edital Anterior)';
           banca = 'Cebraspe (Cespe)';
-        } else if (nomeLower.contains('2023') || nomeLower.contains('2024')) {
+        } else if (nomeUpper.contains('2023') || nomeUpper.contains('2024') || textoBytes.contains('2023') || textoBytes.contains('2024')) {
           certame = 'PC-PE 2023/2024 (Edital Vigente)';
           banca = 'Cebraspe';
         }
@@ -651,16 +689,28 @@ class _AdicionarEditalScreenState extends State<AdicionarEditalScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
+                        PlanoEstudoState.instance.atualizarPlano(
+                          concursoAlvo: _certameDetectado,
+                          cargoAlvo: _cargoDetectado,
+                          banca: _bancaDetectada,
+                          nomeArquivo: _arquivoUploadNome,
+                          tamanhoArquivo: _arquivoTamanho,
+                          horasPorDia: _horasPorDia,
+                          semanasAteProva: _semanasAteProva,
+                          disciplinas: _disciplinasDoEdital,
+                        );
+
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Trilha Tática ativada! Suas metas diárias foram sincronizadas no Painel.'),
+                          SnackBar(
+                            content: Text('🎯 Trilha Tática de $_certameDetectado ativada! Suas metas diárias foram sincronizadas no Painel.'),
                             backgroundColor: AppColors.success,
+                            duration: const Duration(seconds: 4),
                           ),
                         );
                         Navigator.of(context).pop();
                       },
                       child: const Text(
-                        'ATIVAR CRONOGRAMA',
+                        'ATIVAR CRONOGRAMA NO MEU PAINEL',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
                       ),
                     ),

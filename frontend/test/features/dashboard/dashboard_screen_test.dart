@@ -26,7 +26,7 @@ void main() {
 
       // Valida saudação ao aluno
       expect(find.textContaining('Olá, Rudson'), findsOneWidget);
-      expect(find.textContaining('PC-PE (Agente)'), findsOneWidget);
+      expect(find.textContaining('PC-PE'), findsWidgets);
     });
 
     testWidgets('Renderiza Métricas de Desempenho e Saldo Líquido Cebraspe', (tester) async {
@@ -40,17 +40,20 @@ void main() {
       expect(find.text('LÍQUIDA (C-E)'), findsOneWidget);
     });
 
-    testWidgets('Renderiza Concursos de PE em Destaque e Navegação Inferior', (tester) async {
+    testWidgets('Renderiza Meta de Hoje, Concurso Alvo Único e Navegação Inferior', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pump();
 
-      // Concursos de PE
-      expect(find.text('PC-PE'), findsWidgets);
-      expect(find.text('PM-PE'), findsOneWidget);
-      expect(find.text('PP-PE'), findsOneWidget);
+      // Card Meta de Hoje
+      expect(find.textContaining('META DE HOJE'), findsOneWidget);
+
+      // Concurso Alvo Único (foco 100%, sem poluir com outros certames)
+      expect(find.text('SEU CONCURSO ALVO (FOCO 100%)'), findsOneWidget);
+      expect(find.text('SIMULADO DO ALVO'), findsOneWidget);
 
       // Navegação inferior
       expect(find.text('Meu Painel'), findsWidgets);
+      expect(find.text('Guia/Cursos'), findsOneWidget);
       expect(find.text('Questões'), findsOneWidget);
       expect(find.text('Simulado'), findsOneWidget);
     });

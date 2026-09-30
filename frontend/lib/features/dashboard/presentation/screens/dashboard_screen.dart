@@ -3,6 +3,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/widgets/tactical_owl_logo.dart';
+import '../../../../core/state/plano_estudo_state.dart';
 import '../../../questoes/presentation/screens/catalogo_questoes_screen.dart';
 import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
 import '../../../cursos/presentation/screens/guia_estudos_screen.dart';
@@ -27,10 +28,26 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String _filtroPeriodo = 'Hoje';
-  String _concursoSelecionado = 'PC-PE';
+
+  @override
+  void initState() {
+    super.initState();
+    PlanoEstudoState.instance.addListener(_onPlanoMudou);
+  }
+
+  @override
+  void dispose() {
+    PlanoEstudoState.instance.removeListener(_onPlanoMudou);
+    super.dispose();
+  }
+
+  void _onPlanoMudou() {
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final plano = PlanoEstudoState.instance;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -253,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     border: Border.all(color: AppColors.brandCobalt.withValues(alpha: 0.3)),
                                   ),
                                   child: Text(
-                                    widget.concursoAlvo,
+                                    '${plano.concursoAlvo.split('(').first.trim()} • ${plano.cargoAlvo}',
                                     style: const TextStyle(
                                       color: AppColors.brandCobalt,
                                       fontWeight: FontWeight.w700,
@@ -265,7 +282,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Fórmula Cebraspe oficial (Certo menos Errado).',
+                              'Banca ${plano.banca} • ${plano.horasPorDia}h/dia • ${plano.nomeArquivoEdital != null ? "Edital: ${plano.nomeArquivoEdital!}" : "Trilha Oficial Ativa"}',
                               style: AppTypography.bodySmall.copyWith(fontSize: 11),
                             ),
                           ],
@@ -473,7 +490,182 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const SizedBox(height: 16),
 
-            // SEÇÃO: CONCURSOS EM EMINÊNCIA (PERNAMBUCO)
+            // CARD DESTAQUE: META TÁTICA DE HOJE
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.brandOrange.withValues(alpha: 0.5), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandOrange.withValues(alpha: 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandOrange,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('🔥', style: TextStyle(fontSize: 12)),
+                            const SizedBox(width: 4),
+                            Text(
+                              'META DE HOJE • ${plano.metaDeHoje.diaSemana.toUpperCase()}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${plano.horasPorDia}h de foco diário',
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.brandNavy,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Seu cronograma inteligente para vencer o edital de ${plano.cargoAlvo}:',
+                    style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Matéria 1
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.surfaceBorder),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle_outline, color: AppColors.brandCobalt, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                plano.metaDeHoje.disciplina1,
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                plano.metaDeHoje.topico1,
+                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+
+                  // Matéria 2
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.surfaceBorder),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle_outline, color: AppColors.brandCobalt, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                plano.metaDeHoje.disciplina2,
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                plano.metaDeHoje.topico2,
+                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Botões de Ação da Meta
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const GuiaEstudosScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.school, size: 16),
+                          label: const Text('ESTUDAR NO GUIA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.brandCobalt,
+                            side: const BorderSide(color: AppColors.brandCobalt),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const CatalogoQuestoesScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.play_arrow, size: 16),
+                          label: Text(
+                            'RESOLVER ${plano.metaDeHoje.metaQuestoes} ITENS',
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.brandNavy,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                            elevation: 0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // SEÇÃO: CONCURSO ALVO ATIVO (FOCO 100% - APENAS O ESCOLHIDO PELO ALUNO)
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -481,77 +673,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
               runSpacing: 4,
               children: [
                 Text(
-                  'CONCURSOS ALVO (PERNAMBUCO)',
+                  'SEU CONCURSO ALVO (FOCO 100%)',
                   style: AppTypography.tagLabel.copyWith(
                     color: AppColors.textPrimary,
                     letterSpacing: 0.8,
                   ),
                 ),
-                Text(
-                  'Edital Iminente',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.brandOrange,
-                    fontWeight: FontWeight.bold,
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AdicionarEditalScreen()),
+                    );
+                  },
+                  child: const Text(
+                    'Trocar Concurso / Edital',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.brandCobalt,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
-            // Card PC-PE
-            _concursoCard(
-              sigla: 'PC-PE',
-              nome: 'Polícia Civil de Pernambuco',
-              detalhe: 'Agente & Escrivão • 60 Itens Cebraspe • 4h30min',
-              corBadge: AppColors.brandNavy,
-              ativo: _concursoSelecionado == 'PC-PE',
-              onTap: () => setState(() => _concursoSelecionado = 'PC-PE'),
-              onIniciarSimulado: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const SimuladoCockpitScreen(),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 8),
-
-            // Card PM-PE
-            _concursoCard(
-              sigla: 'PM-PE',
-              nome: 'Polícia Militar de Pernambuco',
-              detalhe: 'Soldado & Oficial da PM • Disciplinas Gerais & Específicas',
-              corBadge: const Color(0xFF15803D),
-              ativo: _concursoSelecionado == 'PM-PE',
-              onTap: () => setState(() => _concursoSelecionado = 'PM-PE'),
-              onIniciarSimulado: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const CatalogoQuestoesScreen(),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 8),
-
-            // Card PP-PE
-            _concursoCard(
-              sigla: 'PP-PE',
-              nome: 'Polícia Penal de Pernambuco',
-              detalhe: 'SERES-PE • Agente de Segurança Penitenciária',
-              corBadge: const Color(0xFFB45309),
-              ativo: _concursoSelecionado == 'PP-PE',
-              onTap: () => setState(() => _concursoSelecionado = 'PP-PE'),
-              onIniciarSimulado: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const CatalogoQuestoesScreen(),
-                  ),
-                );
-              },
-            ),
+            // Card Único Exclusivo do Concurso Alvo Ativo
+            _concursoCardUnico(context, plano),
 
             const SizedBox(height: 16),
 
@@ -734,95 +882,148 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _concursoCard({
-    required String sigla,
-    required String nome,
-    required String detalhe,
-    required Color corBadge,
-    required bool ativo,
-    required VoidCallback onTap,
-    required VoidCallback onIniciarSimulado,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: TacticalCard(
-        borderColor: ativo ? AppColors.brandOrange : AppColors.surfaceBorder,
-        backgroundColor: ativo ? AppColors.surface : AppColors.surface,
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: corBadge,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  sigla,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 11,
+
+
+  Widget _concursoCardUnico(BuildContext context, PlanoEstudoState plano) {
+    final nomeUpper = plano.concursoAlvo.toUpperCase();
+    final isPmpe = nomeUpper.contains('MILITAR') || nomeUpper.contains('PMPE') || nomeUpper.contains('PM-PE');
+    final isPppe = nomeUpper.contains('PENAL') || nomeUpper.contains('PPPE') || nomeUpper.contains('PP-PE');
+
+    final String sigla = isPmpe ? 'PM-PE' : isPppe ? 'PP-PE' : 'PC-PE';
+    final Color corBadge = isPmpe ? const Color(0xFF15803D) : isPppe ? const Color(0xFFB45309) : AppColors.brandNavy;
+    final String detalhe = '${plano.cargoAlvo} • Banca ${plano.banca} • ${plano.horasPorDia}h/dia';
+
+    return TacticalCard(
+      borderColor: AppColors.brandOrange,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: corBadge,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    sigla,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          nome,
-                          style: AppTypography.titleMedium.copyWith(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            plano.concursoAlvo,
+                            style: AppTypography.titleMedium.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      if (ativo) ...[
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: AppColors.brandOrange.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            'ATIVO',
+                            'SEU ALVO 100%',
                             style: AppTypography.tagLabel.copyWith(
                               fontSize: 9,
                               color: AppColors.brandOrange,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      detalhe,
+                      style: AppTypography.bodySmall.copyWith(fontSize: 11),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (plano.nomeArquivoEdital != null) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          const Icon(Icons.picture_as_pdf, color: AppColors.success, size: 12),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'Edital Ativo: ${plano.nomeArquivoEdital!} (${plano.tamanhoArquivoEdital ?? ""})',
+                              style: const TextStyle(fontSize: 10.5, color: AppColors.success, fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    detalhe,
-                    style: AppTypography.bodySmall.copyWith(fontSize: 11),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.play_circle_fill, color: AppColors.brandCobalt, size: 28),
-              tooltip: 'Iniciar Simulado',
-              onPressed: onIniciarSimulado,
-            ),
-          ],
-        ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Divider(height: 1, color: AppColors.surfaceBorder),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const AdicionarEditalScreen()),
+                  );
+                },
+                icon: const Icon(Icons.tune, size: 14, color: AppColors.brandCobalt),
+                label: const Text(
+                  'Trocar Concurso / Edital',
+                  style: TextStyle(fontSize: 11, color: AppColors.brandCobalt, fontWeight: FontWeight.bold),
+                ),
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandCobalt,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SimuladoCockpitScreen()),
+                  );
+                },
+                icon: const Icon(Icons.play_circle_fill, size: 16),
+                label: const Text(
+                  'SIMULADO DO ALVO',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
