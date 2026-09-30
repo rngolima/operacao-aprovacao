@@ -56,7 +56,7 @@ A banca adora colocar adjetivos para confundir com descritivo. Linha do tempo em
 
       // Valida Card do Professor CRAVOU AI no final da resposta certa
       expect(find.text('Professor CRAVOU AI'), findsOneWidget);
-      expect(find.text('TIRAR DÚVIDA / PEDIR MNEMÔNICO'), findsOneWidget);
+      expect(find.text('TIRAR DÚVIDA / OUVIR EM ÁUDIO 🔊'), findsOneWidget);
     });
 
     testWidgets('Exibe Ponto de Vulnerabilidade quando o aluno erra e dispara callback de revisão', (tester) async {
@@ -99,7 +99,7 @@ A banca adora colocar adjetivos para confundir com descritivo. Linha do tempo em
 
       // Valida Card do Professor CRAVOU AI no final da resposta errada
       expect(find.text('Professor CRAVOU AI'), findsOneWidget);
-      expect(find.text('DESVENDAR PEGADINHA COM O PROFESSOR'), findsOneWidget);
+      expect(find.text('OUVIR EXPLICAÇÃO DO PROFESSOR (ÁUDIO 🔊)'), findsOneWidget);
 
       // Clica para revisar
       final btnRevisar = find.text('PONTO DE VULNERABILIDADE DETECTADO');

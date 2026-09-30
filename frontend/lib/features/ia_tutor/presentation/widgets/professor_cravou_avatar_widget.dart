@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/tactical_owl_logo.dart';
 
-/// Widget de Avatar do Professor CRAVOU AI.
-/// Exibe a imagem oficial da Coruja Mentora Tática com óculos laranjas e farda.
-/// Possui fallback elegante para ícone vetorial estilizado e ponto pulsante de status online.
+/// Widget de Avatar Oficial do Professor CRAVOU AI.
+/// Renderiza exatamente o bonequinho mascote da nossa marca (TacticalOwlLogo)
+/// com capelo de formatura azul, óculos laranjas e farda tática.
 class ProfessorCravouAvatarWidget extends StatelessWidget {
   final double size;
   final bool showOnlineDot;
@@ -26,6 +27,7 @@ class ProfessorCravouAvatarWidget extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
+            color: const Color(0xFFF0F7FF),
             border: showBorder
                 ? Border.all(
                     color: AppColors.brandOrange,
@@ -34,17 +36,18 @@ class ProfessorCravouAvatarWidget extends StatelessWidget {
                 : null,
             boxShadow: [
               BoxShadow(
-                color: AppColors.brandNavy.withValues(alpha: 0.18),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
+                color: AppColors.brandNavy.withValues(alpha: 0.16),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
           child: ClipOval(
-            child: Image.asset(
-              'assets/images/professor_cravou_avatar.jpg',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => _buildFallbackVectorAvatar(),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: size * 0.05),
+                child: TacticalOwlLogo(size: size * 0.72),
+              ),
             ),
           ),
         ),
@@ -69,25 +72,6 @@ class ProfessorCravouAvatarWidget extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildFallbackVectorAvatar() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF1E3A8A), Color(0xFF1E293B)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Center(
-        child: Icon(
-          Icons.psychology_rounded,
-          color: AppColors.brandOrange,
-          size: size * 0.55,
-        ),
-      ),
     );
   }
 }

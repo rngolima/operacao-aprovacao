@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../models/ia_mensagem_model.dart';
+import '../../services/audio/professor_cravou_audio_service.dart';
 import '../../services/professor_cravou_service.dart';
 import 'professor_cravou_avatar_widget.dart';
 
 /// Modal interativo de Tira-Dúvidas e Mentoria com o Professor CRAVOU AI.
+/// Inclui suporte a explicação em áudio falada por voz humana em Português do Brasil!
 class ProfessorCravouChatModal extends StatefulWidget {
   final String enunciado;
   final String gabaritoOficial;
@@ -53,10 +55,12 @@ class ProfessorCravouChatModal extends StatefulWidget {
 
 class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
   final ProfessorCravouService _service = ProfessorCravouService();
+  final ProfessorCravouAudioService _audioService = ProfessorCravouAudioService();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<IAMensagemModel> _mensagens = [];
   bool _isLoading = false;
+  String? _tocandoMensagemId;
 
   @override
   void initState() {
@@ -66,8 +70,8 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
 
   void _adicionarMensagemBoasVindas() {
     final saudacao = widget.acertou
-        ? 'Fala, futuro Policial! 🦅 Você cravou a alternativa **${widget.gabaritoOficial}** com precisão! Quer que eu monte um mnemônico rápido ou destrinche algum detalhe para fixar de vez na memória?'
-        : 'Cabeça erguida, guerreiro! 🦅 Errar no treino é a melhor vacina para fechar a prova real. O gabarito é a letra **${widget.gabaritoOficial}**. O que você quer que eu te explique agora?';
+        ? 'Fala, futuro Policial! 🦅 Você cravou a alternativa **${widget.gabaritoOficial}** com precisão cirúrgica!\n\nSe preferir, pode até tocar no botão de áudio abaixo de qualquer mensagem minha para **me ouvir explicar em voz alta**, como numa mentoria presencial! Quer que eu te passe um mnemônico rápido ou analise alguma pegadinha?'
+        : 'Cabeça erguida, meu amigo! 🦅 Errar no treino é a melhor coisa para você chegar afiado e cravar no dia da prova da PC-PE. O gabarito é a letra **${widget.gabaritoOficial}**.\n\nToque no botão de áudio abaixo para me ouvir destrinchar ou me pergunte qualquer dúvida que tiver!';
 
     _mensagens.add(
       IAMensagemModel(
@@ -79,9 +83,45 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
     );
   }
 
+  void _toggleAudio(IAMensagemModel msg) {
+    if (_tocandoMensagemId == msg.id) {
+      _audioService.stop();
+      setState(() {
+        _tocandoMensagemId = null;
+      });
+    } else {
+      _audioService.stop();
+      setState(() {
+        _tocandoMensagemId = msg.id;
+      });
+      _audioService.speak(
+        msg.texto,
+        onStart: () {
+          if (mounted) {
+            setState(() {
+              _tocandoMensagemId = msg.id;
+            });
+          }
+        },
+        onDone: () {
+          if (mounted) {
+            setState(() {
+              _tocandoMensagemId = null;
+            });
+          }
+        },
+      );
+    }
+  }
+
   Future<void> _enviarPergunta(String pergunta) async {
     final texto = pergunta.trim();
     if (texto.isEmpty || _isLoading) return;
+
+    _audioService.stop();
+    setState(() {
+      _tocandoMensagemId = null;
+    });
 
     _textController.clear();
 
@@ -122,7 +162,7 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
           _mensagens.add(
             IAMensagemModel(
               id: 'err_${DateTime.now().millisecondsSinceEpoch}',
-              texto: 'Ops, tive uma oscilação na conexão com o banco de dados tático. Tente enviar sua pergunta novamente!',
+              texto: 'Ops, tive uma leve oscilação na conexão com a central tática. Tente enviar sua pergunta novamente!',
               isUser: false,
               timestamp: DateTime.now(),
             ),
@@ -148,6 +188,7 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
 
   @override
   void dispose() {
+    _audioService.stop();
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -185,7 +226,7 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
             ),
           ),
 
-          // Header do Professor CRAVOU AI
+          // Header do Professor CRAVOU AI com nosso bonequinho mascote
           _buildHeader(),
 
           const Divider(height: 1, color: AppColors.surfaceBorder),
@@ -248,13 +289,20 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                           width: 0.8,
                         ),
                       ),
-                      child: const Text(
-                        'IA MENTOR',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.brandOrange,
-                        ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('🔊', style: TextStyle(fontSize: 8)),
+                          SizedBox(width: 3),
+                          Text(
+                            'ÁUDIO + IA',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.brandOrange,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -262,8 +310,8 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                 const SizedBox(height: 2),
                 Text(
                   widget.assunto != null
-                      ? 'Especialista em ${widget.assunto} • Banca ${widget.banca ?? 'Cebraspe'}'
-                      : 'Mentor Pedagógico 24h para Concursos',
+                      ? 'Mentor em ${widget.assunto} • Banca ${widget.banca ?? 'Cebraspe'}'
+                      : 'Mentor Pedagógico 24h • Explicação em Áudio',
                   style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.textSecondary,
@@ -274,7 +322,10 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
           ),
           IconButton(
             icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              _audioService.stop();
+              Navigator.of(context).pop();
+            },
           ),
         ],
       ),
@@ -320,6 +371,7 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
 
   Widget _buildMensagemItem(IAMensagemModel msg) {
     final isUser = msg.isUser;
+    final isPlaying = _tocandoMensagemId == msg.id;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -328,40 +380,84 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
-            const ProfessorCravouAvatarWidget(size: 30, showOnlineDot: false),
+            const ProfessorCravouAvatarWidget(size: 32, showOnlineDot: false),
             const SizedBox(width: 8),
           ],
           Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isUser ? AppColors.brandCobalt : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(14),
-                  topRight: const Radius.circular(14),
-                  bottomLeft: Radius.circular(isUser ? 14 : 2),
-                  bottomRight: Radius.circular(isUser ? 2 : 14),
+            child: Column(
+              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isUser ? AppColors.brandCobalt : Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(14),
+                      topRight: const Radius.circular(14),
+                      bottomLeft: Radius.circular(isUser ? 14 : 2),
+                      bottomRight: Radius.circular(isUser ? 2 : 14),
+                    ),
+                    border: Border.all(
+                      color: isUser ? AppColors.brandCobalt : AppColors.surfaceBorder,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    msg.texto,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.48,
+                      color: isUser ? Colors.white : AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-                border: Border.all(
-                  color: isUser ? AppColors.brandCobalt : AppColors.surfaceBorder,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
+                // Botão de Áudio com a Voz do Professor CRAVOU
+                if (!isUser) ...[
+                  const SizedBox(height: 6),
+                  InkWell(
+                    onTap: () => _toggleAudio(msg),
+                    borderRadius: BorderRadius.circular(16),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isPlaying ? const Color(0xFFFEF3C7) : const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isPlaying ? AppColors.brandOrange : AppColors.brandCobalt.withValues(alpha: 0.25),
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isPlaying ? Icons.pause_circle_filled_rounded : Icons.volume_up_rounded,
+                            size: 15,
+                            color: isPlaying ? AppColors.brandOrange : AppColors.brandCobalt,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            isPlaying ? 'Pausar Áudio do Professor' : '🔊 Ouvir Explicação do Professor',
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.bold,
+                              color: isPlaying ? const Color(0xFF92400E) : AppColors.brandNavy,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-              ),
-              child: Text(
-                msg.texto,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  height: 1.45,
-                  color: isUser ? Colors.white : AppColors.textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              ],
             ),
           ),
           if (isUser) ...[
@@ -405,7 +501,7 @@ class _ProfessorCravouChatModalState extends State<ProfessorCravouChatModal> {
                 ),
                 SizedBox(width: 8),
                 Text(
-                  'Professor CRAVOU analisando a questão...',
+                  'Professor CRAVOU preparando sua explicação...',
                   style: TextStyle(
                     fontSize: 11.5,
                     color: AppColors.textSecondary,

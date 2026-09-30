@@ -41,6 +41,69 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script>
+    // Sintetizador de Áudio e Voz Humana do Professor CRAVOU AI
+    window.professorCravouVoice = {
+      speak: function(text, onStartCallback, onEndCallback) {
+        try {
+          if (!('speechSynthesis' in window)) {
+            console.warn('Speech synthesis not supported in this browser');
+            return false;
+          }
+          window.speechSynthesis.cancel();
+
+          // Limpa caracteres especiais, emojis e marcações markdown para fala natural e humana
+          var cleanText = text
+            .replace(/[\*\_#`>]/g, '')
+            .replace(/[🦉🦅👉💡🎯🔍⚖️⚡✨✓✗💬📢🔊⏸️]/g, '')
+            .replace(/https?:\/\/\S+/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+          var utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.lang = 'pt-BR';
+          utterance.rate = 1.02; // Cadência natural de professor
+          utterance.pitch = 0.98; // Tom professoral firme e acolhedor
+
+          // Busca voz brasileira natural
+          var voices = window.speechSynthesis.getVoices();
+          var ptVoice = voices.find(function(v) {
+            return v.lang === 'pt-BR' || v.lang === 'pt_BR' || v.lang.indexOf('pt') === 0;
+          });
+          if (ptVoice) {
+            utterance.voice = ptVoice;
+          }
+
+          utterance.onstart = function() {
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(true);
+          };
+          utterance.onend = function() {
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(false);
+          };
+          utterance.onerror = function() {
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(false);
+          };
+
+          window.speechSynthesis.speak(utterance);
+          return true;
+        } catch(e) {
+          console.error('Erro na sintese de voz:', e);
+          return false;
+        }
+      },
+      stop: function() {
+        try {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            if (window._cravouVoiceStateListener) window._cravouVoiceStateListener(false);
+          }
+        } catch(e) {}
+      },
+      isSpeaking: function() {
+        return ('speechSynthesis' in window) && window.speechSynthesis.speaking;
+      }
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -75,10 +75,10 @@ class ProfessorCravouCardWidget extends StatelessWidget {
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('⚡', style: TextStyle(fontSize: 8)),
-                              SizedBox(width: 2),
+                              Text('🔊', style: TextStyle(fontSize: 8)),
+                              SizedBox(width: 3),
                               Text(
-                                'MENTOR IA',
+                                'MENTOR COM ÁUDIO',
                                 style: TextStyle(
                                   fontSize: 8.5,
                                   fontWeight: FontWeight.w900,
@@ -93,8 +93,8 @@ class ProfessorCravouCardWidget extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       acertou
-                          ? 'Excelente disparo! Quer um mnemônico rápido para memorizar?'
-                          : 'Pegadinha clássica da banca! Quer que eu destrinche para você?',
+                          ? 'Excelente disparo! Toque para me ouvir explicar em áudio ou pedir um macete!'
+                          : 'Pegadinha clássica da banca! Toque para me ouvir destrinchar em áudio!',
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.textSecondary,
@@ -115,11 +115,11 @@ class ProfessorCravouCardWidget extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _abrirChat(context),
-                  icon: const Icon(Icons.forum_rounded, size: 15),
+                  icon: const Icon(Icons.volume_up_rounded, size: 16),
                   label: Text(
                     acertou
-                        ? 'TIRAR DÚVIDA / PEDIR MNEMÔNICO'
-                        : 'DESVENDAR PEGADINHA COM O PROFESSOR',
+                        ? 'TIRAR DÚVIDA / OUVIR EM ÁUDIO 🔊'
+                        : 'OUVIR EXPLICAÇÃO DO PROFESSOR (ÁUDIO 🔊)',
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
