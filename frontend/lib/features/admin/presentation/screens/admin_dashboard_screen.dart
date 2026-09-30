@@ -3,6 +3,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/widgets/tactical_owl_logo.dart';
+import '../../data/services/admin_content_service.dart';
 import 'upload_edital_screen.dart';
 import 'cadastrar_material_screen.dart';
 import 'gestao_usuarios_screen.dart';
@@ -23,6 +24,21 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AdminContentService.instance.addListener(_onServiceChanged);
+  }
+
+  @override
+  void dispose() {
+    AdminContentService.instance.removeListener(_onServiceChanged);
+    super.dispose();
+  }
+
+  void _onServiceChanged() {
+    if (mounted) setState(() {});
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -312,92 +328,159 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             const SizedBox(height: 8),
 
-            TacticalCard(
-              padding: const EdgeInsets.all(14),
-              borderColor: const Color(0xFF16A34A),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCFCE7),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.picture_as_pdf_rounded, color: Color(0xFF15803D), size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Edital Oficial PM-PE 2026/2027 (Soldado)',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ...AdminContentService.instance.editais.map((edital) {
+              final bool isAtivo = edital.status == 'PUBLICADO';
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: TacticalCard(
+                  padding: const EdgeInsets.all(14),
+                  borderColor: isAtivo ? const Color(0xFF16A34A) : AppColors.surfaceBorder,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isAtivo ? const Color(0xFFDCFCE7) : AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        Text(
-                          'Banca Instituto AOCP • 1.250 Vagas • 6 Disciplinas Ativas',
-                          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                        child: Icon(
+                          Icons.picture_as_pdf_rounded,
+                          color: isAtivo ? const Color(0xFF15803D) : AppColors.brandNavy,
+                          size: 24,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              edital.concurso,
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              'Banca ${edital.banca} • ${edital.vagas} • ${edital.disciplinas.length} Disciplinas • ${edital.nomeArquivo}',
+                              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isAtivo ? const Color(0xFF16A34A) : const Color(0xFFE2E8F0),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          edital.status,
+                          style: TextStyle(
+                            color: isAtivo ? Colors.white : const Color(0xFF475569),
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF16A34A),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'ATIVO',
-                      style: TextStyle(color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.w900),
-                    ),
+                ),
+              );
+            }),
+
+            const SizedBox(height: 18),
+
+            // SEÇÃO 5: MATERIAIS DE APRENDIZAGEM & QUESTÕES EM PRODUÇÃO
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'MATERIAIS & QUESTÕES ALIMENTADOS (PRODUÇÃO)',
+                  style: AppTypography.tagLabel.copyWith(color: AppColors.textPrimary, letterSpacing: 0.8),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const CadastrarMaterialScreen()),
+                    );
+                  },
+                  child: const Text(
+                    '+ Subir Mais',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.brandCobalt),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
-            TacticalCard(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceElevated,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.brandNavy, size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Edital Oficial PC-PE 2024 (Agente & Escrivão)',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+
+            ...AdminContentService.instance.materiais.take(5).map((mat) {
+              final bool isAula = mat.tipo == 'AULA_RESUMO';
+              final bool isPdf = mat.tipo == 'LEGISLACAO';
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: TacticalCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isAula
+                              ? AppColors.brandCobalt.withValues(alpha: 0.1)
+                              : isPdf
+                                  ? const Color(0xFFFEF2F2)
+                                  : const Color(0xFFF0FDF4),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        Text(
-                          'Banca Cebraspe • Material Completo Cadastrado',
-                          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                        child: Icon(
+                          isAula
+                              ? Icons.menu_book_rounded
+                              : isPdf
+                                  ? Icons.picture_as_pdf_rounded
+                                  : Icons.quiz_rounded,
+                          color: isAula
+                              ? AppColors.brandCobalt
+                              : isPdf
+                                  ? const Color(0xFFDC2626)
+                                  : const Color(0xFF16A34A),
+                          size: 20,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              mat.titulo,
+                              style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              '${mat.disciplina} • ${mat.autor} • ${mat.dataUpload}',
+                              style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: AppColors.surfaceBorder),
+                        ),
+                        child: Text(
+                          mat.tipo.replaceAll('_', ' '),
+                          style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE2E8F0),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'PUBLICADO',
-                      style: TextStyle(color: Color(0xFF475569), fontSize: 9.5, fontWeight: FontWeight.w900),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }),
 
             const SizedBox(height: 18),
 

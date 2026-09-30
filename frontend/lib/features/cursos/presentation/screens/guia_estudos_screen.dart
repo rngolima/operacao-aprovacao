@@ -3,6 +3,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/state/plano_estudo_state.dart';
+import '../../../admin/data/services/admin_content_service.dart';
 import '../../../questoes/data/models/questao_model.dart';
 import 'aula_detalhe_screen.dart';
 
@@ -14,6 +15,7 @@ class AulaGuiaItem {
   final bool concluida;
   final bool destaque;
   final List<QuestaoModel>? questoes;
+  final String? conteudoTeorico;
 
   const AulaGuiaItem({
     required this.numero,
@@ -22,6 +24,7 @@ class AulaGuiaItem {
     this.concluida = false,
     this.destaque = false,
     this.questoes,
+    this.conteudoTeorico,
   });
 }
 
@@ -73,11 +76,13 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     super.initState();
     _mostrarApenasFoco = widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty;
     PlanoEstudoState.instance.addListener(_onPlanoMudou);
+    AdminContentService.instance.addListener(_onPlanoMudou);
   }
 
   @override
   void dispose() {
     PlanoEstudoState.instance.removeListener(_onPlanoMudou);
+    AdminContentService.instance.removeListener(_onPlanoMudou);
     super.dispose();
   }
 
@@ -157,7 +162,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   // 6 DISCIPLINAS OFICIAIS • 10 QUESTÕES CADA • TOTAL 60 QUESTÕES
   // ========================================================================
   List<ModuloGuiaEstudo> _obterModulosPmpe() {
-    return [
+    final baseModulos = <ModuloGuiaEstudo>[
       ModuloGuiaEstudo(
         id: 'portugues',
         nome: 'Língua Portuguesa (Instituto AOCP)',
@@ -490,6 +495,45 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
         ],
       ),
     ];
+
+    // Mescla aulas e materiais inseridos pelo Administrador em tempo real
+    final customAulas = AdminContentService.instance.aulasCustomizadas;
+    if (customAulas.isNotEmpty) {
+      final List<ModuloGuiaEstudo> modulosAtualizados = [];
+      for (final mod in baseModulos) {
+        final aulasExtras = customAulas.where((a) {
+          final modLower = mod.nome.toLowerCase();
+          final discLower = a.disciplina.toLowerCase();
+          return modLower.contains(discLower) || discLower.contains(modLower);
+        }).map((a) {
+          return AulaGuiaItem(
+            numero: '${mod.aulas.length + 1}',
+            titulo: a.titulo,
+            detalhes: '${a.tempoLeitura} • Material Oficial Cravou',
+            concluida: false,
+            destaque: a.destaque,
+            conteudoTeorico: a.conteudoTeorico,
+          );
+        }).toList();
+
+        if (aulasExtras.isNotEmpty) {
+          modulosAtualizados.add(ModuloGuiaEstudo(
+            id: mod.id,
+            nome: mod.nome,
+            icone: mod.icone,
+            corBadge: mod.corBadge,
+            totalAulas: mod.totalAulas + aulasExtras.length,
+            totalQuestoes: mod.totalQuestoes,
+            aulas: [...mod.aulas, ...aulasExtras],
+          ));
+        } else {
+          modulosAtualizados.add(mod);
+        }
+      }
+      return modulosAtualizados;
+    }
+
+    return baseModulos;
   }
 
   void _abrirModalAjustarDificuldades() {
@@ -913,7 +957,12 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                         detalhes: aula.detalhes,
                         concluida: aula.concluida,
                         destaque: aula.destaque,
-                        onTap: () => _abrirAula(modulo.nome, 'Aula ${aula.numero}: ${aula.titulo}', questoes: aula.questoes),
+                        onTap: () => _abrirAula(
+                          modulo.nome,
+                          'Aula ${aula.numero}: ${aula.titulo}',
+                          questoes: aula.questoes,
+                          conteudoTeorico: aula.conteudoTeorico,
+                        ),
                       );
                     }).toList(),
                   ),
@@ -955,13 +1004,14 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
     );
   }
 
-  void _abrirAula(String disciplina, String titulo, {List<QuestaoModel>? questoes}) {
+  void _abrirAula(String disciplina, String titulo, {List<QuestaoModel>? questoes, String? conteudoTeorico}) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AulaDetalheScreen(
           disciplina: disciplina,
           tituloAula: titulo,
           questoesVinculadas: questoes ?? _questoesCrase,
+          conteudoTeorico: conteudoTeorico,
         ),
       ),
     );

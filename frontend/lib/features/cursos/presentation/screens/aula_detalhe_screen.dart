@@ -11,6 +11,7 @@ class AulaDetalheScreen extends StatefulWidget {
   final String tituloAula;
   final String tempoLeitura;
   final List<QuestaoModel> questoesVinculadas;
+  final String? conteudoTeorico;
 
   const AulaDetalheScreen({
     super.key,
@@ -18,6 +19,7 @@ class AulaDetalheScreen extends StatefulWidget {
     required this.tituloAula,
     this.tempoLeitura = '15 min de leitura',
     required this.questoesVinculadas,
+    this.conteudoTeorico,
   });
 
   @override
@@ -109,7 +111,7 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
-                              'ALTA RECORRÊNCIA CEBRASPE',
+                              'CONTEÚDO OFICIAL CRAVOU',
                               style: TextStyle(color: AppColors.brandOrange, fontWeight: FontWeight.w800, fontSize: 10),
                             ),
                           ),
@@ -119,12 +121,14 @@ class _AulaDetalheScreenState extends State<AulaDetalheScreen> with SingleTicker
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Síntese Tática: Crase & Regência Sem Mistério',
+                        widget.tituloAula,
                         style: AppTypography.headlineMedium.copyWith(fontSize: 16, fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'A crase representa a fusão de duas vogais idênticas (A + A). A banca Cebraspe adora testar trocas sutis de regência e palavras no plural sem artigo.',
+                        widget.conteudoTeorico != null && widget.conteudoTeorico!.isNotEmpty
+                            ? widget.conteudoTeorico!
+                            : 'A crase representa a fusão de duas vogais idênticas (A + A). A banca examinadora adora testar trocas sutis de regência e palavras no plural sem artigo.',
                         style: AppTypography.bodyMedium.copyWith(fontSize: 13, height: 1.5),
                       ),
                     ],

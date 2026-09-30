@@ -118,36 +118,60 @@ class QuestaoCardWidget extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // Botões de Opção [ CERTO ] e [ ERRADO ]
-          Row(
-            children: [
-              Expanded(
-                child: _OptionButton(
-                  label: '[ CERTO ]',
-                  isSelected: respostaSelecionada == 'CERTO',
-                  isCorrect: questao.gabaritoOficial == 'CERTO',
+          // Opções de Resposta: Múltipla Escolha (A-E) ou Certo/Errado (Cebraspe)
+          if (questao.alternativas != null && questao.alternativas!.isNotEmpty) ...[
+            ...questao.alternativas!.entries.map((entry) {
+              final letra = entry.key;
+              final texto = entry.value;
+              final isSelected = respostaSelecionada?.toUpperCase() == letra.toUpperCase();
+              final isCorrect = questao.gabaritoOficial.toUpperCase() == letra.toUpperCase();
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: _AlternativeItem(
+                  letra: letra,
+                  texto: texto,
+                  isSelected: isSelected,
+                  isCorrect: isCorrect,
                   gabaritoRevelado: gabaritoRevelado,
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    onResponder('CERTO');
+                    onResponder(letra);
                   },
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _OptionButton(
-                  label: '[ ERRADO ]',
-                  isSelected: respostaSelecionada == 'ERRADO',
-                  isCorrect: questao.gabaritoOficial == 'ERRADO',
-                  gabaritoRevelado: gabaritoRevelado,
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    onResponder('ERRADO');
-                  },
+              );
+            }),
+          ] else ...[
+            // Botões Padrão Cebraspe [ CERTO ] e [ ERRADO ]
+            Row(
+              children: [
+                Expanded(
+                  child: _OptionButton(
+                    label: '[ CERTO ]',
+                    isSelected: respostaSelecionada == 'CERTO',
+                    isCorrect: questao.gabaritoOficial == 'CERTO',
+                    gabaritoRevelado: gabaritoRevelado,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      onResponder('CERTO');
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: _OptionButton(
+                    label: '[ ERRADO ]',
+                    isSelected: respostaSelecionada == 'ERRADO',
+                    isCorrect: questao.gabaritoOficial == 'ERRADO',
+                    gabaritoRevelado: gabaritoRevelado,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      onResponder('ERRADO');
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
 
           // Gabarito Comentado e Resolução Didática (Revelado após responder)
           if (foiRespondida) ...[
@@ -334,3 +358,104 @@ class _OptionButton extends StatelessWidget {
     );
   }
 }
+
+class _AlternativeItem extends StatelessWidget {
+  final String letra;
+  final String texto;
+  final bool isSelected;
+  final bool isCorrect;
+  final bool gabaritoRevelado;
+  final VoidCallback onTap;
+
+  const _AlternativeItem({
+    required this.letra,
+    required this.texto,
+    required this.isSelected,
+    required this.isCorrect,
+    required this.gabaritoRevelado,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color backgroundColor = AppColors.surfaceElevated;
+    Color borderColor = AppColors.surfaceBorder;
+    Color badgeBg = AppColors.brandNavy.withValues(alpha: 0.1);
+    Color badgeColor = AppColors.brandNavy;
+    Widget? icon;
+
+    if (gabaritoRevelado) {
+      if (isCorrect) {
+        backgroundColor = const Color(0xFFECFDF5);
+        borderColor = const Color(0xFF10B981);
+        badgeBg = const Color(0xFF10B981);
+        badgeColor = Colors.white;
+        icon = const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 18);
+      } else if (isSelected && !isCorrect) {
+        backgroundColor = const Color(0xFFFEF2F2);
+        borderColor = const Color(0xFFEF4444);
+        badgeBg = const Color(0xFFEF4444);
+        badgeColor = Colors.white;
+        icon = const Icon(Icons.cancel_rounded, color: Color(0xFFEF4444), size: 18);
+      }
+    } else if (isSelected) {
+      backgroundColor = AppColors.brandCobalt.withValues(alpha: 0.08);
+      borderColor = AppColors.brandCobalt;
+      badgeBg = AppColors.brandCobalt;
+      badgeColor = Colors.white;
+    }
+
+    return GestureDetector(
+      onTap: gabaritoRevelado ? null : onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: borderColor, width: 1.5),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: badgeBg,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  letra,
+                  style: TextStyle(
+                    color: badgeColor,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                texto,
+                style: const TextStyle(
+                  fontSize: 13,
+                  height: 1.45,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            if (icon != null) ...[
+              const SizedBox(width: 8),
+              icon,
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+

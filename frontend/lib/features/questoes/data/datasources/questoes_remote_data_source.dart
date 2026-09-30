@@ -11,6 +11,16 @@ class QuestoesRemoteDataSource {
 
   QuestoesRemoteDataSource({required this.apiClient});
 
+  /// Lista em memória de questões inseridas pelo Administrador (QG CRAVOU)
+  static final List<QuestaoModel> _questoesCustomizadas = [];
+
+  static void adicionarQuestaoCustomizada(QuestaoModel questao) {
+    _questoesCustomizadas.removeWhere((q) => q.id == questao.id);
+    _questoesCustomizadas.insert(0, questao);
+  }
+
+  static List<QuestaoModel> get questoesCustomizadas => List.unmodifiable(_questoesCustomizadas);
+
   /// Busca lista paginada de questoes com filtros
   Future<List<QuestaoModel>> getQuestoes(FiltroQuestoes filtro) async {
     try {
@@ -252,7 +262,7 @@ class QuestoesRemoteDataSource {
       ),
     ];
 
-    var filtradas = todas;
+    var filtradas = [..._questoesCustomizadas, ...todas];
 
     if (filtro.disciplina != null && filtro.disciplina!.isNotEmpty && filtro.disciplina != 'Todas') {
       filtradas = filtradas.where((q) => q.disciplina == filtro.disciplina).toList();

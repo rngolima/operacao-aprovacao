@@ -9,9 +9,10 @@ class QuestaoModel {
   final String disciplina;
   final String assunto;
   final String enunciado;
-  final String gabaritoOficial; // 'CERTO' ou 'ERRADO'
+  final String gabaritoOficial; // 'CERTO', 'ERRADO' ou 'A', 'B', 'C', 'D', 'E'
   final String comentarioDidatico;
   final bool anulada;
+  final Map<String, String>? alternativas;
 
   const QuestaoModel({
     required this.id,
@@ -25,6 +26,7 @@ class QuestaoModel {
     required this.gabaritoOficial,
     required this.comentarioDidatico,
     this.anulada = false,
+    this.alternativas,
   });
 
   factory QuestaoModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,9 @@ class QuestaoModel {
       gabaritoOficial: json['gabaritoOficial'] as String? ?? 'CERTO',
       comentarioDidatico: json['comentarioDidatico'] as String? ?? '',
       anulada: json['anulada'] as bool? ?? false,
+      alternativas: json['alternativas'] != null
+          ? Map<String, String>.from(json['alternativas'] as Map)
+          : null,
     );
   }
 
@@ -55,5 +60,6 @@ class QuestaoModel {
         'gabaritoOficial': gabaritoOficial,
         'comentarioDidatico': comentarioDidatico,
         'anulada': anulada,
+        if (alternativas != null) 'alternativas': alternativas,
       };
 }
