@@ -8,7 +8,7 @@ import '../../../questoes/presentation/screens/catalogo_questoes_screen.dart';
 import '../../../simulado/presentation/screens/simulado_cockpit_screen.dart';
 import '../../../cursos/presentation/screens/guia_estudos_screen.dart';
 import '../../../monetizacao/presentation/widgets/plano_pro_modal.dart';
-import 'adicionar_edital_screen.dart';
+import 'planejador_tatico_screen.dart';
 
 /// Tela Principal do Aluno: "Meu Painel" (Dashboard de Alta Performance inspirado no QConcursos).
 /// Apresenta métricas diárias, saldo líquido Cebraspe (C - E), atalho para simulados e certames de PE.
@@ -279,12 +279,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => const AdicionarEditalScreen(),
+                        builder: (_) => const PlanejadorTaticoScreen(),
                       ),
                     );
                   },
-                  icon: const Icon(Icons.add_circle_outline, size: 16),
-                  label: const Text('Adicionar Edital'),
+                  icon: const Icon(Icons.calendar_month_rounded, size: 16),
+                  label: const Text('Planejamento de Estudos'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.brandNavy,
                     foregroundColor: Colors.white,
@@ -806,14 +806,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     letterSpacing: 0.8,
                   ),
                 ),
-                TextButton(
+                TextButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const AdicionarEditalScreen()),
+                      MaterialPageRoute(builder: (_) => const PlanejadorTaticoScreen()),
                     );
                   },
-                  child: const Text(
-                    'Trocar Concurso / Edital',
+                  icon: const Icon(Icons.tune_rounded, size: 14, color: AppColors.brandCobalt),
+                  label: const Text(
+                    'Ajustar Cronograma',
                     style: TextStyle(
                       fontSize: 11,
                       color: AppColors.brandCobalt,
@@ -1124,12 +1125,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               TextButton.icon(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AdicionarEditalScreen()),
+                    MaterialPageRoute(builder: (_) => const PlanejadorTaticoScreen()),
                   );
                 },
                 icon: const Icon(Icons.tune, size: 14, color: AppColors.brandCobalt),
                 label: const Text(
-                  'Trocar Concurso / Edital',
+                  'Ajustar Planejador Tático',
                   style: TextStyle(fontSize: 11, color: AppColors.brandCobalt, fontWeight: FontWeight.bold),
                 ),
               ),

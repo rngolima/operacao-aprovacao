@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:operacao_aprovacao_app/core/widgets/tactical_owl_logo.dart';
 import 'package:operacao_aprovacao_app/core/state/plano_estudo_state.dart';
 import 'package:operacao_aprovacao_app/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:operacao_aprovacao_app/features/dashboard/presentation/screens/planejador_tatico_screen.dart';
 
 void main() {
   Widget createWidgetUnderTest({
@@ -51,12 +52,52 @@ void main() {
       expect(find.text('Rudson Lima'), findsOneWidget);
       expect(find.text('Foco: PM-PE Soldado'), findsOneWidget);
 
-      // Botão "Adicionar Edital" sem o sufixo "(IA)"
-      expect(find.text('Adicionar Edital'), findsOneWidget);
+      // Botão "Planejamento de Estudos" substitui "Adicionar Edital"
+      expect(find.text('Planejamento de Estudos'), findsOneWidget);
+      expect(find.text('Adicionar Edital'), findsNothing);
       expect(find.text('Adicionar Edital (IA)'), findsNothing);
 
       // Banner de Contagem Regressiva para a Prova da PM-PE
       expect(find.textContaining('CONTAGEM REGRESSIVA: 68 DIAS PARA A PROVA DA PM-PE'), findsOneWidget);
+    });
+
+    testWidgets('Navega para PlanejadorTaticoScreen com foco estrito na PM-PE e rigor do edital', (tester) async {
+      tester.view.physicalSize = const Size(800, 1400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pump();
+
+      // Clica em Planejamento de Estudos
+      final btnPlanejamento = find.text('Planejamento de Estudos');
+      await tester.ensureVisible(btnPlanejamento);
+      await tester.tap(btnPlanejamento);
+      await tester.pumpAndSettle();
+
+      // Valida elementos do Planejador Tático
+      expect(find.byType(PlanejadorTaticoScreen), findsOneWidget);
+      expect(find.text('Planejamento de Estudos'), findsWidgets);
+      expect(find.text('CRONOGRAMA RIGOROSO DO EDITAL DA PMPE'), findsOneWidget);
+      expect(find.text('Sua Disponibilidade Diária de Estudos'), findsOneWidget);
+      expect(find.text('As 4 Fases do Seu Cronograma de Guerra'), findsOneWidget);
+      expect(find.text('68 dias p/ a prova'), findsOneWidget);
+
+      // Seleciona 4 horas/dia
+      await tester.tap(find.text('4 horas/dia'));
+      await tester.pump();
+
+      // Salva e atualiza
+      final btnSalvar = find.text('SALVAR E ATUALIZAR MEU CRONOGRAMA');
+      await tester.ensureVisible(btnSalvar);
+      await tester.tap(btnSalvar);
+      await tester.pumpAndSettle();
+
+      // Volta ao Painel com 4h/dia atualizadas
+      expect(PlanoEstudoState.instance.horasPorDia, equals(4));
     });
 
     testWidgets('Renderiza Métricas de Desempenho focadas na PM-PE', (tester) async {
