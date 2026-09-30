@@ -15,10 +15,14 @@ import '../widgets/questao_card_widget.dart';
 /// Tela do Catalogo de Questoes Cebraspe e Modo Treino Avulso do CRAVOU.
 class CatalogoQuestoesScreen extends StatefulWidget {
   final QuestoesController? controller;
+  final String? disciplinaFoco;
+  final String? temaFoco;
 
   const CatalogoQuestoesScreen({
     super.key,
     this.controller,
+    this.disciplinaFoco,
+    this.temaFoco,
   });
 
   @override
@@ -45,10 +49,23 @@ class _CatalogoQuestoesScreenState extends State<CatalogoQuestoesScreen> {
       _internalController = true;
     }
 
+    if (widget.temaFoco != null && widget.temaFoco!.isNotEmpty) {
+      _searchController.text = widget.temaFoco!;
+    }
+
     if (_controller.questoes.isEmpty && !_controller.isLoading) {
       _controller.inicializar();
     }
     _controller.addListener(_onControllerUpdate);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.temaFoco != null && widget.temaFoco!.isNotEmpty) {
+        _controller.buscar(widget.temaFoco!);
+      }
+      if (widget.disciplinaFoco != null && widget.disciplinaFoco!.isNotEmpty) {
+        _controller.selecionarDisciplina(widget.disciplinaFoco!);
+      }
+    });
   }
 
   @override
@@ -149,6 +166,57 @@ class _CatalogoQuestoesScreenState extends State<CatalogoQuestoesScreen> {
               ],
             ),
           ),
+
+          // Banner de Modo Foco nas Questões do Dia
+          if (widget.disciplinaFoco != null || widget.temaFoco != null)
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFBFDBFE)),
+              ),
+              child: Row(
+                children: [
+                  const Text('🎯', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'QUESTÕES DO DIA (META DE HOJE)',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF1E3A8A),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        Text(
+                          'Foco exclusivo em ${widget.disciplinaFoco ?? "disciplinas do dia"}${widget.temaFoco != null ? " • ${widget.temaFoco!}" : ""}.',
+                          style: const TextStyle(fontSize: 10, color: Color(0xFF2563EB)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _searchController.clear();
+                      _controller.buscar('');
+                      _controller.selecionarDisciplina('Todas');
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text('VER TODAS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A))),
+                  ),
+                ],
+              ),
+            ),
 
           // Campo de Busca Textual
           Padding(

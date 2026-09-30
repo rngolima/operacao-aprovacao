@@ -10,10 +10,12 @@ import 'aula_detalhe_screen.dart';
 /// Exibe a trilha por disciplinas do edital com aulas em síntese didática e questões práticas.
 class GuiaEstudosScreen extends StatefulWidget {
   final String? concursoNome;
+  final List<String>? disciplinasFoco;
 
   const GuiaEstudosScreen({
     super.key,
     this.concursoNome,
+    this.disciplinasFoco,
   });
 
   @override
@@ -22,6 +24,24 @@ class GuiaEstudosScreen extends StatefulWidget {
 
 class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   final Map<String, bool> _moduloAberto = {};
+  bool _mostrarApenasFoco = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _mostrarApenasFoco = widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty;
+  }
+
+  bool _deveExibirModulo(String nomeModulo) {
+    if (!_mostrarApenasFoco || widget.disciplinasFoco == null || widget.disciplinasFoco!.isEmpty) {
+      return true;
+    }
+    final modLower = nomeModulo.toLowerCase();
+    return widget.disciplinasFoco!.any((foco) {
+      final fLower = foco.toLowerCase();
+      return modLower.contains(fLower) || fLower.contains(modLower);
+    });
+  }
 
   // Mock de Questões Didáticas Vinculadas para a Aula de Crase
   final List<QuestaoModel> _questoesCrase = const [
@@ -174,9 +194,61 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
 
             const SizedBox(height: 18),
 
+            // Banner de Modo Foco (Meta de Hoje)
+            if (widget.disciplinasFoco != null && widget.disciplinasFoco!.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFBEB),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFDE68A)),
+                ),
+                child: Row(
+                  children: [
+                    const Text('🎯', style: TextStyle(fontSize: 18)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'MODO FOCO • METAS DO DIA',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF92400E),
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                          Text(
+                            _mostrarApenasFoco
+                                ? 'Exibindo apenas as disciplinas do seu treino de hoje.'
+                                : 'Exibindo todas as disciplinas do edital completo da PM-PE.',
+                            style: const TextStyle(fontSize: 10.5, color: Color(0xFFB45309)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => setState(() => _mostrarApenasFoco = !_mostrarApenasFoco),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        _mostrarApenasFoco ? 'VER TODAS' : 'SÓ DO DIA',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF92400E)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             // Título da Seção de Disciplinas
             Text(
-              'DISCIPLINAS DO EDITAL OFICIAL',
+              _mostrarApenasFoco ? 'DISCIPLINAS DO DIA (FOCO 100%)' : 'DISCIPLINAS DO EDITAL OFICIAL',
               style: AppTypography.tagLabel.copyWith(
                 color: AppColors.textPrimary,
                 letterSpacing: 0.8,
@@ -186,120 +258,186 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
             const SizedBox(height: 8),
 
             if (isPmpe) ...[
-              // MÓDULO 1 PM-PE: HISTÓRIA DE PERNAMBUCO
-              _moduloCard(
-                nome: 'História de Pernambuco',
-                icone: '⚔️',
-                totalAulas: 3,
-                totalQuestoes: 15,
-                corBadge: const Color(0xFF15803D),
-                aulas: [
-                  _aulaItem(
-                    numero: '01',
-                    titulo: 'Invasões Holandesas & Governo de Maurício de Nassau',
-                    detalhes: '14 min • Síntese Didática • 8 questões IAUPE',
-                    concluida: true,
-                    onTap: () => _abrirAula('História de Pernambuco', 'Aula 01: Invasões Holandesas em PE', questoes: _questoesHistoriaPe),
-                  ),
-                  _aulaItem(
-                    numero: '02',
-                    titulo: 'Insurreição Pernambucana & Batalha dos Guararapes (Origem do Exército)',
-                    detalhes: '12 min • Síntese Didática • 10 questões',
-                    concluida: false,
-                    destaque: true,
-                    onTap: () => _abrirAula('História de Pernambuco', 'Aula 02: Insurreição e Batalha dos Guararapes', questoes: _questoesHistoriaPe),
-                  ),
-                  _aulaItem(
-                    numero: '03',
-                    titulo: 'Revolução Pernambucana de 1817 & Confederação do Equador (1824)',
-                    detalhes: '15 min • Síntese Didática • 12 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('História de Pernambuco', 'Aula 03: Movimentos Revolucionários de PE', questoes: _questoesHistoriaPe),
-                  ),
-                ],
-              ),
+              // MÓDULO 1 PM-PE: LÍNGUA PORTUGUESA (AOCP)
+              if (_deveExibirModulo('Língua Portuguesa')) ...[
+                _moduloCard(
+                  nome: 'Língua Portuguesa (Instituto AOCP)',
+                  icone: '✍️',
+                  totalAulas: 3,
+                  totalQuestoes: 18,
+                  corBadge: AppColors.brandCobalt,
+                  aulas: [
+                    _aulaItem(
+                      numero: '01',
+                      titulo: 'Compreensão, Interpretação e Tipologia Textual AOCP',
+                      detalhes: '12 min • Síntese Didática • 10 questões',
+                      concluida: false,
+                      destaque: true,
+                      onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Interpretação de Texto AOCP'),
+                    ),
+                    _aulaItem(
+                      numero: '02',
+                      titulo: 'Acento Indicativo de Crase & Regência Verbal e Nominal',
+                      detalhes: '15 min • Síntese Didática • 15 questões',
+                      concluida: false,
+                      onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase e Regência para PM-PE', questoes: _questoesCrase),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
 
-              const SizedBox(height: 10),
+              // MÓDULO 2 PM-PE: NOÇÕES DE INFORMÁTICA
+              if (_deveExibirModulo('Noções de Informática')) ...[
+                _moduloCard(
+                  nome: 'Noções de Informática',
+                  icone: '💻',
+                  totalAulas: 2,
+                  totalQuestoes: 14,
+                  corBadge: const Color(0xFF0284C7),
+                  aulas: [
+                    _aulaItem(
+                      numero: '01',
+                      titulo: 'Segurança da Informação: Vírus, Ransomware, Phishing & Backup',
+                      detalhes: '14 min • Resumo com Casos Práticos • 12 questões',
+                      concluida: false,
+                      destaque: true,
+                      onTap: () => _abrirAula('Noções de Informática', 'Aula 01: Segurança da Informação e Ameaças'),
+                    ),
+                    _aulaItem(
+                      numero: '02',
+                      titulo: 'Sistemas Operacionais Windows 10/11 & Conceitos de Linux',
+                      detalhes: '10 min • Comandos e Atalhos • 10 questões',
+                      concluida: false,
+                      onTap: () => _abrirAula('Noções de Informática', 'Aula 02: Sistemas Operacionais'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
 
-              // MÓDULO 2 PM-PE: GEOGRAFIA DE PERNAMBUCO
-              _moduloCard(
-                nome: 'Geografia de Pernambuco',
-                icone: '🗺️',
-                totalAulas: 2,
-                totalQuestoes: 12,
-                corBadge: const Color(0xFFD97706),
-                aulas: [
-                  _aulaItem(
-                    numero: '01',
-                    titulo: 'Quadro Físico: Relevo, Clima e Vegetação (Zona da Mata, Agreste e Sertão)',
-                    detalhes: '12 min • Síntese Didática • 10 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('Geografia de Pernambuco', 'Aula 01: Mesorregiões e Relevo de PE'),
-                  ),
-                  _aulaItem(
-                    numero: '02',
-                    titulo: 'Bacias Hidrográficas (Rio São Francisco e Transposição) & Economia',
-                    detalhes: '14 min • Síntese Didática • 10 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('Geografia de Pernambuco', 'Aula 02: Hidrografia e Polos Econômicos de PE'),
-                  ),
-                ],
-              ),
+              // MÓDULO 3 PM-PE: HISTÓRIA DE PERNAMBUCO
+              if (_deveExibirModulo('História de Pernambuco')) ...[
+                _moduloCard(
+                  nome: 'História de Pernambuco',
+                  icone: '⚔️',
+                  totalAulas: 3,
+                  totalQuestoes: 15,
+                  corBadge: const Color(0xFF15803D),
+                  aulas: [
+                    _aulaItem(
+                      numero: '01',
+                      titulo: 'Invasões Holandesas & Governo de Maurício de Nassau (1637-1644)',
+                      detalhes: '14 min • Síntese Didática • 8 questões',
+                      concluida: true,
+                      onTap: () => _abrirAula('História de Pernambuco', 'Aula 01: Invasões Holandesas em PE', questoes: _questoesHistoriaPe),
+                    ),
+                    _aulaItem(
+                      numero: '02',
+                      titulo: 'Insurreição Pernambucana & Guerra dos Mascates (1710)',
+                      detalhes: '12 min • Síntese Didática • 10 questões',
+                      concluida: false,
+                      destaque: true,
+                      onTap: () => _abrirAula('História de Pernambuco', 'Aula 02: Insurreição e Mascates', questoes: _questoesHistoriaPe),
+                    ),
+                    _aulaItem(
+                      numero: '03',
+                      titulo: 'Revolução de 1817 & Confederação do Equador (1824)',
+                      detalhes: '15 min • Síntese Didática • 12 questões',
+                      concluida: false,
+                      onTap: () => _abrirAula('História de Pernambuco', 'Aula 03: Movimentos Revolucionários de PE', questoes: _questoesHistoriaPe),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
 
-              const SizedBox(height: 10),
+              // MÓDULO 4 PM-PE: RACIOCÍNIO LÓGICO MATEMÁTICO
+              if (_deveExibirModulo('Raciocínio Lógico')) ...[
+                _moduloCard(
+                  nome: 'Raciocínio Lógico Matemático',
+                  icone: '📐',
+                  totalAulas: 2,
+                  totalQuestoes: 12,
+                  corBadge: const Color(0xFF6366F1),
+                  aulas: [
+                    _aulaItem(
+                      numero: '01',
+                      titulo: 'Lógica Proposicional: Conectivos, Tabela-Verdade e Negações',
+                      detalhes: '14 min • Macetes Práticos • 12 questões',
+                      concluida: false,
+                      destaque: true,
+                      onTap: () => _abrirAula('RLM', 'Aula 01: Lógica Proposicional'),
+                    ),
+                    _aulaItem(
+                      numero: '02',
+                      titulo: 'Equivalências Lógicas & Leis de De Morgan',
+                      detalhes: '10 min • Fórmulas • 10 questões',
+                      concluida: false,
+                      onTap: () => _abrirAula('RLM', 'Aula 02: Equivalências e Negações'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
 
-              // MÓDULO 3 PM-PE: LÍNGUA PORTUGUESA (IAUPE)
-              _moduloCard(
-                nome: 'Língua Portuguesa (Foco IAUPE)',
-                icone: '✍️',
-                totalAulas: 3,
-                totalQuestoes: 18,
-                corBadge: AppColors.brandCobalt,
-                aulas: [
-                  _aulaItem(
-                    numero: '01',
-                    titulo: 'Compreensão e Interpretação Textual na Banca IAUPE',
-                    detalhes: '10 min • Síntese Didática • 10 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 01: Interpretação de Texto IAUPE'),
-                  ),
-                  _aulaItem(
-                    numero: '02',
-                    titulo: 'Acento Indicativo de Crase & Regência Verbal',
-                    detalhes: '15 min • Síntese Didática • 15 questões',
-                    concluida: false,
-                    destaque: true,
-                    onTap: () => _abrirAula('Língua Portuguesa', 'Aula 02: Crase e Regência para PM-PE', questoes: _questoesCrase),
-                  ),
-                ],
-              ),
+              // MÓDULO 5 PM-PE: DIREITO CONSTITUCIONAL
+              if (_deveExibirModulo('Direito Constitucional')) ...[
+                _moduloCard(
+                  nome: 'Direito Constitucional',
+                  icone: '🏛️',
+                  totalAulas: 2,
+                  totalQuestoes: 14,
+                  corBadge: const Color(0xFFB45309),
+                  aulas: [
+                    _aulaItem(
+                      numero: '01',
+                      titulo: 'Art. 5º da CF/88: Direitos e Garantias Individuais e Coletivos',
+                      detalhes: '16 min • Letra de Lei Explicada • 15 questões',
+                      concluida: false,
+                      destaque: true,
+                      onTap: () => _abrirAula('Direito Constitucional', 'Aula 01: Art. 5º da CF/88'),
+                    ),
+                    _aulaItem(
+                      numero: '02',
+                      titulo: 'Da Segurança Pública (Art. 144 da CF/88) & Atribuições da PM',
+                      detalhes: '12 min • Síntese Didática • 10 questões',
+                      concluida: false,
+                      onTap: () => _abrirAula('Direito Constitucional', 'Aula 02: Art. 144 - Segurança Pública'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
 
-              const SizedBox(height: 10),
-
-              // MÓDULO 4 PM-PE: MATEMÁTICA E RLM
-              _moduloCard(
-                nome: 'Matemática e Raciocínio Lógico',
-                icone: '📐',
-                totalAulas: 2,
-                totalQuestoes: 10,
-                corBadge: const Color(0xFF6366F1),
-                aulas: [
-                  _aulaItem(
-                    numero: '01',
-                    titulo: 'Regra de Três, Porcentagem e Juros Simples',
-                    detalhes: '12 min • Fórmulas e Macetes • 10 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('Matemática', 'Aula 01: Porcentagem e Regra de Três'),
-                  ),
-                  _aulaItem(
-                    numero: '02',
-                    titulo: 'Lógica Proposicional: Tabela-Verdade e Negação de Conectivos',
-                    detalhes: '14 min • Macetes Práticos • 10 questões',
-                    concluida: false,
-                    onTap: () => _abrirAula('RLM', 'Aula 02: Lógica Proposicional'),
-                  ),
-                ],
-              ),
+              // MÓDULO 6 PM-PE: DIREITOS HUMANOS E LEGISLAÇÃO
+              if (_deveExibirModulo('Direitos Humanos') || _deveExibirModulo('Legislação')) ...[
+                _moduloCard(
+                  nome: 'Direitos Humanos & Legislação da PMPE',
+                  icone: '⚖️',
+                  totalAulas: 2,
+                  totalQuestoes: 12,
+                  corBadge: const Color(0xFFDC2626),
+                  aulas: [
+                    _aulaItem(
+                      numero: '01',
+                      titulo: 'Declaração Universal dos DH (1948) & Pacto de San José',
+                      detalhes: '12 min • Princípios Fundamentais • 10 questões',
+                      concluida: false,
+                      onTap: () => _abrirAula('Direitos Humanos', 'Aula 01: DUDH e Pacto de San José'),
+                    ),
+                    _aulaItem(
+                      numero: '02',
+                      titulo: 'Estatuto dos Policiais Militares de PE (Lei nº 6.783/74) & Maria da Penha',
+                      detalhes: '15 min • Letra da Lei • 12 questões',
+                      concluida: false,
+                      destaque: true,
+                      onTap: () => _abrirAula('Legislação PMPE', 'Aula 02: Estatuto dos Militares de PE'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
             ] else ...[
               // MÓDULOS PADRÃO PC-PE
               _moduloCard(

@@ -91,94 +91,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         actions: [
-          // Bloco Fiel à Imagem de Referência: [🔥 12 dias seguidos] | (RL) Rudson Lima / Foco: PM-PE Soldado
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 14.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Badge Pílula de Sequência & Disciplina (Estilo QConcursos)
-                  Tooltip(
-                    message: 'Sequência de estudos ativos: 12 dias consecutivos mantendo o foco!',
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF7ED),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFFFEDD5), width: 1.2),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text('🔥', style: TextStyle(fontSize: 13)),
-                          SizedBox(width: 4),
-                          Text(
-                            '12 dias seguidos',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF9A3412),
-                            ),
-                          ),
-                        ],
-                      ),
+          Padding(
+            padding: const EdgeInsets.only(right: 14.0),
+            child: Center(
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF1E3A8A),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    iniciais,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-
-                  // Linha Divisória Vertical sutil
-                  Container(
-                    height: 24,
-                    width: 1,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    color: const Color(0xFFE2E8F0),
-                  ),
-
-                  // Avatar Circular do Candidato (Azul Marinho com Iniciais em Branco)
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1E3A8A),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        iniciais,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Nome do Candidato e Foco no Concurso Alvo
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.userName,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      Text(
-                        'Foco: $sigla $cargoCurto',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -189,6 +121,86 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Barra de Perfil e Sequência de Guerra (Foguinho destacado e sem sobreposição com o logo)
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.surfaceBorder),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1E3A8A),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        iniciais,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.userName,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          'Foco: $sigla $cargoCurto • ${plano.banca}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF7ED),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFFFEDD5), width: 1.2),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text('🔥', style: TextStyle(fontSize: 13)),
+                        SizedBox(width: 4),
+                        Text(
+                          '12 dias seguidos',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF9A3412),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Banner de Contagem Regressiva para a Prova & Foco Militar
             Container(
               margin: const EdgeInsets.only(bottom: 12),
@@ -253,61 +265,84 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
 
-            // Card de Inscrição Oficial Homologada do Candidato
+            // Card de Inscrição Oficial Homologada do Candidato (Responsivo sem vazar do quadro)
             if (isPmpe)
               Container(
                 margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF0FDF4),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: const Color(0xFF86EFAC)),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.verified_rounded, color: Color(0xFF16A34A), size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
+                    Row(
+                      children: [
+                        const Icon(Icons.verified_rounded, color: Color(0xFF16A34A), size: 18),
+                        const SizedBox(width: 6),
+                        const Expanded(
+                          child: Text(
                             'INSCRIÇÃO HOMOLOGADA • Nº 2026-PMPE-08942',
                             style: TextStyle(
-                              fontSize: 10.5,
+                              fontSize: 11,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFF166534),
-                              letterSpacing: 0.4,
+                              letterSpacing: 0.3,
                             ),
                           ),
-                          Text(
-                            'Soldado Combatente da PMPE • 1.250 Vagas • Banca Instituto AOCP',
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCFCE7),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: const Color(0xFF86EFAC)),
+                          ),
+                          child: const Text(
+                            'OFICIAL',
                             style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
                               color: Color(0xFF15803D),
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Soldado Combatente da PMPE • 1.250 Vagas • Banca Instituto AOCP',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF15803D),
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const PlanejadorTaticoScreen()),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        'VER 21 SEMANAS',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF166534),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const PlanejadorTaticoScreen()),
+                          );
+                        },
+                        icon: const Icon(Icons.calendar_month_rounded, size: 14, color: Color(0xFF166534)),
+                        label: const Text(
+                          'ACESSAR CRONOGRAMA DE 21 SEMANAS',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF166534),
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF86EFAC)),
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                         ),
                       ),
                     ),
@@ -813,11 +848,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const GuiaEstudosScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => GuiaEstudosScreen(
+                                  disciplinasFoco: [
+                                    plano.metaDeHoje.disciplina1,
+                                    plano.metaDeHoje.disciplina2,
+                                  ],
+                                ),
+                              ),
                             );
                           },
                           icon: const Icon(Icons.school, size: 16),
-                          label: const Text('ESTUDAR NO GUIA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          label: const Text('ESTUDAR NO GUIA', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold)),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.brandCobalt,
                             side: const BorderSide(color: AppColors.brandCobalt),
@@ -831,13 +873,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const CatalogoQuestoesScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => CatalogoQuestoesScreen(
+                                  disciplinaFoco: plano.metaDeHoje.disciplina1,
+                                  temaFoco: plano.metaDeHoje.topico1,
+                                ),
+                              ),
                             );
                           },
                           icon: const Icon(Icons.play_arrow, size: 16),
                           label: Text(
-                            'RESOLVER ${plano.metaDeHoje.metaQuestoes} ITENS',
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                            'QUESTÕES DO DIA (${plano.metaDeHoje.metaQuestoes})',
+                            style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.brandNavy,

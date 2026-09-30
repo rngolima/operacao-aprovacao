@@ -423,7 +423,7 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Planejador Tático • PM-PE',
+          'Planejador Tático',
           style: AppTypography.heading2.copyWith(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -432,23 +432,23 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
         ),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 14, top: 10, bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            margin: const EdgeInsets.only(right: 12, top: 11, bottom: 11),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: const Color(0xFFFEF3C7),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFFFCD34D)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text('⏳', style: TextStyle(fontSize: 12)),
-                SizedBox(width: 4),
+                Text('⏳', style: TextStyle(fontSize: 11)),
+                SizedBox(width: 3),
                 Text(
-                  '144 dias p/ a prova',
+                  '144 dias',
                   style: TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFFB45309),
                   ),
                 ),
@@ -469,7 +469,10 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
@@ -494,7 +497,6 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
                         decoration: BoxDecoration(
@@ -511,13 +513,20 @@ class _PlanejadorTaticoScreenState extends State<PlanejadorTaticoScreen> {
                           ),
                         ),
                       ),
-                      const Spacer(),
-                      Text(
-                        'EDITAL 30/09/2026',
-                        style: AppTypography.tagLabel.copyWith(
-                          fontSize: 9.5,
-                          color: AppColors.brandOrange,
-                          fontWeight: FontWeight.w900,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF7ED),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: const Color(0xFFFFEDD5)),
+                        ),
+                        child: const Text(
+                          'EDITAL 30/09/2026',
+                          style: TextStyle(
+                            color: Color(0xFF9A3412),
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                     ],

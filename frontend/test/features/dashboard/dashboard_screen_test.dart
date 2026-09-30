@@ -50,9 +50,9 @@ void main() {
       expect(find.text('🔥'), findsWidgets);
 
       // Iniciais e Foco do candidato no topo
-      expect(find.text('RL'), findsOneWidget);
+      expect(find.text('RL'), findsWidgets);
       expect(find.text('Rudson Lima'), findsOneWidget);
-      expect(find.text('Foco: PM-PE Soldado'), findsOneWidget);
+      expect(find.textContaining('Foco: PM-PE Soldado'), findsOneWidget);
 
       // Botão "Planejamento de Estudos" substitui "Adicionar Edital"
       expect(find.text('Planejamento de Estudos'), findsOneWidget);
@@ -88,7 +88,7 @@ void main() {
       expect(find.text('CRONOGRAMA REGRESSIVO OFICIAL DA PM-PE'), findsOneWidget);
       expect(find.text('Sua Disponibilidade Diária de Estudos'), findsOneWidget);
       expect(find.text('Cronograma da Semana 1 ao Dia da Prova'), findsOneWidget);
-      expect(find.text('144 dias p/ a prova'), findsOneWidget);
+      expect(find.text('144 dias'), findsOneWidget);
       expect(find.text('21 SEMANAS'), findsOneWidget);
 
       // Valida a presença da Semana 1 e da Semana da Prova
@@ -127,6 +127,8 @@ void main() {
 
       // Card Meta de Hoje
       expect(find.textContaining('META DE HOJE'), findsOneWidget);
+      expect(find.text('ESTUDAR NO GUIA'), findsOneWidget);
+      expect(find.textContaining('QUESTÕES DO DIA'), findsOneWidget);
 
       // Concurso Alvo Único (foco 100%, sem poluir com outros certames)
       expect(find.text('SEU CONCURSO ALVO (FOCO 100%)'), findsOneWidget);
