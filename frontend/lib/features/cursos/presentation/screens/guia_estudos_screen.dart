@@ -5,6 +5,8 @@ import '../../../../core/widgets/tactical_card.dart';
 import '../../../../core/state/plano_estudo_state.dart';
 import '../../../admin/data/services/admin_content_service.dart';
 import '../../../questoes/data/models/questao_model.dart';
+import '../../data/datasources/direito_constitucional/constitucional_conteudo_oficial.dart';
+import '../../data/datasources/direito_penal/direito_penal_conteudo_oficial.dart';
 import '../../data/datasources/portugues/portugues_conteudo_oficial.dart';
 import '../../data/models/aula_guia_model.dart';
 import '../../data/models/mapa_mental_model.dart';
@@ -288,60 +290,8 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
           ),
         ],
       ),
-      ModuloGuiaEstudo(
-        id: 'constitucional',
-        nome: 'Direito Constitucional',
-        icone: '🏛️',
-        corBadge: const Color(0xFFB45309),
-        totalAulas: 7,
-        totalQuestoes: 42,
-        aulas: [
-          AulaGuiaItem(
-            numero: '01',
-            titulo: 'Princípios Fundamentais da República Federativa do Brasil (Art. 1º ao 4º da CF/88)',
-            detalhes: '12 min • Fundamentos e Objetivos Fundamentais • 8 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '02',
-            titulo: 'Art. 5º da CF/88: Direitos e Deveres Individuais e Coletivos (Vida, Liberdade e Igualdade)',
-            detalhes: '18 min • Letra de Lei + Jurisprudência AOCP • 16 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '03',
-            titulo: 'Remédios Constitucionais: Habeas Corpus, Mandado de Segurança, Habeas Data e Ação Popular',
-            detalhes: '15 min • Garantias Processuais Constitucionais • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '04',
-            titulo: 'Direitos Sociais, Nacionalidade e Direitos Políticos (Art. 6º ao 16 da CF/88)',
-            detalhes: '14 min • Cargos Privativos de Brasileiro Nato • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '05',
-            titulo: 'Da Administração Pública: Princípios Constitucionais (LIMPE) e Servidores (Art. 37 a 41)',
-            detalhes: '15 min • Acumulação de Cargos e Estabilidade • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '06',
-            titulo: 'Da Segurança Pública (Art. 144 da CF/88): Órgãos Policiais e Atribuições Constitucionais',
-            detalhes: '16 min • Missão Constitucional da Polícia Militar • 14 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '07',
-            titulo: 'Forças Armadas e Segurança dos Estados (Art. 42 e 142 da CF/88)',
-            detalhes: '12 min • Militares dos Estados e DF • 10 questões',
-            concluida: false,
-          ),
-        ],
-      ),
+      ConstitucionalConteudoOficial.moduloGuiaEstudo,
+      DireitoPenalConteudoOficial.moduloGuiaEstudo,
       ModuloGuiaEstudo(
         id: 'direitos_humanos',
         nome: 'Direitos Humanos e Legislação Extravagante',
@@ -854,81 +804,40 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
             ),
             const SizedBox(height: 8),
 
-            if (isPmpe) ...[
-              // Renderiza todos os módulos com ordenação inteligente e marcação de dificuldade
-              ...modulosExibicao.asMap().entries.map((entry) {
-                final index = entry.key;
-                final modulo = entry.value;
-                final ehDificuldade = plano.isMateriaDificuldade(modulo.nome);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: _moduloCard(
-                    nome: modulo.nome,
-                    icone: modulo.icone,
-                    totalAulas: modulo.totalAulas,
-                    totalQuestoes: modulo.totalQuestoes,
-                    corBadge: modulo.corBadge,
-                    isDificuldade: ehDificuldade,
-                    index: index,
-                    aulas: modulo.aulas.map((aula) {
-                      return _aulaItem(
-                        numero: aula.numero,
-                        titulo: aula.titulo,
-                        detalhes: aula.detalhes,
-                        concluida: aula.concluida,
-                        destaque: aula.destaque,
-                        onTap: () => _abrirAula(
-                          modulo.nome,
-                          'Aula ${aula.numero}: ${aula.titulo}',
-                          questoes: aula.questoes,
-                          conteudoTeorico: aula.conteudoTeorico,
-                          mapaMental: aula.mapaMental,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              }),
-            ] else ...[
-              // Fallback para PC-PE
-              _moduloCard(
-                nome: 'Língua Portuguesa',
-                icone: '✍️',
-                totalAulas: 4,
-                totalQuestoes: 20,
-                corBadge: AppColors.brandCobalt,
-                isDificuldade: false,
-                aulas: [
-                  _aulaItem(
-                    numero: '01',
-                    titulo: 'Compreensão, Coesão & Conectivos no Cebraspe',
-                    detalhes: '12 min • Síntese Didática • 10 questões',
-                    concluida: true,
-                    onTap: () => _abrirAula(
-                      'Língua Portuguesa',
-                      'Aula 01: Compreensão e Coesão Textual',
-                      questoes: PortuguesConteudoOficial.aulas[0].questoes,
-                      conteudoTeorico: PortuguesConteudoOficial.aulas[0].conteudoTeorico,
-                      mapaMental: PortuguesConteudoOficial.aulas[0].mapaMental,
-                    ),
-                  ),
-                  _aulaItem(
-                    numero: '02',
-                    titulo: 'Acento Indicativo de Crase & Regências Perigosas',
-                    detalhes: '15 min • Síntese Didática • 15 questões',
-                    concluida: false,
-                    destaque: true,
-                    onTap: () => _abrirAula(
-                      'Língua Portuguesa',
-                      'Aula 02: Crase & Regência sem Mistério',
-                      questoes: PortuguesConteudoOficial.aulas[6].questoes,
-                      conteudoTeorico: PortuguesConteudoOficial.aulas[6].conteudoTeorico,
-                      mapaMental: PortuguesConteudoOficial.aulas[6].mapaMental,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            // Renderiza todos os módulos com ordenação inteligente e marcação de dificuldade
+            ...modulosExibicao.asMap().entries.map((entry) {
+              final index = entry.key;
+              final modulo = entry.value;
+              final ehDificuldade = plano.isMateriaDificuldade(modulo.nome);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: _moduloCard(
+                  nome: modulo.nome,
+                  icone: modulo.icone,
+                  totalAulas: modulo.totalAulas,
+                  totalQuestoes: modulo.totalQuestoes,
+                  corBadge: modulo.corBadge,
+                  isDificuldade: ehDificuldade,
+                  index: index,
+                  aulas: modulo.aulas.map((aula) {
+                    return _aulaItem(
+                      numero: aula.numero,
+                      titulo: aula.titulo,
+                      detalhes: aula.detalhes,
+                      concluida: aula.concluida,
+                      destaque: aula.destaque,
+                      onTap: () => _abrirAula(
+                        modulo.nome,
+                        'Aula ${aula.numero}: ${aula.titulo}',
+                        questoes: aula.questoes,
+                        conteudoTeorico: aula.conteudoTeorico,
+                        mapaMental: aula.mapaMental,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              );
+            }),
 
             const SizedBox(height: 30),
           ],
