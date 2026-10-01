@@ -13,6 +13,7 @@ import '../../data/datasources/historia_pe/historia_pe_conteudo_oficial.dart';
 import '../../data/datasources/informatica/informatica_conteudo_oficial.dart';
 import '../../data/datasources/portugues/portugues_conteudo_oficial.dart';
 import '../../data/datasources/raciocinio_logico/rlm_conteudo_oficial.dart';
+import '../../data/datasources/direitos_humanos/direitos_humanos_conteudo_oficial.dart';
 import '../../data/models/aula_guia_model.dart';
 import '../../data/models/mapa_mental_model.dart';
 import 'aula_detalhe_screen.dart';
@@ -139,60 +140,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
       ConstitucionalConteudoOficial.moduloGuiaEstudo,
       DireitoPenalConteudoOficial.moduloGuiaEstudo,
       ExecucaoPenalConteudoOficial.moduloGuiaEstudo,
-      ModuloGuiaEstudo(
-        id: 'direitos_humanos',
-        nome: 'Direitos Humanos e Legislação Extravagante',
-        icone: '⚖️',
-        corBadge: const Color(0xFFDC2626),
-        totalAulas: 7,
-        totalQuestoes: 38,
-        aulas: [
-          AulaGuiaItem(
-            numero: '01',
-            titulo: 'Teoria Geral dos Direitos Humanos, Gerações/Dimensões de Direitos e Princípios Fundamentais',
-            detalhes: '14 min • Conceitos Doutrinários • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '02',
-            titulo: 'Declaração Universal dos Direitos Humanos (DUDH 1948 - ONU): Artigos e Aplicação Policial',
-            detalhes: '15 min • Letra Integral da DUDH • 12 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '03',
-            titulo: 'Convenção Americana sobre Direitos Humanos (Pacto de San José da Costa Rica)',
-            detalhes: '14 min • Direitos Civis e Políticos • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '04',
-            titulo: 'Estatuto dos Policiais Militares do Estado de Pernambuco (Lei Estadual nº 6.783/1974)',
-            detalhes: '18 min • Hierarquia, Disciplina, Direitos e Deveres • 15 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '05',
-            titulo: 'Lei de Abuso de Autoridade (Lei Federal nº 13.869/2019): Crimes e Sanções Administrativas',
-            detalhes: '15 min • Condutas Típicas na Atividade Policial • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '06',
-            titulo: 'Lei dos Crimes Hediondos (Lei nº 8.072/1990) e Lei de Tortura (Lei nº 9.455/1997)',
-            detalhes: '14 min • Inafiançabilidade e Cumprimento de Pena • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '07',
-            titulo: 'Estatuto do Desarmamento (Lei nº 10.826/2003) e Lei Maria da Penha (Lei nº 11.340/2006)',
-            detalhes: '16 min • Tipos Penais e Medidas Protetivas • 12 questões',
-            concluida: false,
-          ),
-        ],
-      ),
+      DireitosHumanosConteudoOficial.moduloGuiaEstudo,
     ];
 
     // Mescla aulas e materiais inseridos pelo Administrador em tempo real
