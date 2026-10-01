@@ -31,6 +31,24 @@
 
   <title>operacao_aprovacao_app</title>
   <link rel="manifest" href="manifest.json">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    // Força limpeza imediata de qualquer cache offline e ServiceWorker no celular
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var name of names) caches.delete(name);
+      });
+    }
+  </script>
 </head>
 <body>
   <!--
