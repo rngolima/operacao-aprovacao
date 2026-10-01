@@ -14,46 +14,55 @@ final aulaGuiaItemConstitucional01 = AulaGuiaItem(
   detalhes: '20 min • Inviolabilidade de Domicílio, Sigilo e Remédios Constitucionais • 15 questões',
   concluida: false,
   destaque: true,
-  conteudoTeorico: '''# 🏛️ DIREITO CONSTITUCIONAL TÁTICO - AULA 01
-## Direitos e Deveres Individuais e Coletivos (Art. 5º da CF/88)
+  conteudoTeorico: '''# DIREITOS E DEVERES INDIVIDUAIS E COLETIVOS (ART. 5º DA CF/88)
+
+## 1. DESTINATÁRIOS E RELATIVIDADE DOS DIREITOS FUNDAMENTAIS
+- **Destinatários Expressos**: Brasileiros natos, naturalizados e estrangeiros residentes no país ou em trânsito.
+- **Pessoas Jurídicas**: Titularizam direitos fundamentais compatíveis com a sua natureza (ex.: honra objetiva, inviolabilidade de domicílio em escritórios e sigilo de correspondência).
+- **Regra de Ouro CRAVOU**: No ordenamento jurídico brasileiro, NENHUM direito fundamental é absoluto! Nem mesmo o direito à vida é absoluto, haja vista a previsão expressa de pena de morte em caso de guerra externa declarada (Art. 5º, XLVII, "a").
+- CUIDADO com a pegadinha da banca: Os direitos fundamentais aplicam-se não apenas na relação cidadão-Estado (eficácia vertical), mas também nas relações privadas entre particulares (eficácia horizontal).
 
 ---
 
-### 📌 1. Destinatários e Eficácia dos Direitos Fundamentais
-O Art. 5º, caput, da CF/88 estabelece que todos são iguais perante a lei, garantindo-se a:
-- **Destinatários**: Brasileiros (natos ou naturalizados) e **estrangeiros** (residentes ou em trânsito). O STF estende garantias também a pessoas jurídicas (ex: honra objetiva, inviolabilidade de domicílio em escritórios).
-- **Relatividade dos Direitos**: No ordenamento brasileiro, **NENHUM direito fundamental é absoluto**. Nem mesmo o direito à vida é absoluto, haja vista a admissão constitucional da **pena de morte em caso de guerra externa declarada** (Art. 5º, XLVII, "a").
+## 2. INVIOLABILIDADE DE DOMICÍLIO (ART. 5º, INCISO XI)
+- **Conceito Constitucional de Casa**: Abrange qualquer compartimento privado habitado ou com acesso restrito (residência, quarto de hotel ocupado, boleia de caminhão habitada e consultórios).
+- **A Qualquer Hora (Dia ou Noite)**:
+  1. Flagrante delito comprovado por fundada suspeita prévia (STF Tema 280).
+  2. Desastre de qualquer natureza.
+  3. Prestação de socorro a vítimas.
+  4. Consentimento voluntário do morador.
+- **Exclusivamente DURANTE O DIA**:
+  - Somente por **Determinação Judicial (Mandado)** devidamente fundamentado.
+- Mnemônico Tático F-D-S: Flagrante, Desastre e Socorro autorizam entrada dia e noite; Juiz só autoriza com sol (durante o dia)!
+- ATENÇÃO: A polícia NUNCA pode cumprir mandado judicial de busca domiciliar à noite, mesmo que o juiz expressamente autorize no documento. Isso configura crime de abuso de autoridade (Lei 13.869/19)!
 
 ---
 
-### 🛡️ 2. Inviolabilidade de Domicílio (Art. 5º, Inciso XI)
-> *"A casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial."*
-
-#### As 4 Hipóteses de Entrada Forçada:
-1. **Com consentimento do morador**: A qualquer momento (dia ou noite).
-2. **Flagrante Delito**: A qualquer momento (dia ou noite). *(STF - Tema 280: Exige justa causa com fundada suspeita prévia, sob pena de nulidade da busca).*
-3. **Prestar Socorro ou Desastre**: A qualquer momento (dia ou noite).
-4. **Por Determinação Judicial (Mandado)**: **SOMENTE DURANTE O DIA**.
-   - *Critério de "Dia":* Critério cronológico (das 06h às 18h) ou critério da Lei de Abuso de Autoridade (das 05h às 21h). É crime de abuso de autoridade cumprir mandado de busca após as 21h ou antes das 05h.
-
----
-
-### 📱 3. Sigilo das Comunicações e Interceptação Telefônica (Art. 5º, XII)
-- É inviolável o sigilo da correspondência e das comunicações telegráficas, de dados e das comunicações telefônicas.
-- **Exceção (Interceptação Telefônica)**:
-  - Exige **ordem judicial** fundamentada;
-  - Apenas para fins de **investigação criminal ou instrução processual penal**;
-  - Na forma da Lei Federal nº 9.296/96;
-  - **VEDADA** em processos civis, administrativos disciplinares (PAD) ou tributários autônomos.
+## 3. SIGILO DAS COMUNICAÇÕES E INTERCEPTAÇÃO TELEFÔNICA (ART. 5º, XII)
+- **Inviolabilidade Geral**: É inviolável o sigilo da correspondência, comunicações telegráficas, dados e comunicações telefônicas.
+- **Requisitos Cumulativos da Interceptação Telefônica**:
+  1. Reserva de Jurisdição: Exclusivamente por determinação de autoridade judiciária competente.
+  2. Finalidade Estrita: Somente para investigação criminal ou instrução processual penal.
+  3. Previsão Legal: Observância rigorosa das hipóteses da Lei 9.296/96 (crime punido com reclusão e sem outro meio de prova viável).
+- CUIDADO: É expressamente PROIBIDA a interceptação telefônica para instruir processo administrativo disciplinar (PAD) autônomo ou ação civil pública!
+- **Gravação Clandestina**: A gravação feita por um dos interlocutores sem conhecimento do outro é VÁLIDA e LÍCITA quando utilizada em legítima defesa (STF Tema 979).
 
 ---
 
-### ⚖️ 4. Remédios Constitucionais (Garantias Fundamentais)
-• **Habeas Corpus (Art. 5º, LXVIII)**: Protege a **liberdade de locomoção** (ir, vir e permanecer). É gratuito e não exige advogado.  
-• **Mandado de Segurança (Art. 5º, LXIX)**: Protege **direito líquido e certo** não amparado por HC ou HD. Prazo decadencial de **120 dias**.  
-• **Habeas Data (Art. 5º, LXXII)**: Assegura o conhecimento ou retificação de **informações relativas à pessoa do impetrante** (personalíssimo). É gratuito. Exige recusa administrativa prévia (Súmula 2 do STJ).  
-• **Ação Popular (Art. 5º, LXXIII)**: Qualquer **cidadão** (eleitor com título regular) pode propor para anular ato lesivo ao patrimônio público, moralidade administrativa, meio ambiente ou patrimônio histórico. Isenta de custas (salvo má-fé).
-''',
+## 4. REMÉDIOS CONSTITUCIONAIS E AÇÕES DE GARANTIA
+1. **Habeas Corpus (Art. 5º, LXVIII)**:
+   - Finalidade: Proteger a liberdade de locomoção (ir, vir e permanecer) contra ilegalidade ou abuso de poder.
+   - Natureza: Ação penal popular constitucional, gratuita e que independe de capacidade postulatória (qualquer pessoa pode impetrar sem advogado).
+2. **Mandado de Segurança (Art. 5º, LXIX)**:
+   - Finalidade: Proteger direito líquido e certo não amparado por Habeas Corpus ou Habeas Data.
+   - Prazos e Provas: Prazo decadencial improrrogável de 120 dias a contar da ciência do ato. Exige prova documental pré-constituída (não admite dilação probatória).
+3. **Habeas Data (Art. 5º, LXXII)**:
+   - Finalidade: Assegurar o conhecimento ou a retificação de informações relativas à pessoa do impetrante (caráter personalíssimo).
+   - Gratuidade e Requisito: Ação gratuita que exige prévia recusa da via administrativa (Súmula 2 do STJ).
+4. **Ação Popular (Art. 5º, LXXIII)**:
+   - Legitimidade Ativa: Exclusiva de cidadão brasileiro no gozo de seus direitos políticos (exige título de eleitor regular).
+   - Finalidade: Anular ato lesivo ao patrimônio público, moralidade administrativa, meio ambiente e patrimônio histórico-cultural.
+   - Isenção de Custas: O autor é isento de custas judiciais e sucumbência, salvo comprovada má-fé.''',
   mapaMental: const MapaMentalData(
     titulo: 'DIREITOS FUNDAMENTAIS: ART. 5º DA CF/88',
     conceitoCentral: 'Garantias individuais, inviolabilidades táticas e remédios constitucionais que blindam o cidadão perante o poder punitivo do Estado.',

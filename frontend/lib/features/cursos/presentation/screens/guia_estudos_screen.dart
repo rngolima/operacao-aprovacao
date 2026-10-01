@@ -7,6 +7,7 @@ import '../../../admin/data/services/admin_content_service.dart';
 import '../../../questoes/data/models/questao_model.dart';
 import '../../data/datasources/direito_constitucional/constitucional_conteudo_oficial.dart';
 import '../../data/datasources/direito_penal/direito_penal_conteudo_oficial.dart';
+import '../../data/datasources/execucao_penal/execucao_penal_conteudo_oficial.dart';
 import '../../data/datasources/portugues/portugues_conteudo_oficial.dart';
 import '../../data/models/aula_guia_model.dart';
 import '../../data/models/mapa_mental_model.dart';
@@ -292,6 +293,7 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
       ),
       ConstitucionalConteudoOficial.moduloGuiaEstudo,
       DireitoPenalConteudoOficial.moduloGuiaEstudo,
+      ExecucaoPenalConteudoOficial.moduloGuiaEstudo,
       ModuloGuiaEstudo(
         id: 'direitos_humanos',
         nome: 'Direitos Humanos e Legislação Extravagante',

@@ -14,55 +14,48 @@ final aulaGuiaItemDireitoPenal01 = AulaGuiaItem(
   detalhes: '18 min • Legalidade, Insignificância e Tempo/Lugar do Crime • 15 questões',
   concluida: false,
   destaque: true,
-  conteudoTeorico: '''# ⚖️ DIREITO PENAL TÁTICO - AULA 01
-## Princípios Constitucionais Penais e Aplicação da Lei Penal
+  conteudoTeorico: '''# PRINCÍPIOS FUNDAMENTAIS DO DIREITO PENAL E APLICAÇÃO DA LEI PENAL
+
+## 1. PRINCÍPIO DA LEGALIDADE E SEUS DESDOBRAMENTOS (ART. 1º DO CP)
+- **Regra Absoluta**: Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.
+- **Os 4 Desdobramentos da Legalidade**:
+  1. Anterioridade da Lei Penal (*Lex Praevia*): A lei penal incriminadora não retroage para punir fatos praticados antes da sua vigência.
+  2. Reserva Legal Estrita (*Lex Scripta*): Somente lei em sentido formal pode criar crimes. Medida Provisória NÃO pode criar tipos penais nem majorar penas (Art. 62, §1º, I, "b" da CF/88).
+  3. Taxatividade (*Lex Certa*): É vedada a criação de crimes com tipos vagos, abertos ou ambíguos. O cidadão precisa saber com clareza o que é proibido.
+  4. Proibição da Analogia Incriminadora (*Lex Stricta*): É permitida a analogia apenas *in bonam partem* (em benefício do réu). É proibida a analogia *in malam partem*.
+- **Regra de Ouro CRAVOU**: O Direito Penal é a *ultima ratio* do ordenamento. Só intervém quando todos os demais ramos do Direito falharem na proteção do bem jurídico relevante!
 
 ---
 
-### 📌 1. Princípio da Legalidade / Reserva Legal (Art. 5º, XXXIX da CF/88 e Art. 1º do CP)
-O Direito Penal é a ferramenta mais invasiva do Estado. Por isso, vige a regra inegociável:
-> *"Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal."*
-
-#### Os 4 Desdobramentos da Legalidade:
-1. **Anterioridade da Lei Penal (*Lex Praevia*)**: A lei penal incriminadora não retroage para punir fatos praticados antes da sua entrada em vigor.
-2. **Reserva Legal Estrita (*Lex Scripta*)**: Somente lei em sentido formal (ordinária ou complementar) pode criar tipos penais e cominar penas. Medida Provisória **NÃO** pode criar crimes nem majorar penas (Art. 62, §1º, I, "b" da CF/88).
-3. **Taxatividade e Certeza (*Lex Certa*)**: É vedada a criação de crimes com tipos vagos, abertos ou ambíguos. O cidadão precisa saber com exatidão o que é proibido.
-4. **Proibição da Analogia Incriminadora (*Lex Stricta*)**: É permitida a analogia apenas *in bonam partem* (em benefício do réu). É proibida a analogia *in malam partem*.
-
----
-
-### 🔍 2. Princípio da Insignificância (Bagatela Própria)
-O princípio da insignificância atua como causa de **exclusão da tipicidade material** da conduta (o fato deixa de ser crime).
-
-#### Requisitos Cumulativos do STF e STJ (Mnemônico MARI):
-• **M** - Mínima ofensividade da conduta do agente;  
-• **A** - Ausência de periculosidade social da ação;  
-• **R** - Reduzidíssimo grau de reprovabilidade do comportamento;  
-• **I** - Inexpressividade da lesão jurídica provocada.  
-
-#### ⚠️ Vedações e Súmulas de Prova Policial:
-- **Súmula 599 do STJ**: O princípio da insignificância é **inaplicável aos crimes contra a Administração Pública** (salvo a hipótese do crime de descaminho tributário até R\$ 20.000,00).
-- **Súmula 588 do STJ**: É **inaplicável** aos crimes e contravenções cometidos com violência ou grave ameaça à mulher no âmbito das relações domésticas.
-- **Crimes com Violência Real**: Roubo, extorsão e homicídio JAMAIS admitem insignificância.
+## 2. PRINCÍPIO DA INSIGNIFICÂNCIA (BAGATELA PRÓPRIA)
+- **Natureza Jurídica**: Causa supralegal de **exclusão da tipicidade material** da conduta (o fato torna-se penalmente atípico).
+- Mnemônico MARI (Requisitos Cumulativos do STF e STJ):
+  - **M** - Mínima ofensividade da conduta do agente.
+  - **A** - Ausência de periculosidade social da ação.
+  - **R** - Reduzidíssimo grau de reprovabilidade do comportamento.
+  - **I** - Inexpressividade da lesão jurídica provocada.
+- CUIDADO com as vedações sumuladas da banca examinadora:
+  - **Súmula 599 do STJ**: O princípio da insignificância é INAPLICÁVEL aos crimes contra a Administração Pública (salvo descaminho até R\$ 20.000,00).
+  - **Súmula 589 do STJ**: É INAPLICÁVEL aos crimes e contravenções cometidos com violência ou grave ameaça à mulher no âmbito das relações domésticas.
+  - Crimes com violência real à pessoa (roubo, homicídio, extorsão) JAMAIS admitem insignificância.
 
 ---
 
-### ⏳ 3. Lei Penal no Tempo (Art. 2º a 4º do CP)
-- **Regra**: Aplica-se a lei vigente ao tempo da conduta (*tempus regit actum*).
-- **Exceção (Retroatividade Benéfica)**: A lei penal só retroage para beneficiar o réu (*lex mitior*).
-- **Abolitio Criminis**: Lei nova que deixa de considerar o fato como crime extingue todos os efeitos penais da condenação (permanecem apenas efeitos civis).
-- **Tempo do Crime (Art. 4º do CP)**: Adota a **Teoria da Atividade** — momento da ação ou omissão, mesmo que outro seja o resultado.
-- **Súmula 711 do STF (Crimes Permanentes e Continuados)**:
-  > *"A lei penal mais grave aplica-se ao crime continuado ou permanente, se a sua vigência é anterior à cessação da continuidade ou permanência."*
+## 3. APLICAÇÃO DA LEI PENAL NO TEMPO (ART. 2º A 4º DO CP)
+- **Regra Geral**: Aplica-se a lei vigente ao tempo da conduta (*tempus regit actum*).
+- **Exceção (Retroatividade Benéfica)**: A lei penal mais favorável sempre retroage para beneficiar o réu (*lex mitior*), mesmo após o trânsito em julgado da condenação.
+- **Abolitio Criminis**: Lei posterior que deixa de considerar o fato como criminoso faz cessar a execução e os efeitos penais da condenação (subsistem apenas eventuais efeitos civis).
+- **Tempo do Crime (Art. 4º do CP)**: Adota a **Teoria da Atividade** — considera-se praticado o crime no momento da ação ou omissão, ainda que outro seja o momento do resultado.
+- ATENÇÃO à Súmula 711 do STF: A lei penal mais grave aplica-se ao crime continuado ou ao crime permanente (ex.: sequestro e extorsão mediante sequestro), se a sua vigência é anterior à cessação da continuidade ou da permanência!
 
 ---
 
-### 🗺️ 4. Lei Penal no Espaço (Art. 5º e 6º do CP)
+## 4. APLICAÇÃO DA LEI PENAL NO ESPAÇO (ART. 5º E 6º DO CP)
 - **Lugar do Crime (Art. 6º do CP)**: Adota a **Teoria da Ubiquidade (ou Mista)** — o crime é considerado praticado tanto no local da ação/omissão quanto no local onde ocorreu ou deveria ocorrer o resultado.
-- **Mnemônico Tático LUTA**:
-  - **L**ugar do Crime = **U**biquidade
-  - **T**empo do Crime = **A**tividade
-''',
+- **Princípio da Territorialidade Temperada**: Aplica-se a lei brasileira aos crimes cometidos no território nacional, ressalvadas as convenções, tratados e regras de direito internacional.
+- Mnemônico Tático LUTA:
+  - **L**ugar do Crime = Teoria da **U**biquidade.
+  - **T**empo do Crime = Teoria da **A**tividade.''',
   mapaMental: const MapaMentalData(
     titulo: 'DIREITO PENAL: PRINCÍPIOS E LEI PENAL',
     conceitoCentral: 'A espinha dorsal das garantias penais: Legalidade estrita, Tipicidade material e Aplicação temporal e espacial da norma penal.',

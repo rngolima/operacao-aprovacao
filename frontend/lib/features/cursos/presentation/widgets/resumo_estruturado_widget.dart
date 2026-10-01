@@ -394,6 +394,113 @@ class _ResumoEstruturadoWidgetState extends State<ResumoEstruturadoWidget> {
           ),
         );
 
+      case _TipoBloco.subsecao:
+        return Container(
+          margin: const EdgeInsets.only(top: 14, bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(6),
+            border: const Border(
+              left: BorderSide(color: Color(0xFF4F46E5), width: 3.5),
+            ),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.label_important_outline, size: 16, color: Color(0xFF4F46E5)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  bloco.texto,
+                  style: TextStyle(
+                    fontSize: 13.5 * _fonteEscala,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF1E293B),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case _TipoBloco.citacaoLei:
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFBEB).withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFFFDE68A), width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('📜', style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'LEI SECA & SÚMULA APLICADA',
+                    style: TextStyle(
+                      fontSize: 10 * _fonteEscala,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFFB45309),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                bloco.texto,
+                style: TextStyle(
+                  fontSize: 12.5 * _fonteEscala,
+                  fontStyle: FontStyle.italic,
+                  color: const Color(0xFF451A03),
+                  height: 1.45,
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case _TipoBloco.itemNumerado:
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.brandCobalt.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  bloco.prefixoNumero ?? '•',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.brandCobalt,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  bloco.texto,
+                  style: TextStyle(
+                    fontSize: 13 * _fonteEscala,
+                    color: AppColors.textPrimary,
+                    height: 1.45,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
       case _TipoBloco.paragrafo:
         return Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
@@ -463,18 +570,32 @@ class _ResumoEstruturadoWidgetState extends State<ResumoEstruturadoWidget> {
       if (l.startsWith('# ') || l.startsWith('## ')) {
         final limpo = l.replaceAll('#', '').trim();
         blocos.add(_BlocoConteudo(tipo: _TipoBloco.secaoPrincipal, texto: limpo));
+      } else if (l.startsWith('### ') || l.startsWith('#### ')) {
+        final limpo = l.replaceAll('#', '').trim();
+        blocos.add(_BlocoConteudo(tipo: _TipoBloco.subsecao, texto: limpo));
       } else if (l.toLowerCase().contains('regra de ouro') || l.toLowerCase().contains('regra absoluta')) {
         final limpo = l.replaceAll(RegExp(r'\*\*|#'), '').trim();
         blocos.add(_BlocoConteudo(tipo: _TipoBloco.regraDeOuro, texto: limpo));
-      } else if (l.toLowerCase().contains('cuidado') || l.toLowerCase().contains('pegadinha') || l.toLowerCase().contains('atenção')) {
+      } else if (l.toLowerCase().contains('cuidado') ||
+          l.toLowerCase().contains('pegadinha') ||
+          l.toLowerCase().contains('atenção') ||
+          l.toLowerCase().contains('armadilha')) {
         final limpo = l.replaceAll(RegExp(r'\*\*|#'), '').trim();
         blocos.add(_BlocoConteudo(tipo: _TipoBloco.pegadinha, texto: limpo));
-      } else if (l.toLowerCase().contains('mnemônico')) {
+      } else if (l.toLowerCase().contains('mnemônico') || l.toLowerCase().contains('mnemonico')) {
         final limpo = l.replaceAll(RegExp(r'\*\*|#'), '').trim();
         blocos.add(_BlocoConteudo(tipo: _TipoBloco.mnemonico, texto: limpo));
+      } else if (l.startsWith('> ') || l.toLowerCase().startsWith('súmula') || l.toLowerCase().contains('súmula vinculante')) {
+        final limpo = l.replaceFirst(RegExp(r'^>\s*'), '').replaceAll(RegExp(r'\*\*|\*|"'), '').trim();
+        blocos.add(_BlocoConteudo(tipo: _TipoBloco.citacaoLei, texto: limpo));
       } else if (l.toLowerCase().startsWith('exemplo') || l.toLowerCase().startsWith('exemplos:')) {
         final limpo = l.replaceAll(RegExp(r'\*\*|\*'), '').trim();
         blocos.add(_BlocoConteudo(tipo: _TipoBloco.exemplo, texto: limpo));
+      } else if (RegExp(r'^\d+\.\s').hasMatch(l)) {
+        final match = RegExp(r'^(\d+)\.\s*(.*)$').firstMatch(l);
+        final numPrefixo = match?.group(1) ?? '•';
+        final conteudo = (match?.group(2) ?? l).replaceAll('**', '').trim();
+        blocos.add(_BlocoConteudo(tipo: _TipoBloco.itemNumerado, texto: conteudo, prefixoNumero: '$numPrefixo.'));
       } else if (l.startsWith('- ') || l.startsWith('• ') || l.startsWith('* ')) {
         final limpo = l.substring(2).replaceAll('**', '').trim();
         blocos.add(_BlocoConteudo(tipo: _TipoBloco.itemTexto, texto: limpo));
@@ -490,10 +611,13 @@ class _ResumoEstruturadoWidgetState extends State<ResumoEstruturadoWidget> {
 
 enum _TipoBloco {
   secaoPrincipal,
+  subsecao,
   regraDeOuro,
   pegadinha,
   mnemonico,
+  citacaoLei,
   exemplo,
+  itemNumerado,
   itemTexto,
   paragrafo,
 }
@@ -501,6 +625,11 @@ enum _TipoBloco {
 class _BlocoConteudo {
   final _TipoBloco tipo;
   final String texto;
+  final String? prefixoNumero;
 
-  const _BlocoConteudo({required this.tipo, required this.texto});
+  const _BlocoConteudo({
+    required this.tipo,
+    required this.texto,
+    this.prefixoNumero,
+  });
 }
