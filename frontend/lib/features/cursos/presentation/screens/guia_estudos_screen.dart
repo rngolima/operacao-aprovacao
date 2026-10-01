@@ -8,7 +8,11 @@ import '../../../questoes/data/models/questao_model.dart';
 import '../../data/datasources/direito_constitucional/constitucional_conteudo_oficial.dart';
 import '../../data/datasources/direito_penal/direito_penal_conteudo_oficial.dart';
 import '../../data/datasources/execucao_penal/execucao_penal_conteudo_oficial.dart';
+import '../../data/datasources/geografia_pe/geografia_pe_conteudo_oficial.dart';
+import '../../data/datasources/historia_pe/historia_pe_conteudo_oficial.dart';
+import '../../data/datasources/informatica/informatica_conteudo_oficial.dart';
 import '../../data/datasources/portugues/portugues_conteudo_oficial.dart';
+import '../../data/datasources/raciocinio_logico/rlm_conteudo_oficial.dart';
 import '../../data/models/aula_guia_model.dart';
 import '../../data/models/mapa_mental_model.dart';
 import 'aula_detalhe_screen.dart';
@@ -128,169 +132,10 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   List<ModuloGuiaEstudo> _obterModulosPmpe() {
     final baseModulos = <ModuloGuiaEstudo>[
       PortuguesConteudoOficial.moduloGuiaEstudo,
-      ModuloGuiaEstudo(
-        id: 'historia',
-        nome: 'História de Pernambuco',
-        icone: '⚔️',
-        corBadge: const Color(0xFF15803D),
-        totalAulas: 7,
-        totalQuestoes: 38,
-        aulas: [
-          AulaGuiaItem(
-            numero: '01',
-            titulo: 'Ocupação Pré-Colonial, Capitania Hereditária de Duarte Coelho e Economia Açucareira',
-            detalhes: '14 min • Formação Social e Econômica • 8 questões',
-            concluida: true,
-            questoes: _questoesHistoriaPe,
-          ),
-          AulaGuiaItem(
-            numero: '02',
-            titulo: 'As Invasões Holandesas e o Governo de Maurício de Nassau no Recife (1637-1644)',
-            detalhes: '16 min • Tolerância Religiosa e Urbanismo • 10 questões',
-            concluida: false,
-            destaque: true,
-            questoes: _questoesHistoriaPe,
-          ),
-          AulaGuiaItem(
-            numero: '03',
-            titulo: 'A Insurreição Pernambucana e a Batalha dos Guararapes (1645-1654)',
-            detalhes: '12 min • Expulsão Neerlandesa e Sentimento Nativista • 8 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '04',
-            titulo: 'A Guerra dos Mascates (1710-1711) e o Conflito entre Nobreza de Olinda e Comerciantes do Recife',
-            detalhes: '12 min • Autonomia Política • 8 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '05',
-            titulo: 'A Revolução Pernambucana de 1817: República Provisória e Ruptura com a Coroa Joanina',
-            detalhes: '15 min • Marco Revolucionário • 12 questões',
-            concluida: false,
-            questoes: _questoesHistoriaPe,
-          ),
-          AulaGuiaItem(
-            numero: '06',
-            titulo: 'A Confederação do Equador (1824) e a Luta Republicana de Frei Caneca',
-            detalhes: '14 min • Constituição Outorgada de 1824 • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '07',
-            titulo: 'A Revolução Praieira (1848) e Movimentos Político-Sociais em Pernambuco',
-            detalhes: '12 min • Manifesto ao Mundo • 8 questões',
-            concluida: false,
-          ),
-        ],
-      ),
-      ModuloGuiaEstudo(
-        id: 'rlm',
-        nome: 'Raciocínio Lógico Matemático',
-        icone: '📐',
-        corBadge: const Color(0xFF6366F1),
-        totalAulas: 7,
-        totalQuestoes: 40,
-        aulas: [
-          AulaGuiaItem(
-            numero: '01',
-            titulo: 'Estrutura Lógica de Relações Arbitrárias entre Pessoas, Lugares e Objetos',
-            detalhes: '14 min • Associação Lógica • 10 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '02',
-            titulo: 'Lógica Proposicional: Proposições Simples/Compostas e Conectivos (e, ou, se...então)',
-            detalhes: '16 min • Fundamentos Proposicionais • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '03',
-            titulo: 'Construção de Tabelas-Verdade, Tautologia, Contradição e Contingência',
-            detalhes: '15 min • Métodos Rápidos de Resolução • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '04',
-            titulo: 'Equivalências Lógicas e Aplicação Rigorosa das Leis de De Morgan',
-            detalhes: '14 min • Fórmulas Essenciais AOCP • 14 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '05',
-            titulo: 'Negação de Proposições Compostas e Condicionais (Regra do MANÉ)',
-            detalhes: '12 min • Macetes Práticos de Prova • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '06',
-            titulo: 'Diagramas Lógicos, Operações com Conjuntos e Quantificadores (Todo, Algum, Nenhum)',
-            detalhes: '14 min • Interseção e Negação • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '07',
-            titulo: 'Princípios de Contagem (Arranjo, Combinação e Permutação) e Probabilidade Básica',
-            detalhes: '15 min • Análise Combinatória para Concursos • 10 questões',
-            concluida: false,
-          ),
-        ],
-      ),
-      ModuloGuiaEstudo(
-        id: 'informatica',
-        nome: 'Noções de Informática',
-        icone: '💻',
-        corBadge: const Color(0xFF0284C7),
-        totalAulas: 7,
-        totalQuestoes: 36,
-        aulas: [
-          AulaGuiaItem(
-            numero: '01',
-            titulo: 'Hardware: Processadores, Memórias (RAM, ROM, Cache), Barramentos e Periféricos',
-            detalhes: '12 min • Arquitetura de Computadores • 8 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '02',
-            titulo: 'Sistemas Operacionais: Windows 10/11 (Atalhos de Teclado, Gerenciador de Tarefas e Painel)',
-            detalhes: '14 min • Recursos Práticos do Sistema • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '03',
-            titulo: 'Conceitos Básicos do Ambiente Linux (Estrutura de Diretórios e Comandos do Terminal)',
-            detalhes: '12 min • Comandos Essenciais para Concursos • 8 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '04',
-            titulo: 'Pacote Microsoft Office (Word e Excel) e LibreOffice (Writer e Calc)',
-            detalhes: '15 min • Fórmulas do Excel e Formatação • 12 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '05',
-            titulo: 'Redes de Computadores, Conceitos de Internet/Intranet, Navegadores Web e E-mail',
-            detalhes: '12 min • Protocolos (HTTP, HTTPS, TCP/IP, DNS) • 10 questões',
-            concluida: false,
-          ),
-          AulaGuiaItem(
-            numero: '06',
-            titulo: 'Segurança da Informação: Vírus, Ransomware, Worms, Phishing, Engenharia Social e Backup',
-            detalhes: '16 min • Ameaças e Mecanismos de Proteção • 15 questões',
-            concluida: false,
-            destaque: true,
-          ),
-          AulaGuiaItem(
-            numero: '07',
-            titulo: 'Armazenamento em Nuvem (Cloud Storage), Google Drive e Microsoft OneDrive',
-            detalhes: '10 min • Sincronização e Compartilhamento • 8 questões',
-            concluida: false,
-          ),
-        ],
-      ),
+      HistoriaPeConteudoOficial.moduloGuiaEstudo,
+      GeografiaPeConteudoOficial.moduloGuiaEstudo,
+      RlmConteudoOficial.moduloGuiaEstudo,
+      InformaticaConteudoOficial.moduloGuiaEstudo,
       ConstitucionalConteudoOficial.moduloGuiaEstudo,
       DireitoPenalConteudoOficial.moduloGuiaEstudo,
       ExecucaoPenalConteudoOficial.moduloGuiaEstudo,
