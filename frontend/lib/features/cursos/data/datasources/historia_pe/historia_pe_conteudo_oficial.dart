@@ -37,21 +37,26 @@ final aulaGuiaItemHistoria01 = AulaGuiaItem(
 
 ---
 
-## 3. RESISTÊNCIA NEGRA E A FORMAÇÃO DOS QUILOMBOS
-- **Quilombo dos Palmares**:
-  - Embora situado territorialmente na Serra da Barriga (hoje estado de Alagoas), Palmares pertencia administrativamente à Capitania de Pernambuco durante o século XVII.
-  - Maior símbolo de resistência à escravidão nas Américas, reunindo mais de 20 mil habitantes em diversos mocambos (Macaco, Subupira, Dambrabanga).
-  - Líderes históricos: Ganga Zumba (tratado de paz de 1678) e Zumbi dos Palmares (recusa à rendição).
-  - Destruído em 1694 pelas tropas do bandeirante paulista Domingos Jorge Velho, contratado pelo governo de Pernambuco.
+## 3. A INVASÃO HOLANDESA & O GOVERNO DE MAURÍCIO DE NASSAU (1630-1654)
+- **União Ibérica e WIC**: Espanha assume Portugal e bloqueia comércio holandês. A Companhia das Índias Ocidentais invade Olinda e Recife em 1630.
+- **Governo de Nassau (1637-1644)**: Tolerância religiosa (Sinagoga Kahal Zur Israel, 1ª das Américas), pontes e canais na Cidade Maurícia, artistas (Frans Post, Eckhout) e crédito farto.
+- **Insurreição Pernambucana e Montes Guararapes (1648/1649)**: Aliança trirracial de brancos (João Fernandes Vieira), negros (Henrique Dias) e indígenas (Filipe Camarão). Berço do Exército Brasileiro.
 
 ---
 
-## 4. PATRIMÔNIO CULTURAL E IDENTIDADE PERNAMBUCANA
-- **Frevo**: Surgiu no final do século XIX nas ruas do Recife, fruto da rivalidade entre bandas marciais militares e capoeiristas. Declarado Patrimônio Cultural Imaterial da Humanidade pela UNESCO em 2012.
-- **Maracatu**:
-  - *Maracatu Nação (Baque Virado)*: Origem urbana afro-brasileira nas coroações simbólicas dos Reis do Congo.
-  - *Maracatu Rural (Baque Solto)*: Origem no corte da cana da Zona da Mata Norte, caracterizado pelos Caboclos de Lança com suas golas bordadas.
-- **Culinária Oficial**: O Bolo de Rolo é reconhecido pela Lei Estadual nº 13.436/2008 como Patrimônio Cultural e Imaterial de Pernambuco!''',
+## 4. MOVIMENTOS DE RESISTÊNCIA E EMANCIPACIONISTAS
+- **Guerra dos Mascates (1710-1711)**: Nobres de Olinda (senhores endividados) contra comerciantes do Recife ("mascates"). Recife torna-se vila autônoma.
+- **Revolução Pernambucana de 1817 ("Revolução dos Padres")**: Tomou o poder por mais de 70 dias! Proclamou a República e instituiu a Lei Orgânica Provisória com liberdade de imprensa e de culto. ATENÇÃO: NÃO aboliu a escravidão!
+- **Confederação do Equador (1824)**: Reação contra o autoritarismo de D. Pedro I e a Constituição outorgada de 1824. Frei Caneca foi o ideólogo central, condenado e fuzilado no Forte das Cinco Pontas em 1825.
+- **Guerra dos Cabanos / Cabanada (1832-1835)**: Movimento popular sertanejo no Agreste e Mata Sul que lutava pelo retorno de D. Pedro I e pela religião tradicional.
+- **Revolução Praieira (1848-1850)**: Última revolta liberal do Império. Lançou o "Manifesto ao Mundo": voto livre e universal, liberdade de imprensa, fim do Poder Moderador e garantia de trabalho.
+
+---
+
+## 5. PATRIMÔNIO CULTURAL E IDENTIDADE PERNAMBUCANA
+- **Frevo**: Surgiu no fim do século XIX nas ruas do Recife da rivalidade entre bandas e capoeiras. Patrimônio da Humanidade pela UNESCO (2012).
+- **Maracatu**: Maracatu Nação (Baque Virado, urbano/afro) vs. Maracatu Rural (Baque Solto, corte da cana com Caboclo de Lança).
+- **Cultura Popular**: Cavalo-Marinho, Ciranda de Lia de Itamaracá e Luiz Gonzaga (o Rei do Baião).''',
   mapaMental: const MapaMentalData(
     titulo: 'HISTÓRIA DE PERNAMBUCO: COLÔNIA E FORMAÇÃO',
     conceitoCentral: 'Capitania Hereditária de Duarte Coelho, Civilização do Açúcar, Resistência Quilombola e Cultura Popular.',

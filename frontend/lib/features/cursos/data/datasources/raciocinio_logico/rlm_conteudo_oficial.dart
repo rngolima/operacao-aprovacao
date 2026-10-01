@@ -51,7 +51,27 @@ final aulaGuiaItemRlm01 = AulaGuiaItem(
   - **P**elo menos um... NÃO;
   - **E**xiste um... que NÃO;
   - **A**lgum... NÃO.
-- CUIDADO com a pegadinha clássica da banca: NUNCA negue "Todo" dizendo "Nenhum"! Dizer *"Nenhum"* é um erro grotesco de extrapolação.''',
+- CUIDADO com a pegadinha clássica da banca: NUNCA negue "Todo" dizendo "Nenhum"! Dizer *"Nenhum"* é um erro grotesco de extrapolação.
+
+---
+
+## 5. DIAGRAMAS LÓGICOS & CONJUNTOS DE VENN
+- **Fórmula da União**: n(A ∪ B) = n(A) + n(B) - n(A ∩ B).
+- **Relações de Pertinência**:
+  - *Todo A é B*: Conjunto A totalmente inserido dentro de B (A ⊂ B).
+  - *Nenhum A é B*: Conjuntos disjuntos sem nenhum ponto em comum.
+  - *Algum A é B*: Interseção não vazia.
+
+---
+
+## 6. ANÁLISE COMBINATÓRIA & PROBABILIDADE
+- **A Ordem Importa?**
+  - **Se a ordem IMPORTA -> ARRANJO**: Senhas, filas, premiações, cargos distintos (Comandante e Subcomandante). Fórmula: A(n, p) = n! / (n - p)!
+  - **Se a ordem NÃO IMPORTA -> COMBINAÇÃO**: Equipes de patrulha, grupos de policiais, comissões de ronda. Fórmula: C(n, p) = n! / [p!(n - p)!]
+- **Probabilidade Clássica**:
+  - P(A) = Casos Favoráveis / Casos Possíveis (Espaço Amostral).
+  - Regra do "E": Eventos sucessivos/independentes -> MULTIPLICA as probabilidades.
+  - Regra do "OU": Eventos alternativos -> SOMA as probabilidades.''',
   mapaMental: const MapaMentalData(
     titulo: 'RACIOCÍNIO LÓGICO: PROPOSIÇÕES E EQUIVALÊNCIAS',
     conceitoCentral: 'Tabela-Verdade dos 5 Conectivos, Regra do MANÉ para o Condicional e Leis de De Morgan.',

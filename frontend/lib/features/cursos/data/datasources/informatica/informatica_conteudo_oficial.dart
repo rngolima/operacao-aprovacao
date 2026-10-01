@@ -69,7 +69,19 @@ final aulaGuiaItemInformatica01 = AulaGuiaItem(
 - **Malwares em Concursos**:
   - *Ransomware*: Código malicioso que criptografa os arquivos do sistema e exige resgate financeiro para restaurá-los.
   - *Phishing*: Isca por e-mail ou link falso que simula portais oficiais para roubar credenciais e senhas da vítima.
-  - *Worm*: Malware que se replica sozinho pela rede através de falhas, sem necessitar de arquivo hospedeiro nem de ação do usuário.''',
+  - *Worm*: Malware que se replica sozinho pela rede através de falhas, sem necessitar de arquivo hospedeiro nem de ação do usuário.
+
+---
+
+## 5. NUVEM (CLOUD COMPUTING) & PROCEDIMENTOS DE BACKUP
+- **Modelos de Nuvem (SPI)**:
+  - *SaaS*: Software pronto na nuvem (Google Drive, Gmail, Office 365).
+  - *PaaS*: Ambiente de desenvolvimento e hospedagem de aplicações.
+  - *IaaS*: Infraestrutura bruta, servidores virtuais e armazenamento (AWS, Azure).
+- **Tipos de Backup (Decoreba AOCP)**:
+  - *Backup Completo (Full)*: Copia tudo e desmarca o atributo de arquivo.
+  - *Backup Incremental*: Copia arquivos criados/alterados desde o último backup (seja full ou incremental). Mais rápido para gravar, mais lento para restaurar.
+  - *Backup Diferencial*: Copia arquivos criados/alterados desde o último backup COMPLETO. Não desmarca o atributo. Restauração rápida (Full + Último Diferencial).''',
   mapaMental: const MapaMentalData(
     titulo: 'INFORMÁTICA: HARDWARE, REDES E SEGURANÇA',
     conceitoCentral: 'Memórias, Atalhos do Windows, Protocolos TCP/IP e Proteção contra Malwares (Ransomware/Phishing).',
