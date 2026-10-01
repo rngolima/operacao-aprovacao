@@ -4,154 +4,173 @@ import '../../models/aula_guia_model.dart';
 import '../../models/mapa_mental_model.dart';
 
 /// Aula 01 Oficial de Informática (Soldado PM-PE)
+/// Estrutura Tática AlfaCon (Prof. João Paulo Orso) & Instituto AOCP
 final aulaGuiaItemInformatica01 = AulaGuiaItem(
   numero: '01',
-  titulo: 'Hardware, Windows 10/11, Linux, Protocolos de Rede e Segurança (Ransomware & Phishing)',
-  detalhes: '18 min • Método CRAVOU • 15 questões comentadas',
+  titulo: 'Hardware, Windows 10/11, Linux, Redes, Modelo OSI e Segurança da Informação',
+  detalhes: '25 min • Método CRAVOU • Doutrina AlfaCon • Questões Comentadas',
   concluida: false,
   destaque: true,
   conteudoTeorico: '''# INFORMÁTICA TÁTICA: HARDWARE, SISTEMAS, REDES E SEGURANÇA DA INFORMAÇÃO
+## Doutrina Especializada AlfaCon (Prof. João Paulo Orso) • Instituto AOCP
 
-## 1. HARDWARE E SISTEMAS OPERACIONAIS
-- **Hierarquia de Memórias**:
-  - *Registradores da CPU*: Mais rápidos e de menor capacidade.
-  - *Memória Cache (L1, L2, L3)*: Memória ultra rápida integrada ao processador para acelerar dados repetitivos.
-  - *Memória RAM*: Memória principal de trabalho, volátil (perde o conteúdo quando o computador é desligado).
-  - *Memória ROM*: Não volátil, somente de leitura, armazena o BIOS/UEFI e a rotina de POST.
-- **Atalhos Essenciais do Windows 10/11**:
-  - `Win + L`: Bloqueia o computador instantaneamente (*Lock*).
-  - `Win + D`: Minimiza tudo e exibe a Área de Trabalho (*Desktop*).
-  - `Win + Shift + S`: Captura de tela interativa recortada.
+---
+
+## 1. HARDWARE, ARQUITETURA E HIERARQUIA DE MEMÓRIAS
+- **Hierarquia de Velocidade e Custo por Bit**:
+  1. *Registradores da CPU*: Mais rápidos do computador, ficam dentro do chip processador. Voláteis.
+  2. *Memória Cache (L1, L2, L3)*: Memória SRAM ultra rápida. Evita o gargalo entre processador e RAM.
+  3. *Memória Principal (RAM)*: Memória de trabalho dinâmica (DRAM), volátil (desligou = apagou).
+  4. *Memória Secundária (HDD / SSD)*: Armazenamento em massa permanente e não volátil.
+     - *SSD*: Memória Flash eletrônica, sem partes móveis, muito mais veloz e resistente a impactos (SATA até 550 MB/s; NVMe/PCIe até 7.000 MB/s).
+     - *HDD*: Discos magnéticos giratórios e braço mecânico leitor.
+  5. *Memória ROM*: Gravada na fábrica da placa-mãe. Não volátil. Armazena BIOS/UEFI e a rotina POST (autoteste na inicialização).
+
+---
+
+## 2. SISTEMAS OPERACIONAIS: WINDOWS 10/11 E LINUX
+- **Microsoft Windows (Atalhos Mais Cobrados em Prova)**:
+  - `Win + L`: Bloqueia o computador imediatamente (*Lock*).
+  - `Win + D`: Minimiza/restaura janelas e mostra a Área de Trabalho (*Desktop*).
+  - `Win + E`: Abre o Explorador de Arquivos (*Explorer*).
+  - `Win + V`: Histórico da área de transferência (múltiplos itens copiados).
   - `Ctrl + Shift + Esc`: Abre direto o Gerenciador de Tarefas.
-- **Comandos Básicos do Terminal Linux**:
-  - `pwd`: Mostra o diretório corrente de trabalho.
-  - `ls -la`: Lista todos os arquivos e diretórios com permissões detalhadas.
-  - `chmod`: Altera permissões de acesso (leitura `r`, escrita `w`, execução `x`).
-  - `grep`: Procura termos e padrões de texto dentro de arquivos.
+- **Sistema Operacional Linux**:
+  - *Kernel Aberto*, multiusuário, multitarefa preemptivo, *case-sensitive* (diferencia maiúsculas de minúsculas).
+  - *Diretórios Típicos*:
+    - `/bin`: Binários essenciais executáveis por todos os usuários.
+    - `/sbin`: Binários administrativos (usados pelo *root*).
+    - `/etc`: Arquivos de configuração global do sistema e serviços.
+    - `/home`: Pastas pessoais dos usuários comuns.
+    - `/root`: Pasta pessoal do superusuário.
+    - `/var`: Arquivos variáveis (logs do sistema).
+  - *Comandos Essenciais*: `pwd` (exibe caminho atual), `ls -la` (lista arquivos com permissões), `grep` (filtra textos), `chmod` (modifica permissões).
+  - *Permissões Octais (`chmod`)*: Leitura `r=4`, Escrita `w=2`, Execução `x=1`. Exemplo: `chmod 755` = Dono 7 (rwx), Grupo 5 (r-x), Outros 5 (r-x).
 
 ---
 
-## 2. SUÍTE DE ESCRITÓRIO (WORD/EXCEL VS LIBREOFFICE WRITER/CALC)
-- **Extensões de Arquivos Nativas**:
-  - Microsoft Word: `.docx` | LibreOffice Writer: `.odt`
-  - Microsoft Excel: `.xlsx` | LibreOffice Calc: `.ods`
-- **Fórmulas Matemáticas em Planilhas**:
-  - `=SOMA(A1:A5)`: Soma todos os valores da célula A1 até A5 (dois pontos = intervalo contínuo).
-  - `=SOMA(A1;A5)`: Soma exclusivamente a célula A1 e a célula A5 (ponto e vírgula = elementos pontuais).
-  - `=MÉDIA(A1:A5)`: Calcula a média aritmética das células do intervalo.
-  - `=SE(teste_lógico; valor_se_verdadeiro; valor_se_falso)`: Função condicional lógica.
+## 3. SUÍTES DE ESCRITÓRIO: MS OFFICE E LIBREOFFICE
+- **Extensões Nativas**:
+  - Word (`.docx`) vs LibreOffice Writer (`.odt`).
+  - Excel (`.xlsx`) vs LibreOffice Calc (`.ods`).
+- **Fórmulas e Funções em Planilhas (Excel e Calc)**:
+  - `=SOMA(A1:A5)`: Soma de A1 ATÉ A5 (dois pontos = intervalo contínuo).
+  - `=SOMA(A1;A5)`: Soma de A1 E A5 (ponto e vírgula = células pontuais).
+  - `=SE(teste; se_verdadeiro; se_falso)`: Função condicional lógica.
+  - `=CONT.SE(intervalo; critério)`: Conta quantas células atendem ao critério.
+  - `=SOMASE(intervalo; critério; [intervalo_soma])`: Soma condicional.
+  - Cifrão (`\\\$`) trava a célula para o auto-preenchimento: `\\\$A\\\$1` fixa coluna e linha; tecla `F4` no Excel alterna travas.
 
 ---
 
-## 3. REDES DE COMPUTADORES E PROTOCOLOS DA INTERNET
-- **Classificação por Extensão**:
-  - `PAN`: Rede pessoal (Bluetooth).
-  - `LAN`: Rede local (computadores do quartel ou prédio).
-  - `MAN`: Rede metropolitana (conecta batalhões pela cidade).
-  - `WAN`: Rede de alcance global (a Internet mundial).
-- **Protocolos Mais Cobrados**:
-  - `HTTP` (Porta 80): Comunicação web sem criptografia.
-  - `HTTPS` (Porta 443): Comunicação web segura com criptografia SSL/TLS.
-  - `DNS` (Porta 53): Converte endereços textuais em números IP.
-  - `SMTP` (Porta 587): Protocolo de envio de e-mails (*Sua Mensagem Tá Partindo*).
-  - `IMAP` (Porta 143/993): Recebimento com sincronização na nuvem (mensagens mantidas no servidor).
-  - `POP3` (Porta 110): Recebimento com download para a máquina e deleção do servidor.
+## 4. REDES DE COMPUTADORES, MODELO OSI/TCP-IP E INTERNET
+- **Classificação Geográfica**: `PAN` (pessoal/bluetooth) < `LAN` (local/edifício) < `MAN` (metropolitana/cidade) < `WAN` (longa distância/global).
+- **Equipamentos**:
+  - *Hub*: Camada Física (1). Sem inteligência, envia tudo por *broadcast* (gera colisões).
+  - *Switch*: Camada de Enlace (2). Baseado em MAC address, envia direto ao destino (*unicast*).
+  - *Roteador*: Camada de Rede (3). Baseado em endereços lógicos IP, define rotas entre redes distintas.
+- **Portas e Protocolos Cruciais**:
+  - `HTTP` (Porta 80) e `HTTPS` (Porta 443 - SSL/TLS criptografado).
+  - `DNS` (Porta 53): Converte URLs/nomes em endereços IP.
+  - `DHCP` (Portas 67/68): Distribui IPs automaticamente.
+  - `FTP` (Portas 20/21): Transferência de arquivos.
+  - `SSH` (Porta 22): Shell remoto com criptografia forte.
+  - `SMTP` (Porta 587): Envio de e-mails (*Sua Mensagem Tá Partindo*).
+  - `POP3` (Porta 110): Recebimento com download para a máquina local e exclusão do servidor.
+  - `IMAP` (Porta 143/993): Recebimento com sincronização na nuvem do servidor.
+- **IPv4 vs IPv6**:
+  - IPv4 tem **32 bits** (4 octetos decimais, ex: `192.168.1.1`).
+  - IPv6 tem **128 bits** (8 grupos hexadecimais, ex: `2001:db8::1`).
 
 ---
 
-## 4. SEGURANÇA DA INFORMAÇÃO E AMEAÇAS CIBERNÉTICAS
-- **Os 5 Princípios da Segurança (C.I.D.A.N)**:
-  - **C**onfidencialidade: Sigilo dos dados contra olhares não autorizados.
-  - **I**ntegridade: Proteção contra modificações ou corrupção indevida.
-  - **D**isponibilidade: Sistema no ar e acessível quando requisitado.
-  - **A**utenticidade: Certeza incontestável de quem produziu a informação.
-  - **N**ão Repúdio: Impossibilidade jurídica de negar a prática de uma ação.
-- **Malwares em Concursos**:
-  - *Ransomware*: Código malicioso que criptografa os arquivos do sistema e exige resgate financeiro para restaurá-los.
-  - *Phishing*: Isca por e-mail ou link falso que simula portais oficiais para roubar credenciais e senhas da vítima.
-  - *Worm*: Malware que se replica sozinho pela rede através de falhas, sem necessitar de arquivo hospedeiro nem de ação do usuário.
-
----
-
-## 5. NUVEM (CLOUD COMPUTING) & PROCEDIMENTOS DE BACKUP
-- **Modelos de Nuvem (SPI)**:
-  - *SaaS*: Software pronto na nuvem (Google Drive, Gmail, Office 365).
-  - *PaaS*: Ambiente de desenvolvimento e hospedagem de aplicações.
-  - *IaaS*: Infraestrutura bruta, servidores virtuais e armazenamento (AWS, Azure).
-- **Tipos de Backup (Decoreba AOCP)**:
-  - *Backup Completo (Full)*: Copia tudo e desmarca o atributo de arquivo.
-  - *Backup Incremental*: Copia arquivos criados/alterados desde o último backup (seja full ou incremental). Mais rápido para gravar, mais lento para restaurar.
-  - *Backup Diferencial*: Copia arquivos criados/alterados desde o último backup COMPLETO. Não desmarca o atributo. Restauração rápida (Full + Último Diferencial).''',
+## 5. SEGURANÇA DA INFORMAÇÃO, MALWARES E CRIPTOGRAFIA
+- **Princípios Básicos (C.I.D.A.N)**:
+  - **C**onfidencialidade: Sigilo contra acessos indevidos (Criptografia).
+  - **I**ntegridade: Informação inalterada (Hash SHA-256).
+  - **D**isponibilidade: Acessível sempre que os autorizados precisarem.
+  - **A**utenticidade: Confirmação de autoria (Certificados digitais).
+  - **N**ão Repúdio: Impossibilidade jurídica de negar a ação.
+- **Pragas Virtuais e Ataques**:
+  - *Ransomware*: Criptografa os arquivos e exige resgate em dinheiro/bitcoin.
+  - *Phishing*: Isca por e-mail ou página clonada para pescar senhas.
+  - *Worm*: Replica-se automaticamente pela rede sem precisar de hospedeiro ou ação do usuário.
+  - *Trojan*: Programa disfarçado de inofensivo que abre portas (*backdoors*) para invasores.
+  - *DDoS*: Ataque que sobrecarrega servidores através de redes de computadores zumbis (*botnets*).
+- **Criptografia e Assinatura Digital**:
+  - *Simétrica*: Uma única chave secreta para cifrar e decifrar (AES, DES).
+  - *Assimétrica*: Par de chaves pública e privada (RSA).
+  - *Regra de Ouro da Assinatura Digital*: O remetente **assina com a sua Chave Privada** e o destinatário **valida a autenticidade com a Chave Pública** dele!''',
   mapaMental: const MapaMentalData(
     titulo: 'INFORMÁTICA: HARDWARE, REDES E SEGURANÇA',
-    conceitoCentral: 'Memórias, Atalhos do Windows, Protocolos TCP/IP e Proteção contra Malwares (Ransomware/Phishing).',
-    regraDeOuro: 'RAM é Volátil! Win+L bloqueia tela! HTTPS porta 443 é seguro! Ransomware criptografa arquivos e pede resgate!',
+    conceitoCentral: 'Arquitetura de PCs, Windows vs Linux, Protocolos TCP/IP e Segurança C.I.D.A.N.',
+    regraDeOuro: 'RAM é volátil! Win+L bloqueia sessão! Porta 443 é HTTPS seguro! Assina com a Privada e confere com a Pública!',
     ramos: [
       MapaMentalRamo(
         tituloRamo: 'Hardware e Memórias',
-        subtitulo: 'RAM vs ROM',
+        subtitulo: 'RAM vs Cache vs SSD',
         corRamo: Color(0xFF0284C7),
         icone: Icons.memory,
         itens: [
           MapaMentalItem(
-            titulo: 'RAM',
-            descricao: 'Memória principal volátil de execução de programas.',
-            mnemonico: 'Desligou o PC = Perdeu dados da RAM',
+            titulo: 'Hierarquia',
+            descricao: 'Registradores > Cache L1/L2/L3 > RAM > SSD NVMe > HDD.',
+            mnemonico: 'Mais rápido no topo = Mais caro por bit',
           ),
           MapaMentalItem(
-            titulo: 'ROM',
-            descricao: 'Não volátil, gravada de fábrica para inicializar a BIOS/POST.',
+            titulo: 'RAM vs ROM',
+            descricao: 'RAM é volátil de trabalho; ROM armazena BIOS/UEFI não volátil.',
           ),
         ],
       ),
       MapaMentalRamo(
-        tituloRamo: 'Atalhos do Windows',
-        subtitulo: 'Win+L e Win+D',
+        tituloRamo: 'Windows vs Linux',
+        subtitulo: 'Atalhos e Comandos',
         corRamo: Color(0xFF2563EB),
-        icone: Icons.keyboard,
+        icone: Icons.terminal,
         itens: [
           MapaMentalItem(
-            titulo: 'Win + L',
-            descricao: 'Bloqueia o computador imediatamente para segurança.',
-            mnemonico: 'L de Lock (Travar tela)',
+            titulo: 'Atalhos Windows',
+            descricao: 'Win+L bloqueia, Win+D exibe Desktop, Ctrl+Shift+Esc abre Gerenciador.',
+            mnemonico: 'Win + L = Lock (Trava imediata)',
           ),
           MapaMentalItem(
-            titulo: 'Win + D',
-            descricao: 'Minimiza todas as janelas e revela o Desktop.',
+            titulo: 'Linux chmod 755',
+            descricao: 'Leitura(4), Escrita(2), Execução(1). Dono total (7) e outros leem/executam (5).',
           ),
         ],
       ),
       MapaMentalRamo(
-        tituloRamo: 'Protocolos de Rede',
-        subtitulo: 'HTTPS, SMTP e IMAP',
+        tituloRamo: 'Redes e Protocolos',
+        subtitulo: 'TCP/IP e Portas',
         corRamo: Color(0xFF10B981),
         icone: Icons.lan,
         itens: [
           MapaMentalItem(
-            titulo: 'HTTPS (443)',
-            descricao: 'Navegação criptografada com certificados SSL/TLS.',
+            titulo: 'Portas Cruciais',
+            descricao: 'HTTPS (443), HTTP (80), DNS (53), SMTP (587), SSH (22).',
           ),
           MapaMentalItem(
-            titulo: 'SMTP vs IMAP',
-            descricao: 'SMTP: Envia e-mail. IMAP: Recebe e sincroniza na nuvem.',
+            titulo: 'E-mails: SMTP vs IMAP',
+            descricao: 'SMTP envia. IMAP sincroniza na nuvem. POP3 baixa e apaga.',
             mnemonico: 'SMTP = Sua Mensagem Tá Partindo',
           ),
         ],
       ),
       MapaMentalRamo(
-        tituloRamo: 'Ameaças Virtuais',
-        subtitulo: 'Ransomware e Phishing',
+        tituloRamo: 'Segurança e Ataques',
+        subtitulo: 'C.I.D.A.N e Assinatura Digital',
         corRamo: Color(0xFFDC2626),
         icone: Icons.security,
         itens: [
           MapaMentalItem(
-            titulo: 'Ransomware',
-            descricao: 'Criptografa dados da vítima e exige resgate em dinheiro.',
-            mnemonico: 'Criptografia + Resgate = Ransomware',
+            titulo: 'Assinatura Digital',
+            descricao: 'Gera Hash e criptografa com a CHAVE PRIVADA do emissor.',
+            mnemonico: 'Assina com a Privada, valida com a Pública!',
           ),
           MapaMentalItem(
-            titulo: 'Phishing',
-            descricao: 'Páginas e e-mails falsificados como isca para roubar senhas.',
+            titulo: 'Ransomware vs Phishing',
+            descricao: 'Ransomware sequestra com cripto e resgate; Phishing pesca senhas com links falsos.',
           ),
         ],
       ),
@@ -203,6 +222,75 @@ final aulaGuiaItemInformatica01 = AulaGuiaItem(
 
 🔍 DESTRINCHANDO ALTERNATIVA POR ALTERNATIVA:
 • A) CORRETA. O termo "Phishing" deriva de pescaria: o atacante lança uma isca fraudulenta (e-mail ou link clone) para fisgar senhas e dados confidenciais do usuário.''',
+    ),
+    QuestaoModel(
+      id: 803,
+      banca: 'Instituto AOCP',
+      orgao: 'PM-PE',
+      cargo: 'Soldado da Polícia Militar',
+      ano: 2024,
+      disciplina: 'Noções de Informática',
+      assunto: 'Protocolos de Redes e Internet',
+      enunciado: 'No âmbito da arquitetura TCP/IP, qual protocolo é o responsável pelo envio de mensagens de correio eletrônico entre clientes e servidores de e-mail?',
+      tipoQuestao: 'MULTIPLA_ESCOLHA',
+      alternativas: {
+        'A': 'IMAP',
+        'B': 'POP3',
+        'C': 'SMTP',
+        'D': 'FTP',
+        'E': 'DNS',
+      },
+      gabaritoOficial: 'C',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C (SMTP)
+
+🔍 DESTRINCHANDO ALTERNATIVA POR ALTERNATIVA:
+• C) CORRETA. Mnemônico CRAVOU: SMTP ("Sua Mensagem Tá Partindo") é o protocolo de envio de mensagens de e-mail. IMAP e POP3 são de recebimento.''',
+    ),
+    QuestaoModel(
+      id: 804,
+      banca: 'Instituto AOCP',
+      orgao: 'Polícia Científica',
+      cargo: 'Perito Criminal / Papiloscopista',
+      ano: 2024,
+      disciplina: 'Noções de Informática',
+      assunto: 'Criptografia e Assinatura Digital',
+      enunciado: 'Em relação aos conceitos de criptografia e assinatura digital, para que um remetente assine digitalmente um documento eletrônico garantindo a sua autenticidade e o não repúdio, ele deve utilizar:',
+      tipoQuestao: 'MULTIPLA_ESCOLHA',
+      alternativas: {
+        'A': 'A chave pública do destinatário.',
+        'B': 'A chave privada do destinatário.',
+        'C': 'A sua própria chave privada.',
+        'D': 'A sua própria chave pública.',
+        'E': 'A chave simétrica compartilhada.',
+      },
+      gabaritoOficial: 'C',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: C (A sua própria chave privada)
+
+🔍 DESTRINCHANDO ALTERNATIVA POR ALTERNATIVA:
+• C) CORRETA. Regra de Ouro AlfaCon/CRAVOU: A assinatura digital é cifrada com a CHAVE PRIVADA do emissor (garantindo que somente ele gerou o resumo) e conferida com a CHAVE PÚBLICA do emissor por qualquer terceiro.''',
+    ),
+    QuestaoModel(
+      id: 805,
+      banca: 'Instituto AOCP',
+      orgao: 'PM-PE',
+      cargo: 'Soldado da Polícia Militar',
+      ano: 2024,
+      disciplina: 'Noções de Informática',
+      assunto: 'Sistema Operacional Linux',
+      enunciado: 'No sistema operacional Linux, qual comando é empregado para alterar as permissões de acesso de leitura, gravação e execução sobre arquivos ou diretórios?',
+      tipoQuestao: 'MULTIPLA_ESCOLHA',
+      alternativas: {
+        'A': 'chown',
+        'B': 'chmod',
+        'C': 'chgrp',
+        'D': 'umask',
+        'E': 'ls -la',
+      },
+      gabaritoOficial: 'B',
+      comentarioDidatico: '''🎯 CRAVOU NO GABARITO OFICIAL: B (chmod)
+
+🔍 DESTRINCHANDO ALTERNATIVA POR ALTERNATIVA:
+• B) CORRETA. O comando `chmod` (change mode) altera permissões de leitura (4), escrita (2) e execução (1). O comando `chown` altera o proprietário (*owner*).''',
     ),
   ],
 );
