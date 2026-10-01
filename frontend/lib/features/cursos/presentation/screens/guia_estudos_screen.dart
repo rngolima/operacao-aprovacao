@@ -129,19 +129,65 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
   // ========================================================================
   // GRADE COMPLETA E RIGOROSA DO CONTEÚDO PROGRAMÁTICO DA PM-PE (AOCP)
   // 6 DISCIPLINAS OFICIAIS • 10 QUESTÕES CADA • TOTAL 60 QUESTÕES
+  // ISOLAMENTO RESTRITO: Aluno PM-PE jamais vê matérias de PC-PE ou PP-PE!
   // ========================================================================
-  List<ModuloGuiaEstudo> _obterModulosPmpe() {
-    final baseModulos = <ModuloGuiaEstudo>[
-      PortuguesConteudoOficial.moduloGuiaEstudo,
-      HistoriaPeConteudoOficial.moduloGuiaEstudo,
-      GeografiaPeConteudoOficial.moduloGuiaEstudo,
-      RlmConteudoOficial.moduloGuiaEstudo,
-      InformaticaConteudoOficial.moduloGuiaEstudo,
-      ConstitucionalConteudoOficial.moduloGuiaEstudo,
-      DireitoPenalConteudoOficial.moduloGuiaEstudo,
-      ExecucaoPenalConteudoOficial.moduloGuiaEstudo,
-      DireitosHumanosConteudoOficial.moduloGuiaEstudo,
-    ];
+  List<ModuloGuiaEstudo> _obterModulos(String concursoAtivo) {
+    final bool isPmpe = concursoAtivo.toUpperCase().contains('MILITAR') ||
+        concursoAtivo.toUpperCase().contains('PMPE') ||
+        concursoAtivo.toUpperCase().contains('PM-PE');
+
+    final bool isPcpe = concursoAtivo.toUpperCase().contains('CIVIL') ||
+        concursoAtivo.toUpperCase().contains('PCPE') ||
+        concursoAtivo.toUpperCase().contains('PC-PE');
+
+    final bool isPppe = concursoAtivo.toUpperCase().contains('PENAL') ||
+        concursoAtivo.toUpperCase().contains('PPPE') ||
+        concursoAtivo.toUpperCase().contains('PP-PE');
+
+    List<ModuloGuiaEstudo> baseModulos;
+
+    if (isPmpe) {
+      // EDITAL OFICIAL SOLDADO PM-PE (AOCP) - RIGOROSAMENTE 6 DISCIPLINAS
+      baseModulos = <ModuloGuiaEstudo>[
+        PortuguesConteudoOficial.moduloGuiaEstudo,
+        HistoriaPeConteudoOficial.moduloGuiaEstudo,
+        GeografiaPeConteudoOficial.moduloGuiaEstudo,
+        RlmConteudoOficial.moduloGuiaEstudo,
+        InformaticaConteudoOficial.moduloGuiaEstudo,
+        ConstitucionalConteudoOficial.moduloGuiaEstudo,
+        DireitosHumanosConteudoOficial.moduloGuiaEstudo,
+      ];
+    } else if (isPcpe) {
+      // POLÍCIA CIVIL DE PERNAMBUCO (PC-PE)
+      baseModulos = <ModuloGuiaEstudo>[
+        PortuguesConteudoOficial.moduloGuiaEstudo,
+        InformaticaConteudoOficial.moduloGuiaEstudo,
+        RlmConteudoOficial.moduloGuiaEstudo,
+        ConstitucionalConteudoOficial.moduloGuiaEstudo,
+        DireitoPenalConteudoOficial.moduloGuiaEstudo,
+      ];
+    } else if (isPppe) {
+      // POLÍCIA PENAL DE PERNAMBUCO (PP-PE)
+      baseModulos = <ModuloGuiaEstudo>[
+        PortuguesConteudoOficial.moduloGuiaEstudo,
+        InformaticaConteudoOficial.moduloGuiaEstudo,
+        ConstitucionalConteudoOficial.moduloGuiaEstudo,
+        DireitoPenalConteudoOficial.moduloGuiaEstudo,
+        ExecucaoPenalConteudoOficial.moduloGuiaEstudo,
+        DireitosHumanosConteudoOficial.moduloGuiaEstudo,
+      ];
+    } else {
+      // PADRÃO PM-PE CASO NÃO ESPECIFICADO
+      baseModulos = <ModuloGuiaEstudo>[
+        PortuguesConteudoOficial.moduloGuiaEstudo,
+        HistoriaPeConteudoOficial.moduloGuiaEstudo,
+        GeografiaPeConteudoOficial.moduloGuiaEstudo,
+        RlmConteudoOficial.moduloGuiaEstudo,
+        InformaticaConteudoOficial.moduloGuiaEstudo,
+        ConstitucionalConteudoOficial.moduloGuiaEstudo,
+        DireitosHumanosConteudoOficial.moduloGuiaEstudo,
+      ];
+    }
 
     // Mescla aulas e materiais inseridos pelo Administrador em tempo real
     final customAulas = AdminContentService.instance.aulasCustomizadas;
@@ -236,15 +282,16 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
                     style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.35),
                   ),
                   const SizedBox(height: 16),
-                  Wrap(
+                    Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      'Raciocínio Lógico Matemático',
-                      'Direito Constitucional',
                       'Língua Portuguesa',
                       'História de Pernambuco',
+                      'Geografia de Pernambuco',
+                      'Raciocínio Lógico Matemático',
                       'Noções de Informática',
+                      'Direito Constitucional',
                       'Direitos Humanos e Legislação',
                     ].map((materia) {
                       final isSelected = plano.isMateriaDificuldade(materia);
@@ -311,8 +358,8 @@ class _GuiaEstudosScreenState extends State<GuiaEstudosScreen> {
         concursoAtivo.toUpperCase().contains('PMPE') ||
         concursoAtivo.toUpperCase().contains('PM-PE');
 
-    // Módulos oficiais da PMPE ou gerais
-    final modulosPmpe = _obterModulosPmpe();
+    // Módulos oficiais estritamente filtrados pelo concurso ativo
+    final modulosPmpe = _obterModulos(concursoAtivo);
 
     // Aplica a regra de priorização por dificuldade
     List<ModuloGuiaEstudo> modulosExibicao = List.from(modulosPmpe);

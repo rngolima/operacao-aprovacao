@@ -90,5 +90,23 @@ void main() {
 
       expect(find.text('Minhas Maiores Dificuldades'), findsNothing);
     });
+
+    testWidgets('Garante Isolamento Absoluto: Aluno PM-PE NÃO vê Direito Penal nem Execução Penal', (tester) async {
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pump();
+
+      // Disciplinas oficiais da PM-PE DEVEM estar presentes
+      expect(find.textContaining('Língua Portuguesa'), findsWidgets);
+      expect(find.textContaining('História de Pernambuco'), findsWidgets);
+      expect(find.textContaining('Geografia de Pernambuco'), findsWidgets);
+      expect(find.textContaining('Raciocínio Lógico'), findsWidgets);
+      expect(find.textContaining('Informática'), findsWidgets);
+      expect(find.textContaining('Constitucional'), findsWidgets);
+      expect(find.textContaining('Direitos Humanos'), findsWidgets);
+
+      // Disciplinas de outros editais (PC-PE / PP-PE) NUNCA podem aparecer na PM-PE
+      expect(find.text('Direito Penal (Oficial PC-PE / PP-PE)'), findsNothing);
+      expect(find.text('Execução Penal - LEP (Oficial PP-PE)'), findsNothing);
+    });
   });
 }
